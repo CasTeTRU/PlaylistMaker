@@ -15,5 +15,15 @@
         <item name="colorOnSurface">@color/text_primary</item>
         <item name="android:statusBarColor">@color/background</item>
         <item name="android:navigationBarColor">@color/background</item>
+        <item name="android:textSize">22sp</item>
+
+        <!-- <item name="android:backgroundTint">@color/white</item> -->
     </style>
+    <!-- Base application theme. -->
+    <style name="Base.Theme.MaterialComponents.DayNight.NoActionBar" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
+
+    <style name="Theme.MaterialComponents.DayNight.NoActionBar" parent="Base.Theme.MaterialComponents.DayNight.NoActionBar" />
 </resources>
