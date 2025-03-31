@@ -7,7 +7,8 @@
     android:orientation="vertical"
     android:padding="16dp"
     android:background="@color/background"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
 
     <Button
         app:icon="@drawable/ic_search"
@@ -17,14 +18,13 @@
 
         android:id="@+id/btnSearch"
         android:layout_weight="3"
-        android:textAllCaps="false"
-        android:textSize="22sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/search"
         android:backgroundTint="@color/white"
         android:textColor="@color/black"
-        android:layout_marginTop="16dp"/>
+        android:foreground="?attr/selectableItemBackground"
+        />
 
     <Button
         app:icon="@drawable/ic_library"
@@ -34,14 +34,13 @@
 
         android:id="@+id/btnLibrary"
         android:layout_weight="3"
-        android:textAllCaps="false"
-        android:textSize="22sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/library"
         android:backgroundTint="@color/white"
         android:textColor="@color/black"
-        android:layout_marginTop="16dp"/>
+        android:foreground="?attr/selectableItemBackground"
+        />
 
     <Button
         app:icon="@drawable/ic_settings"
@@ -51,12 +50,11 @@
 
         android:id="@+id/btnSettings"
         android:layout_weight="3"
-        android:textAllCaps="false"
-        android:textSize="22sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/settings"
         android:backgroundTint="@color/white"
         android:textColor="@color/black"
-        android:layout_marginTop="16dp"/>
+        android:foreground="?attr/selectableItemBackground"
+        />
 </LinearLayout>
