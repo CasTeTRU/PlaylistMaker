@@ -8,6 +8,7 @@
     android:padding="16dp"
     android:background="@color/white"
     tools:context=".MainActivity"
+    android:theme="@style/Base.Theme.MaterialComponents.DayNight.NoActionBar"
     >
 
     <Button
@@ -20,18 +21,26 @@
         android:layout_height="wrap_content"
         android:backgroundTint="@color/white"
         android:textColor="@color/black"
-        android:gravity="start"
+        android:gravity="start|center_vertical"
         android:textSize="22sp"
         android:textAllCaps="false"
         android:text="@string/settings"
         />
 
-    <Switch
+
+
+
+    <androidx.appcompat.widget.SwitchCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="start|center_vertical"
         android:textSize="16sp"
-        android:text="Темная тема"
-        />
+        android:text="@string/night_theme"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="20dp"
+        android:fontFamily="sans-serif-medium"
+    />
+
 
     <Button
         app:icon="@drawable/ic_share"
@@ -43,9 +52,10 @@
         android:layout_height="wrap_content"
         android:backgroundTint="@color/white"
         android:textColor="@color/black"
-        android:gravity="start"
+        android:gravity="start|center_vertical"
         android:textSize="16sp"
-        android:textAllCaps="false"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="20dp"
         android:text="@string/share"
         />
 
@@ -59,9 +69,10 @@
         android:layout_height="wrap_content"
         android:backgroundTint="@color/white"
         android:textColor="@color/black"
-        android:gravity="start"
+        android:gravity="start|center_vertical"
         android:textSize="16sp"
-        android:textAllCaps="false"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="20dp"
         android:text="@string/support"
         />
 
@@ -75,9 +86,10 @@
         android:layout_height="wrap_content"
         android:backgroundTint="@color/white"
         android:textColor="@color/black"
-        android:gravity="start"
+        android:gravity="start|center_vertical"
         android:textSize="16sp"
-        android:textAllCaps="false"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="20dp"
         android:text="@string/agreement"
         />
 
