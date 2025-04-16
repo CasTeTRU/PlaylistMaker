@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">PlaylistMaker</string>
+    <string name="app_name">Playlist Maker</string>
     <string name="search">Поиск</string>
     <string name="library">Медиатека</string>
     <string name="settings">Настройки</string>
@@ -8,4 +8,21 @@
     <string name="support">Написать в поддержку</string>
     <string name="agreement">Пользовательское соглашение</string>
     <string name="night_theme">Тёмная тема</string>
+
+    <string name="share_app_message">Присоединяйтесь к курсу по Андроид-разработке в Практикуме: %s</string>
+    <string name="share_app_url">https://practicum.yandex.ru/android</string>
+
+    <string name="support_email">your-email@example.com</string>
+    <string name="support_subject">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
+    <string name="support_body">Спасибо разработчикам и разработчицам за крутое приложение!</string>
+
+    <string name="terms_of_service_url">https://practicum.yandex.ru/terms</string>
+
+    <string name="search_hint">Поиск</string>
+    <string name="clear_button_description">Очистить поисковый запрос</string>
+    <string name="no_results">Нет результатов</string>
+    <string name="clear_search" >Очистить поиск</string>
+    <string name="clear" >Очистить</string>
+
+    <string name="search_header">Поиск</string>"Поиск"/>
 </resources>
