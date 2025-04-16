@@ -1,60 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/background_main"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="@color/background"
+    android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
     tools:context=".MainActivity"
-    android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
+    android:fitsSystemWindows="true"
+    >
+
+    <TextView
+        android:id="@+id/app_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/app_name"
+        android:textColor="@color/yp_white"
+        android:background="@color/background_main"/>
 
     <Button
+        android:id="@+id/btnSearch"
+        android:layout_marginTop="24dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="3"
+
+        android:backgroundTint="@color/white"
+        android:foreground="?attr/selectableItemBackground"
+        android:text="@string/search"
+        android:textColor="@color/black"
+        app:cornerRadius="16dp"
         app:icon="@drawable/ic_search"
         app:iconGravity="textStart"
-        app:iconTint="@color/surface"
-        app:cornerRadius="16dp"
-
-        android:id="@+id/btnSearch"
-        android:layout_weight="3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/search"
-        android:backgroundTint="@color/white"
-        android:textColor="@color/black"
-        android:foreground="?attr/selectableItemBackground"
-        />
+        app:iconTint="@color/surface" />
 
     <Button
+        android:id="@+id/btnLibrary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="3"
+
+        android:backgroundTint="@color/white"
+        android:foreground="?attr/selectableItemBackground"
+        android:text="@string/library"
+        android:textColor="@color/black"
+        app:cornerRadius="16dp"
         app:icon="@drawable/ic_library"
         app:iconGravity="textStart"
-        app:iconTint="@color/surface"
-        app:cornerRadius="16dp"
-
-        android:id="@+id/btnLibrary"
-        android:layout_weight="3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/library"
-        android:backgroundTint="@color/white"
-        android:textColor="@color/black"
-        android:foreground="?attr/selectableItemBackground"
-        />
+        app:iconTint="@color/surface" />
 
     <Button
-        app:icon="@drawable/ic_settings"
-        app:iconGravity="textStart"
-        app:iconTint="@color/surface"
-        app:cornerRadius="16dp"
-
         android:id="@+id/btnSettings"
-        android:layout_weight="3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/settings"
+        android:layout_weight="3"
+
         android:backgroundTint="@color/white"
-        android:textColor="@color/black"
         android:foreground="?attr/selectableItemBackground"
-        />
+        android:text="@string/settings"
+        android:textColor="@color/black"
+        app:cornerRadius="16dp"
+        app:icon="@drawable/ic_settings"
+        app:iconGravity="textStart"
+        app:iconTint="@color/surface" />
 </LinearLayout>

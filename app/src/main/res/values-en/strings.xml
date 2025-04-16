@@ -8,4 +8,16 @@
     <string name="support">Support</string>
     <string name="agreement">User agreement</string>
     <string name="night_theme">Night theme</string>
+    <string name="share_app_message">Join the Android development course at the Practicum: %s</string>
+    <string name="share_app_url">https://practicum.yandex.ru/android</string>
+    <string name="support_email">your-email@example.com</string>
+    <string name="support_subject">A message to the developers and developers of the Playlist Maker app</string>
+    <string name="support_body">Thanks to the developers and developers for the cool app!</string>
+    <string name="terms_of_service_url">https://practicum.yandex.ru/terms</string>
+    <string name="search_hint">Search</string>
+    <string name="clear_button_description">Clear</string>
+    <string name="no_results">None</string>
+    <string name="clear_search">Clear</string>
+    <string name="clear">Clear</string>
+    <string name="search_header">Search</string>
 </resources>
