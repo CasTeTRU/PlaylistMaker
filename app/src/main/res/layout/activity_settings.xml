@@ -33,52 +33,57 @@
 
 
     <Switch
+        android:layout_marginTop="24dp"
         style="@style/ButtonStyle"
 
         android:text="@string/night_theme"
         android:id="@+id/night_switch"
-        android:fontFamily="sans-serif-medium"
         android:background="@color/switch_track"
         android:stateListAnimator="@null"
         android:backgroundTint="@color/button_background"
         android:textColor="@color/button_text_color"
+        android:thumbTint="@color/switch_thumb_color"
+        android:trackTint="@color/switch_track_color"
         />
 
 
     <Button
+        android:id="@+id/share_app_button"
+        style="@style/ButtonStyle"
+        android:backgroundTint="@color/button_background"
+        android:stateListAnimator="@null"
+        android:text="@string/share"
+        android:textColor="@color/button_text_color"
         app:icon="@drawable/ic_share"
         app:iconGravity="end"
-        app:iconTint="@color/icon_color"
-        android:stateListAnimator="@null"
-        style="@style/ButtonStyle"
-        android:id="@+id/share_app_button"
-        android:text="@string/share"
-        android:backgroundTint="@color/button_background"
-        android:textColor="@color/button_text_color"
+        app:iconTint="@color/yp_text_grey"
+        app:iconSize="24dp"
         />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         app:icon="@drawable/ic_support"
         app:iconGravity="end"
-        app:iconTint="@color/icon_color"
+        app:iconTint="@color/yp_text_grey"
         android:stateListAnimator="@null"
         style="@style/ButtonStyle"
         android:id="@+id/contact_support_button"
         android:text="@string/support"
         android:backgroundTint="@color/button_background"
         android:textColor="@color/button_text_color"
+        app:iconSize="24dp"
         />
 
     <Button
         app:icon="@drawable/ic_arrow_forward"
         app:iconGravity="end"
-        app:iconTint="@color/icon_color"
+        app:iconTint="@color/yp_text_grey"
         android:stateListAnimator="@null"
         style="@style/ButtonStyle"
         android:id="@+id/terms_of_service_button"
         android:text="@string/agreement"
         android:backgroundTint="@color/button_background"
         android:textColor="@color/button_text_color"
+        app:iconSize="24dp"
         />
 
 

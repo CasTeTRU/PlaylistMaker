@@ -14,11 +14,19 @@
 
     <TextView
         android:id="@+id/app_name"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="12dp"
+
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:title="@string/app_name"
+        app:titleTextAppearance="@style/Theme.PlaylistMaker"
+        android:background="@color/background_main"
         android:text="@string/app_name"
         android:textColor="@color/yp_white"
-        android:background="@color/background_main"/>
+        android:textSize="22sp"
+        android:fontFamily="@font/ys_display_regular"
+        />
 
     <Button
         android:id="@+id/btnSearch"
@@ -26,7 +34,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="3"
-
+        android:layout_marginBottom="@dimen/button_margin"
+        android:layout_marginHorizontal="@dimen/button_margin"
         android:backgroundTint="@color/white"
         android:foreground="?attr/selectableItemBackground"
         android:text="@string/search"
@@ -41,6 +50,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="3"
+        android:layout_marginBottom="@dimen/button_margin"
+        android:layout_marginHorizontal="@dimen/button_margin"
 
         android:backgroundTint="@color/white"
         android:foreground="?attr/selectableItemBackground"
@@ -56,6 +67,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="3"
+        android:layout_marginBottom="@dimen/button_margin"
+        android:layout_marginHorizontal="@dimen/button_margin"
 
         android:backgroundTint="@color/white"
         android:foreground="?attr/selectableItemBackground"

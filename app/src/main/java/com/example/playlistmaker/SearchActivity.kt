@@ -11,7 +11,8 @@ import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageButton
-
+import androidx.appcompat.widget.Toolbar
+import androidx.core.view.isVisible
 
 class SearchActivity : AppCompatActivity() {
 
@@ -24,18 +25,25 @@ class SearchActivity : AppCompatActivity() {
 
         searchEditText = findViewById(R.id.searchEditText)
         clearButton = findViewById(R.id.clearButton)
+        val backButton = findViewById<Toolbar>(R.id.search_header)
+
+        backButton.setNavigationOnClickListener {
+            finish()
+        }
+
 
         clearButton.setOnClickListener {
             searchEditText.text.clear()
             hideKeyboard()
-            clearButton.visibility = View.GONE
         }
+
+
 
         searchEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                clearButton.visibility = if (s.isNullOrEmpty()) View.GONE else View.VISIBLE
+                clearButton.isVisible = !s.isNullOrEmpty()
             }
 
             override fun afterTextChanged(s: Editable?) {}

@@ -57,6 +57,7 @@ class SettingsActivity : AppCompatActivity() {
             val url = getString(R.string.terms_of_service_url)
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
 
+
             if (intent.resolveActivity(packageManager) != null) {
                 startActivity(intent)
             } else {
