@@ -5,92 +5,87 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:background="@color/white"
     tools:context=".MainActivity"
-    android:theme="@style/Base.Theme.MaterialComponents.DayNight.NoActionBar"
+    android:background="@color/background_settings"
+    android:theme="@style/Theme.PlaylistMaker"
+    android:fitsSystemWindows="true"
     >
 
     <Button
         app:icon="@drawable/ic_arrow_back"
         app:iconGravity="start"
-        app:iconTint="@color/black"
+        app:iconTint="@color/icon_color"
 
         android:id="@+id/btn_back"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/white"
-        android:textColor="@color/black"
+
         android:gravity="start|center_vertical"
         android:textSize="22sp"
         android:textAllCaps="false"
+        android:fontFamily="@font/ys_display_regular"
         android:text="@string/settings"
+        android:backgroundTint="@color/button_background"
+        android:textColor="@color/button_text_color"
         />
 
 
 
 
-    <androidx.appcompat.widget.SwitchCompat
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="start|center_vertical"
-        android:textSize="16sp"
+    <Switch
+        android:layout_marginTop="24dp"
+        style="@style/ButtonStyle"
+
         android:text="@string/night_theme"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="20dp"
-        android:fontFamily="sans-serif-medium"
-    />
+        android:id="@+id/night_switch"
+        android:background="@color/switch_track"
+        android:stateListAnimator="@null"
+        android:backgroundTint="@color/button_background"
+        android:textColor="@color/button_text_color"
+        android:thumbTint="@color/switch_thumb_color"
+        android:trackTint="@color/switch_track_color"
+        />
 
 
     <Button
+        android:id="@+id/share_app_button"
+        style="@style/ButtonStyle"
+        android:backgroundTint="@color/button_background"
+        android:stateListAnimator="@null"
+        android:text="@string/share"
+        android:textColor="@color/button_text_color"
         app:icon="@drawable/ic_share"
         app:iconGravity="end"
-        app:iconTint="@color/black"
-
-        android:id="@+id/share"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/white"
-        android:textColor="@color/black"
-        android:gravity="start|center_vertical"
-        android:textSize="16sp"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="20dp"
-        android:text="@string/share"
+        app:iconTint="@color/yp_text_grey"
+        app:iconSize="24dp"
         />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         app:icon="@drawable/ic_support"
         app:iconGravity="end"
-        app:iconTint="@color/black"
-
-        android:id="@+id/support"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/white"
-        android:textColor="@color/black"
-        android:gravity="start|center_vertical"
-        android:textSize="16sp"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="20dp"
+        app:iconTint="@color/yp_text_grey"
+        android:stateListAnimator="@null"
+        style="@style/ButtonStyle"
+        android:id="@+id/contact_support_button"
         android:text="@string/support"
+        android:backgroundTint="@color/button_background"
+        android:textColor="@color/button_text_color"
+        app:iconSize="24dp"
         />
 
     <Button
         app:icon="@drawable/ic_arrow_forward"
         app:iconGravity="end"
-        app:iconTint="@color/black"
-
-        android:id="@+id/agreement"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/white"
-        android:textColor="@color/black"
-        android:gravity="start|center_vertical"
-        android:textSize="16sp"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="20dp"
+        app:iconTint="@color/yp_text_grey"
+        android:stateListAnimator="@null"
+        style="@style/ButtonStyle"
+        android:id="@+id/terms_of_service_button"
         android:text="@string/agreement"
+        android:backgroundTint="@color/button_background"
+        android:textColor="@color/button_text_color"
+        app:iconSize="24dp"
         />
+
+
 
 </LinearLayout>
