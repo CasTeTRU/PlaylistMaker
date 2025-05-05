@@ -35,4 +35,5 @@
     <color name="yp_blue">#3772E7</color>
     <color name="yp_blue_light">#9FBBF3</color>
 
+    <color name="arrow_color">@color/yp_black</color>
 </resources>

@@ -13,6 +13,7 @@
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
 
+
     <color name="yp_black">#000000</color>
     <color name="yp_blue">#3772E7</color>
     <color name="yp_blue_light">#9FBBF3</color>
@@ -27,6 +28,7 @@
     <color name="dark_colorPrimary">#BB86FC</color>
     <color name="dark_colorPrimaryDark">#3700B3</color>
     <color name="dark_colorAccent">#03DAC5</color>
+    <color name="arrow_color">@color/yp_text_grey</color>
 
     <color name="hint_color">#808080</color>
     <color name="text_color">#000000</color>
