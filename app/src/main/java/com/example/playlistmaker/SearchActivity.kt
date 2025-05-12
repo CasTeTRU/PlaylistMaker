@@ -30,15 +30,6 @@ class SearchActivity : AppCompatActivity() {
 
     private var initialTracksLoaded = false
 
-
-    data class Track(
-        val trackName: String,
-        val artistName: String,
-        val trackTime: String,
-        val artworkUrl100: String
-    )
-
-
     class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val artwork: ImageView = itemView.findViewById(R.id.artworkImageView)
         private val trackName: TextView = itemView.findViewById(R.id.trackNameTextView)
@@ -47,12 +38,16 @@ class SearchActivity : AppCompatActivity() {
 
         fun bind(track: Track) {
             trackName.text = track.trackName
-            artistName.text = "${track.artistName} • ${track.trackTime}"
+            artistName.text = itemView.context.getString(R.string.artist_name_track_time,
+                track.artistName, track.trackTime)
 
             Glide.with(itemView)
                 .load(track.artworkUrl100)
                 .centerCrop()
-                .transform(RoundedCorners(12))
+                .transform(RoundedCorners(
+                    itemView.context.resources.getDimensionPixelSize(R.dimen.corner_radius)
+                    )
+                )
                 .placeholder(R.drawable.ic_placeholder)
                 .error(R.drawable.ic_placeholder)
                 .into(artwork)
@@ -94,8 +89,8 @@ class SearchActivity : AppCompatActivity() {
         val backButton = findViewById<Toolbar>(R.id.search_header)
 
 
-        originalTracks = getSampleTracks() // Сохраняем оригинальные данные
-        trackAdapter = TrackAdapter(emptyList()) // Изначально пустой список
+        originalTracks = getSampleTracks()
+        trackAdapter = TrackAdapter(emptyList())
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = trackAdapter
 
@@ -122,23 +117,7 @@ class SearchActivity : AppCompatActivity() {
             recyclerView.requestLayout()
         }
 
-        fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            clearButton.isVisible = s?.isNotEmpty() == true
 
-            val query = s.toString().trim().lowercase()
-
-            val filteredList = if (query.isEmpty()) {
-                originalTracks
-            } else {
-                originalTracks.filter { track ->
-                    track.trackName.lowercase().contains(query) ||
-                            track.artistName.lowercase().contains(query)
-                }
-            }
-
-            println("FilteredList size: ${filteredList.size}")
-            updateRecyclerViewVisibility(trackAdapter, filteredList)
-        }
 
         searchEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -149,7 +128,7 @@ class SearchActivity : AppCompatActivity() {
                 val query = s.toString().trim().lowercase()
 
                 val filteredList = if (query.isEmpty()) {
-                    emptyList() // Не показываем весь список по умолчанию
+                    emptyList()
                 } else {
                     originalTracks.filter { track ->
                         track.trackName.lowercase().contains(query) ||

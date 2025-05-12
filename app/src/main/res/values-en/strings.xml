@@ -22,4 +22,5 @@
     <string name="search_header">Search</string>
     <string name="place_holder">No Data</string>
     <string name="placeholder_search_text">Enter song name</string>
+    <string name="artist_name_track_time">%s • %s</string>
 </resources>

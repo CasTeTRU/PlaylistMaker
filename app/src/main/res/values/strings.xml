@@ -28,4 +28,6 @@
 
     <string name="place_holder">Нет данных</string>
     <string name="placeholder_search_text">Введите запрос для поиска треков</string>
+
+    <string name="artist_name_track_time">%s • %s</string>
 </resources>
