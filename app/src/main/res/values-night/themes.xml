@@ -10,7 +10,7 @@
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryVariant">@color/primary</item>
         <item name="colorOnPrimary">@color/text_primary</item>
-        <item name="android:colorBackground">@color/background</item>
+        <item name="android:colorBackground">@color/yp_black</item>
         <item name="colorSurface">@color/surface</item>
         <item name="colorOnSurface">@color/text_primary</item>
         <item name="android:statusBarColor">@color/background</item>

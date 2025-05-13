@@ -11,7 +11,7 @@
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
-    <color name="yp_black">#000000</color>
+    <color name="yp_black">#1A1B22</color>
     <color name="yp_white">#FFFFFF</color>
     <color name="yp_light_grey">#E6E8EB</color>
     <color name="switch_thumb">#FFFFFF</color>
@@ -23,16 +23,20 @@
     <color name="dark_colorPrimaryDark">#3100B3</color>
     <color name="dark_colorAccent">#031AC5</color>
 
-    <color name="background_settings">#000000</color>
+    <color name="background_settings">#1A1B22</color>
     <color name="surface_dark">#1E1E1E</color>
     <color name="on_surface_dark">#FFFFFF</color>
 
-    <color name="background_main">#000000</color>
+    <color name="background_main">#1A1B22</color>
 
-    <color name="button_background">#000000</color>
+    <color name="button_background">#1A1B22</color>
     <color name="button_text_color">#FFFFFF</color>
     <color name="icon_color">#FFFFFF</color>
     <color name="yp_blue">#3772E7</color>
     <color name="yp_blue_light">#9FBBF3</color>
 
+    <color name="arrow_color">@color/yp_black</color>
+
+    <color name="hint_text_color">@color/yp_black</color>
+    <color name="search_icon_color">@color/hint_text_color</color>
 </resources>
