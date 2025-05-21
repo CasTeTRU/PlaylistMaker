@@ -30,4 +30,9 @@
     <string name="placeholder_search_text">Введите запрос для поиска треков</string>
 
     <string name="artist_name_track_time">%s • %s</string>
+
+    <string name="no_internet_connection">Нет подключения к интернету</string>
+    <string name="nothing_found">Ничего не нашлось</string>
+    <string name="connection_error">Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
+    <string name="reload_button">Обновить</string>
 </resources>

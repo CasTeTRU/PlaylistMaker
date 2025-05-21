@@ -1,24 +1,27 @@
 package com.example.playlistmaker
 
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import android.view.ViewStub
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class SearchActivity : AppCompatActivity() {
 
@@ -26,56 +29,11 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var clearButton: ImageButton
     private lateinit var recyclerView: RecyclerView
     private lateinit var trackAdapter: TrackAdapter
-    private lateinit var originalTracks: List<Track>
 
-    private var initialTracksLoaded = false
-
-    class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val artwork: ImageView = itemView.findViewById(R.id.artworkImageView)
-        private val trackName: TextView = itemView.findViewById(R.id.trackNameTextView)
-        private val artistName: TextView = itemView.findViewById(R.id.artistNameTextView)
-        private val trackTime: TextView = itemView.findViewById(R.id.trackTimeTextView)
-
-        fun bind(track: Track) {
-            trackName.text = track.trackName
-            artistName.text = itemView.context.getString(R.string.artist_name_track_time,
-                track.artistName, track.trackTime)
-
-            Glide.with(itemView)
-                .load(track.artworkUrl100)
-                .centerCrop()
-                .transform(RoundedCorners(
-                    itemView.context.resources.getDimensionPixelSize(R.dimen.corner_radius)
-                    )
-                )
-                .placeholder(R.drawable.ic_placeholder)
-                .error(R.drawable.ic_placeholder)
-                .into(artwork)
-        }
-    }
-
-
-    class TrackAdapter(tracks: List<Track>) : RecyclerView.Adapter<TrackViewHolder>() {
-
-        private var trackList = tracks
-
-        fun updateData(newTracks: List<Track>) {
-            trackList = newTracks
-            notifyDataSetChanged()
-        }
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {
-            val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.item_track, parent, false)
-            return TrackViewHolder(view)
-        }
-
-        override fun onBindViewHolder(holder: TrackViewHolder, position: Int) {
-            holder.bind(trackList[position])
-        }
-
-        override fun getItemCount() = trackList.size
-    }
+    private lateinit var placeholderStub: ViewStub
+    private lateinit var errorStub: ViewStub
+    private var errorLayout: View? = null
+    private var emptyLayout: View? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,58 +43,44 @@ class SearchActivity : AppCompatActivity() {
         searchEditText = findViewById(R.id.searchEditText)
         clearButton = findViewById(R.id.clearButton)
         recyclerView = findViewById(R.id.tracksRecyclerView)
+        placeholderStub = findViewById(R.id.placeholder_stub)
+        errorStub = findViewById(R.id.error_stub)
 
-        val backButton = findViewById<Toolbar>(R.id.search_header)
 
-
-        originalTracks = getSampleTracks()
         trackAdapter = TrackAdapter(emptyList())
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = trackAdapter
 
-        backButton.setNavigationOnClickListener { finish() }
+        findViewById<Toolbar>(R.id.search_header).setNavigationOnClickListener { finish() }
 
         clearButton.setOnClickListener {
             searchEditText.text.clear()
             hideKeyboard()
+            trackAdapter.updateData(emptyList())
+            hideAllPlaceholders()
         }
 
-        fun updateRecyclerViewVisibility(adapter: TrackAdapter, filteredList: List<Track>) {
-            adapter.updateData(filteredList)
-
-            val layoutParams = recyclerView.layoutParams
-            if (filteredList.isEmpty()) {
-                layoutParams.height = 0
-                recyclerView.visibility = View.GONE
+        searchEditText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                val query = searchEditText.text.toString().trim()
+                if (query.isNotEmpty()) {
+                    searchTracks(query)
+                }
+                true
             } else {
-                layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
-                recyclerView.visibility = View.VISIBLE
+                false
             }
-
-            recyclerView.layoutParams = layoutParams
-            recyclerView.requestLayout()
         }
-
-
 
         searchEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 clearButton.isVisible = s?.isNotEmpty() == true
-
                 val query = s.toString().trim().lowercase()
-
-                val filteredList = if (query.isEmpty()) {
-                    emptyList()
-                } else {
-                    originalTracks.filter { track ->
-                        track.trackName.lowercase().contains(query) ||
-                                track.artistName.lowercase().contains(query)
-                    }
+                if (query.isEmpty()) {
+                    trackAdapter.updateData(emptyList())
+                    hideAllPlaceholders()
                 }
-
-                updateRecyclerViewVisibility(trackAdapter, filteredList)
             }
 
             override fun afterTextChanged(s: Editable?) {}
@@ -146,50 +90,86 @@ class SearchActivity : AppCompatActivity() {
             if (hasFocus) showKeyboard()
         }
     }
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork ?: return false
+        val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+        return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+                capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+    }
+    private fun searchTracks(query: String) {
+        if (!isNetworkAvailable()) {
+            showErrorPlaceholder()
+            return
+        }
 
-    private fun getSampleTracks(): List<Track> {
-        return listOf(
-            Track(
-                "Smells Like Teen Spirit",
-                "Nirvana",
-                "5:01",
-                "https://is5-ssl.mzstatic.com/image/thumb/Music115/v4/7b/58/c2/7b58c21a-2b51-2bb2-e59a-9bb9b96ad8c3/00602567924166.rgb.jpg/100x100bb.jpg"
-            ),
-            Track(
-                "Billie Jean",
-                "Michael Jackson",
-                "4:35",
-                "https://is5-ssl.mzstatic.com/image/thumb/Music125/v4/3d/9d/38/3d9d3811-71f0-3a0e-1ada-3004e56ff852/827969428726.jpg/100x100bb.jpg"
-            ),
-            Track(
-                "Stayin' Alive",
-                "Bee Gees",
-                "4:10",
-                "https://is4-ssl.mzstatic.com/image/thumb/Music115/v4/1f/80/1f/1f801fc1-8c0f-ea3e-d3e5-387c6619619e/16UMGIM86640.rgb.jpg/100x100bb.jpg"
-            ),
-            Track(
-                "Whole Lotta Love",
-                "Led Zeppelin",
-                "5:33",
-                "https://is2-ssl.mzstatic.com/image/thumb/Music62/v4/7e/17/e3/7e17e33f-2efa-2a36-e916-7f808576cf6b/mzm.fyigqcbs.jpg/100x100bb.jpg"
-            ),
-            Track(
-                "Sweet Child O'Mine",
-                "Guns N' Roses",
-                "5:03",
-                "https://is5-ssl.mzstatic.com/image/thumb/Music125/v4/a0/4d/c4/a04dc484-03cc-02aa-fa82-5334fcb4bc16/18UMGIM24878.rgb.jpg/100x100bb.jpg"
-            )
-        )
+        hideAllPlaceholders()
+
+        val call = NetworkClient.itunesApi.search(query)
+
+        call.enqueue(object : Callback<SearchResponse> {
+            override fun onResponse(call: Call<SearchResponse>, response: Response<SearchResponse>) {
+                if (response.isSuccessful && (response.body()?.resultCount ?: 0) > 0) {
+                    val tracks = response.body()?.results ?: emptyList()
+                    trackAdapter.updateData(tracks)
+                    recyclerView.visibility = View.VISIBLE
+                } else if (!response.isSuccessful) {
+                    showErrorPlaceholder()
+                } else {
+                    showEmptyPlaceholder()
+                }
+            }
+
+            override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
+                showErrorPlaceholder()
+            }
+        })
+    }
+    private fun showEmptyPlaceholder() {
+        hideAllPlaceholders()
+        if (emptyLayout == null) {
+            emptyLayout = placeholderStub.inflate()
+        }
+        emptyLayout?.visibility = View.VISIBLE
     }
 
+    private fun showErrorPlaceholder() {
+        hideAllPlaceholders()
+        
+        if (errorLayout == null) {
+            errorLayout = errorStub.inflate()
+            val retryBtn = errorLayout?.findViewById<Button>(R.id.retryButton)
+            retryBtn?.setOnClickListener {
+                val query = searchEditText.text.toString().trim()
+                if (!isNetworkAvailable()) {
+                    Toast.makeText(this, getString(R.string.no_internet_connection),
+                        Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+                if (query.isNotEmpty()) {
+                    searchTracks(query)
+                }
+            }
+        }
+        
+        errorLayout?.visibility = View.VISIBLE
+    }
+    private fun hideAllPlaceholders() {
+        emptyLayout?.visibility = View.GONE
+        errorLayout?.visibility = View.GONE
+        recyclerView.visibility = View.GONE
+    }
 
     private fun showKeyboard() {
         val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        searchEditText.requestFocus()
         imm.showSoftInput(searchEditText, InputMethodManager.SHOW_IMPLICIT)
     }
 
     private fun hideKeyboard() {
         val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(searchEditText.windowToken, 0)
+        if (searchEditText.isFocused) {
+            imm.hideSoftInputFromWindow(searchEditText.windowToken, 0)
+        }
     }
 }
