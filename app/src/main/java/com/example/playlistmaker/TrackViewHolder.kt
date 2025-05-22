@@ -16,7 +16,7 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     fun bind(track: Track) {
         trackName.text = track.trackName
-        artistName.text = "${track.artistName} • ${track.formattedTrackTime}"
+        artistName.text = itemView.context.getString(R.string.artist_name_track_time, track.artistName, track.formattedTrackTime)
 
         val radius = 12.dpToPx(itemView.context)
         Glide.with(itemView)

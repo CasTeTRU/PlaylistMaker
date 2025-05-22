@@ -109,7 +109,8 @@ class SearchActivity : AppCompatActivity() {
 
         call.enqueue(object : Callback<SearchResponse> {
             override fun onResponse(call: Call<SearchResponse>, response: Response<SearchResponse>) {
-                if (response.isSuccessful && (response.body()?.resultCount ?: 0) > 0) {
+                val hasResults = response.isSuccessful && (response.body()?.resultCount ?: 0) > 0
+                if (hasResults) {
                     val tracks = response.body()?.results ?: emptyList()
                     trackAdapter.updateData(tracks)
                     recyclerView.visibility = View.VISIBLE
