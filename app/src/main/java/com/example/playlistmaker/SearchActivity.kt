@@ -79,10 +79,10 @@ class SearchActivity : AppCompatActivity() {
 
         clearHistoryButton.setOnClickListener {
             clearHistory()
-            historyTitle.visibility = View.GONE
-            clearHistoryButton.visibility = View.GONE
+            historyTitle.isVisible = false
+            clearHistoryButton.isVisible = false
             trackAdapter.updateData(emptyList())
-            recyclerView.visibility = View.GONE
+            recyclerView.isVisible = false
         }
 
         searchEditText.setOnEditorActionListener { _, actionId, _ ->

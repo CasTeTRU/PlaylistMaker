@@ -52,7 +52,9 @@
             android:layout_height="wrap_content"
             android:textSize="14sp"
             android:maxLines="1"
-            android:ellipsize="end"/>
+            android:ellipsize="end"
+
+            />
     </LinearLayout>
 
     <ImageView

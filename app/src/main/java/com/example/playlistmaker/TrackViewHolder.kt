@@ -13,12 +13,12 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val artwork: ImageView = itemView.findViewById(R.id.artworkImageView)
     private val trackName: TextView = itemView.findViewById(R.id.trackNameTextView)
     private val artistName: TextView = itemView.findViewById(R.id.artistNameTextView)
-
+    private val trackTime: TextView = itemView.findViewById(R.id.trackTimeTextView)
 
     fun bind(track: Track) {
         trackName.text = track.trackName
-        artistName.text = itemView.context.getString(R.string.artist_name_track_time, track.artistName, track.formattedTrackTime)
-
+        artistName.text = track.artistName
+        trackTime.text = track.formattedTrackTime
 
         val radius = 12.dpToPx(itemView.context)
         Glide.with(itemView)
