@@ -13,15 +13,21 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+
+private const val MAX_HISTORY_SIZE = 10
+private const val HISTORY_KEY = "history_tracks"
 
 class SearchActivity : AppCompatActivity() {
 
@@ -29,27 +35,37 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var clearButton: ImageButton
     private lateinit var recyclerView: RecyclerView
     private lateinit var trackAdapter: TrackAdapter
+    private lateinit var historyTitle: TextView
+    private lateinit var clearHistoryButton: Button
 
     private lateinit var placeholderStub: ViewStub
     private lateinit var errorStub: ViewStub
     private var errorLayout: View? = null
     private var emptyLayout: View? = null
 
+    private val sharedPreferences by lazy {
+        getSharedPreferences("search_history", Context.MODE_PRIVATE)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
-
 
         searchEditText = findViewById(R.id.searchEditText)
         clearButton = findViewById(R.id.clearButton)
         recyclerView = findViewById(R.id.tracksRecyclerView)
         placeholderStub = findViewById(R.id.placeholder_stub)
         errorStub = findViewById(R.id.error_stub)
+        historyTitle = findViewById(R.id.historyTitle)
+        clearHistoryButton = findViewById(R.id.clearHistoryButton)
 
-
-        trackAdapter = TrackAdapter(emptyList())
+        trackAdapter = TrackAdapter(emptyList()) { track ->
+            saveTrackToHistory(track)
+        }
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = trackAdapter
+
+        showHistoryIfAvailable()
 
         findViewById<Toolbar>(R.id.search_header).setNavigationOnClickListener { finish() }
 
@@ -58,6 +74,15 @@ class SearchActivity : AppCompatActivity() {
             hideKeyboard()
             trackAdapter.updateData(emptyList())
             hideAllPlaceholders()
+            showHistoryIfAvailable()
+        }
+
+        clearHistoryButton.setOnClickListener {
+            clearHistory()
+            historyTitle.isVisible = false
+            clearHistoryButton.isVisible = false
+            trackAdapter.updateData(emptyList())
+            recyclerView.isVisible = false
         }
 
         searchEditText.setOnEditorActionListener { _, actionId, _ ->
@@ -76,20 +101,37 @@ class SearchActivity : AppCompatActivity() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 clearButton.isVisible = s?.isNotEmpty() == true
-                val query = s.toString().trim().lowercase()
-                if (query.isEmpty()) {
-                    trackAdapter.updateData(emptyList())
-                    hideAllPlaceholders()
-                }
+                showHistoryIfAvailable()
             }
 
             override fun afterTextChanged(s: Editable?) {}
         })
 
         searchEditText.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) showKeyboard()
+            if (hasFocus) {
+                showKeyboard()
+                showHistoryIfAvailable()
+            }
+        }
+
+        searchEditText.requestFocus()
+        showKeyboard()
+    }
+
+    private fun showHistoryIfAvailable() {
+        val history = loadHistoryTracks()
+        if (searchEditText.text.isEmpty() && searchEditText.hasFocus() && history.isNotEmpty()) {
+            trackAdapter.updateData(history)
+            recyclerView.visibility = View.VISIBLE
+            historyTitle.visibility = View.VISIBLE
+            clearHistoryButton.visibility = View.VISIBLE
+            hideAllPlaceholders()
+        } else {
+            historyTitle.visibility = View.GONE
+            clearHistoryButton.visibility = View.GONE
         }
     }
+
     private fun isNetworkAvailable(): Boolean {
         val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val network = connectivityManager.activeNetwork ?: return false
@@ -97,6 +139,7 @@ class SearchActivity : AppCompatActivity() {
         return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
                 capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
     }
+
     private fun searchTracks(query: String) {
         if (!isNetworkAvailable()) {
             showErrorPlaceholder()
@@ -126,6 +169,7 @@ class SearchActivity : AppCompatActivity() {
             }
         })
     }
+
     private fun showEmptyPlaceholder() {
         hideAllPlaceholders()
         if (emptyLayout == null) {
@@ -155,10 +199,10 @@ class SearchActivity : AppCompatActivity() {
         
         errorLayout?.visibility = View.VISIBLE
     }
+
     private fun hideAllPlaceholders() {
         emptyLayout?.visibility = View.GONE
         errorLayout?.visibility = View.GONE
-        recyclerView.visibility = View.GONE
     }
 
     private fun showKeyboard() {
@@ -172,5 +216,39 @@ class SearchActivity : AppCompatActivity() {
         if (searchEditText.isFocused) {
             imm.hideSoftInputFromWindow(searchEditText.windowToken, 0)
         }
+    }
+
+    fun saveTrackToHistory(track: Track) {
+        val history = loadHistoryTracks().toMutableList()
+
+        history.removeAll { it.trackId == track.trackId }
+
+        history.add(0, track)
+
+        if (history.size > MAX_HISTORY_SIZE) {
+            history.take(MAX_HISTORY_SIZE).let {
+                saveHistory(it)
+            }
+        } else {
+            saveHistory(history)
+        }
+    }
+
+    private fun saveHistory(history: List<Track>) {
+        val editor = sharedPreferences.edit()
+        val gson = Gson()
+        val json = gson.toJson(history)
+        editor.putString(HISTORY_KEY, json)
+        editor.apply()
+    }
+
+    fun loadHistoryTracks(): List<Track> {
+        val json = sharedPreferences.getString(HISTORY_KEY, null)
+        val typeToken = object : TypeToken<List<Track>>() {}.type
+        return Gson().fromJson(json, typeToken) ?: emptyList()
+    }
+
+    fun clearHistory() {
+        sharedPreferences.edit().remove(HISTORY_KEY).apply()
     }
 }
