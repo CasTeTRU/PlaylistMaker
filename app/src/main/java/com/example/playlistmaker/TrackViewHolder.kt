@@ -7,7 +7,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.example.playlistmaker.R
 
 class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val artwork: ImageView = itemView.findViewById(R.id.artworkImageView)
@@ -20,18 +19,31 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         artistName.text = track.artistName
         trackTime.text = track.formattedTrackTime
 
-        val radius = 12.dpToPx(itemView.context)
+        val placeholderRes = if (isInNightMode(itemView.context)) {
+            R.drawable.ic_cover_placeholder_night
+        } else {
+            R.drawable.ic_cover_placeholder
+        }
+
+        val coverUrl = track.getCoverArtwork()
+
         Glide.with(itemView)
-            .load(track.artworkUrl100)
+            .load(coverUrl)
+            .placeholder(placeholderRes)
+            .error(placeholderRes)
             .centerCrop()
-            .transform(RoundedCorners(radius))
-            .placeholder(R.drawable.ic_placeholder)
-            .error(R.drawable.ic_placeholder)
+            .transform(RoundedCorners(dpToPx(itemView.context, 12)))
             .into(artwork)
     }
 
-    fun Int.dpToPx(context: Context): Int {
-        val scale = context.resources.displayMetrics.density
-        return (this * scale + 0.5f).toInt()
+    private fun dpToPx(context: Context, dp: Int): Int {
+        val density = context.resources.displayMetrics.density
+        return (dp * density + 0.5f).toInt()
+    }
+
+    private fun isInNightMode(context: Context): Boolean {
+        val uiMode = context.resources.configuration.uiMode
+        return (uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
+                android.content.res.Configuration.UI_MODE_NIGHT_YES
     }
 }

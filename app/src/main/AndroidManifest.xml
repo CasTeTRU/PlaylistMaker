@@ -20,6 +20,9 @@
             android:name=".MediatekaActivity"
             android:exported="true" />
         <activity
+            android:name=".PlayerActivity"
+            android:exported="true" />
+        <activity
             android:name=".SearchActivity"
             android:exported="true" />
         <activity

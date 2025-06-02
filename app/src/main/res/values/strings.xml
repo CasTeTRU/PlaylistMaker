@@ -29,7 +29,7 @@
     <string name="place_holder">Нет данных</string>
     <string name="placeholder_search_text">Введите запрос для поиска треков</string>
 
-    <string name="artist_name_track_time">%s • %s</string>
+    <string name="artist_name_track_time" formatted="false">%s • %s</string>
 
     <string name="no_internet_connection">Нет подключения к интернету</string>
     <string name="nothing_found">Ничего не нашлось</string>
@@ -38,4 +38,11 @@
 
     <string name="search_history">Вы искали</string>
     <string name="clear_history">Очистить историю</string>
+
+    <string name="country">Страна</string>
+    <string name="genre">Жанр</string>
+    <string name="year">Год</string>
+    <string name="album">Альбом</string>
+    <string name="duration">Длительность</string>
+    <string name="add_to_playlist">Добавить в плейлист</string>
 </resources>

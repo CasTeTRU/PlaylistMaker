@@ -1,20 +1,19 @@
 package com.example.playlistmaker
 
+import TrackAdapter
 import android.content.Context
+import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.ViewStub
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
@@ -61,7 +60,12 @@ class SearchActivity : AppCompatActivity() {
 
         trackAdapter = TrackAdapter(emptyList()) { track ->
             saveTrackToHistory(track)
+            val intent = Intent(this@SearchActivity, PlayerActivity::class.java).apply {
+                putExtra("track", track)
+            }
+            startActivity(intent)
         }
+
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = trackAdapter
 
@@ -103,7 +107,6 @@ class SearchActivity : AppCompatActivity() {
                 clearButton.isVisible = s?.isNotEmpty() == true
                 showHistoryIfAvailable()
             }
-
             override fun afterTextChanged(s: Editable?) {}
         })
 
@@ -155,9 +158,19 @@ class SearchActivity : AppCompatActivity() {
                 val hasResults = response.isSuccessful && (response.body()?.resultCount ?: 0) > 0
                 if (hasResults) {
                     val tracks = response.body()?.results ?: emptyList()
+
+                    if (tracks.isNotEmpty()) {
+                        tracks.firstOrNull()?.let {
+                            Log.d("SearchActivity", "First track: ${it.trackName}, " +
+                                    "Time: ${it.trackTimeMillis}, " +
+                                    "Artwork: ${it.artworkUrl100}")
+                        }
+                    }
+
                     trackAdapter.updateData(tracks)
                     recyclerView.visibility = View.VISIBLE
                 } else if (!response.isSuccessful) {
+                    Log.e("SearchActivity", "Error response: ${response.code()}")
                     showErrorPlaceholder()
                 } else {
                     showEmptyPlaceholder()
@@ -165,6 +178,7 @@ class SearchActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
+                Log.e("SearchActivity", "Network failure", t)
                 showErrorPlaceholder()
             }
         })
@@ -180,15 +194,17 @@ class SearchActivity : AppCompatActivity() {
 
     private fun showErrorPlaceholder() {
         hideAllPlaceholders()
-        
         if (errorLayout == null) {
             errorLayout = errorStub.inflate()
             val retryBtn = errorLayout?.findViewById<Button>(R.id.retryButton)
             retryBtn?.setOnClickListener {
                 val query = searchEditText.text.toString().trim()
                 if (!isNetworkAvailable()) {
-                    Toast.makeText(this, getString(R.string.no_internet_connection),
-                        Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this,
+                        getString(R.string.no_internet_connection),
+                        Toast.LENGTH_SHORT
+                    ).show()
                     return@setOnClickListener
                 }
                 if (query.isNotEmpty()) {
@@ -196,7 +212,6 @@ class SearchActivity : AppCompatActivity() {
                 }
             }
         }
-        
         errorLayout?.visibility = View.VISIBLE
     }
 
@@ -220,15 +235,10 @@ class SearchActivity : AppCompatActivity() {
 
     fun saveTrackToHistory(track: Track) {
         val history = loadHistoryTracks().toMutableList()
-
         history.removeAll { it.trackId == track.trackId }
-
         history.add(0, track)
-
         if (history.size > MAX_HISTORY_SIZE) {
-            history.take(MAX_HISTORY_SIZE).let {
-                saveHistory(it)
-            }
+            saveHistory(history.take(MAX_HISTORY_SIZE))
         } else {
             saveHistory(history)
         }
