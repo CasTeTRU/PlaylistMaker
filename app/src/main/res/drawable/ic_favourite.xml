@@ -1,0 +1,21 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="69dp"
+    android:height="69dp"
+    android:viewportWidth="69"
+    android:viewportHeight="69">
+
+  <!-- Прозрачный круг (для тап-зоны) -->
+  <path
+      android:fillColor="@android:color/transparent"
+      android:pathData="M34.5,0a34.5,34.5 0,1 0,0 69a34.5,34.5 0,0 0,0 -69z"/>
+
+  <!-- Видимый круг -->
+  <path
+      android:fillColor="?attr/selectableItemBackgroundBorderless"
+      android:pathData="M34.5,9a25.5,25.5 0,1 0,0 51a25.5,25.5 0,0 0,0 -51z"/>
+
+  <!-- Иконка сердца -->
+  <path
+      android:fillColor="@color/text_day_night"
+      android:pathData="M..."/>
+</vector>

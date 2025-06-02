@@ -39,6 +39,8 @@
         <item name="iconTint">@color/yp_text_grey</item>
         <item name="iconSize">24dp</item>
 
+
+
     </style>
 
 </resources>

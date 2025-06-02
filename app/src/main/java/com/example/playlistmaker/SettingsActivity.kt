@@ -6,21 +6,31 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.Button
 import android.widget.Toast
+import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {
+    private lateinit var themeManager: ThemeManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
+        themeManager = ThemeManager(this)
+
         val btnBack = findViewById<Button>(R.id.btn_back)
+        val themeSwitcher = findViewById<SwitchMaterial>(R.id.themeSwitcher)
+
+        themeSwitcher.isChecked = themeManager.isDarkTheme()
+
+        themeSwitcher.setOnCheckedChangeListener { _, isChecked ->
+            themeManager.setDarkTheme(isChecked)
+        }
 
         btnBack.setOnClickListener {
-        finish()
+            finish()
         }
 
         val shareAppButton = findViewById<Button>(R.id.share_app_button)
-
-
         shareAppButton.setOnClickListener {
             val shareMessage = getString(R.string.share_app_message, getString(R.string.share_app_url))
             val intent = Intent(Intent.ACTION_SEND).apply {
@@ -31,7 +41,6 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         val contactSupportButton = findViewById<Button>(R.id.contact_support_button)
-
         contactSupportButton.setOnClickListener {
             val email = getString(R.string.support_email)
             val subject = getString(R.string.support_subject)
@@ -52,11 +61,9 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         val termsOfServiceButton = findViewById<Button>(R.id.terms_of_service_button)
-
         termsOfServiceButton.setOnClickListener {
             val url = getString(R.string.terms_of_service_url)
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-
 
             if (intent.resolveActivity(packageManager) != null) {
                 startActivity(intent)
@@ -64,6 +71,6 @@ class SettingsActivity : AppCompatActivity() {
                 Toast.makeText(this, "Браузер не найден", Toast.LENGTH_SHORT).show()
             }
         }
-        }
     }
+}
 
