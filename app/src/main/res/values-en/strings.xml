@@ -22,5 +22,17 @@
     <string name="search_header">Search</string>
     <string name="place_holder">No Data</string>
     <string name="placeholder_search_text">Enter song name</string>
-    <string name="artist_name_track_time">%s • %s</string>
+    <string name="artist_name_track_time" formatted="false">%s • %s</string>
+    <string name="nothing_found">Nothing found</string>
+    <string name="connection_error">Connection error\n\nLoad unsuccessful. Check internet connection</string>
+    <string name="reload_button">Reload</string>
+    <string name="no_internet_connection">No internet connection</string>
+    <string name="search_history">Search history</string>
+    <string name="clear_history">Clear history</string>
+    <string name="country">Country</string>
+    <string name="genre">Genre</string>
+    <string name="year">Year</string>
+    <string name="album">Album</string>
+    <string name="duration">Duration</string>
+    <string name="add_to_playlist">Add to playlist</string>
 </resources>

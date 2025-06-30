@@ -1,26 +1,33 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:fitsSystemWindows="true">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/search_header"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="?attr/actionBarSize"
         app:navigationIcon="@drawable/ic_arrow_back"
         app:navigationIconTint="@color/button_text_color"
-        app:title="@string/search"/>
+        app:title="@string/search"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <FrameLayout
-        android:layout_width="match_parent"
+        android:id="@+id/searchInputContainer"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/search_background"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        >
+        android:background="@drawable/search_background"
+        app:layout_constraintTop_toBottomOf="@id/search_header"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <EditText
             android:id="@+id/searchEditText"
@@ -30,7 +37,8 @@
             android:drawableTint="@color/search_icon_color"
             android:drawablePadding="12dp"
             android:hint="@string/search_hint"
-            android:imeOptions="actionSearch"
+            android:imeOptions="actionDone"
+            android:singleLine="true"
             android:inputType="text"
             android:textColor="@color/yp_black"
             android:paddingStart="12dp"
@@ -41,7 +49,7 @@
             android:textSize="16sp"
             android:background="@android:color/transparent"
             android:focusable="true"
-            android:clickable="true"/>
+            android:clickable="true" />
 
         <ImageButton
             android:id="@+id/clearButton"
@@ -54,9 +62,80 @@
             app:tint="@color/arrow_color" />
     </FrameLayout>
 
+    <TextView
+        android:id="@+id/historyTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/search_history"
+        android:textSize="19sp"
+        android:textColor="@color/button_text_color"
+        android:fontFamily="@font/ys_display_medium"
+        android:paddingTop="18dp"
+        android:paddingBottom="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="12dp"
+        android:gravity="center"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/searchInputContainer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/tracksRecyclerView"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="24dp"
+        app:layout_constraintTop_toBottomOf="@id/historyTitle"
+        app:layout_constraintBottom_toTopOf="@id/clearHistoryButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:indeterminateTint="@color/progress_bar"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/historyTitle"
+        app:layout_constraintBottom_toTopOf="@id/clearHistoryButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <Button
+        android:id="@+id/clearHistoryButton"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        />
-</LinearLayout>
+        android:text="@string/clear_history"
+        android:textColor="@color/button_background"
+        android:backgroundTint="@color/button_text_color"
+        android:stateListAnimator="@null"
+        android:visibility="gone"
+        app:cornerRadius="54dp"
+        android:textSize="14sp"
+        android:layout_marginBottom="24dp"
+        android:layout_marginHorizontal="106dp"
+        android:fontFamily="@font/ys_display_medium"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <ViewStub
+        android:id="@+id/placeholder_stub"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout="@layout/placeholder_empty_search"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@id/searchInputContainer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <ViewStub
+        android:id="@+id/error_stub"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout="@layout/placeholder_server_error"
+        app:layout_constraintTop_toBottomOf="@id/searchInputContainer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

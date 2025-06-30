@@ -7,32 +7,39 @@
     android:layout_height="72dp"
     android:padding="12dp">
 
-
     <ImageView
         android:id="@+id/artworkImageView"
         android:layout_width="45dp"
         android:layout_height="45dp"
         android:scaleType="centerCrop"
-
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        tools:src="@tools:sample/avatars"/>
+        tools:src="@tools:sample/avatars" />
 
+    <ImageView
+        android:id="@+id/arrowImageView"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_arrow_forward"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginEnd="4dp" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         app:layout_constraintStart_toEndOf="@id/artworkImageView"
         app:layout_constraintEnd_toStartOf="@id/arrowImageView"
         app:layout_constraintTop_toTopOf="@id/artworkImageView"
-        app:layout_constraintBottom_toBottomOf="@id/artworkImageView"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp">
+        app:layout_constraintBottom_toBottomOf="@id/artworkImageView">
 
         <TextView
             android:id="@+id/trackNameTextView"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:fontFamily="@font/ys_display_medium"
             android:gravity="center_vertical"
@@ -42,42 +49,46 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            tools:text="Smells Like Teen Spirit"/>
+            tools:text="Smells Like Teen Spirit" />
 
         <TextView
             android:id="@+id/artistNameTextView"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:layout_marginTop="1dp"
             android:textSize="11sp"
+            android:ellipsize="marquee"
+            android:maxWidth="250dp"
             android:maxLines="1"
-            android:ellipsize="end"
-            app:layout_constraintTop_toBottomOf="@id/trackNameTextView"
+            app:layout_constraintTop_toTopOf="@id/trackTimeTextView"
+            app:layout_constraintBottom_toBottomOf="@id/trackTimeTextView"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:text="Nirvana"/>
+            tools:text="A Very Very Long Artist Name That Gets Truncated" />
+
+        <TextView
+            android:id="@+id/separatorTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" • "
+            android:textSize="11sp"
+            android:ellipsize="marquee"
+            android:maxLines="1"
+            app:layout_constraintTop_toTopOf="@id/trackTimeTextView"
+            app:layout_constraintBottom_toBottomOf="@id/trackTimeTextView"
+            app:layout_constraintStart_toEndOf="@id/artistNameTextView"
+            tools:text=" • " />
+
+        <TextView
+            android:id="@+id/trackTimeTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="11sp"
+            android:ellipsize="marquee"
+            android:maxLines="1"
+            app:layout_constraintTop_toBottomOf="@id/trackNameTextView"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/separatorTextView"
+            tools:text="3:45" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <TextView
-        android:id="@+id/trackTimeTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:textSize="11sp"
-        android:textColor="#808080"
-        app:layout_constraintBottom_toBottomOf="@id/artworkImageView"
-        app:layout_constraintEnd_toStartOf="@id/arrowImageView"
-        app:layout_constraintTop_toTopOf="@id/artworkImageView"
-        tools:text="5:01"/>
-
-    <ImageView
-        android:id="@+id/arrowImageView"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-
-        android:src="@drawable/ic_arrow_forward"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

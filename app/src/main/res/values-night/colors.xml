@@ -39,4 +39,6 @@
 
     <color name="hint_text_color">@color/yp_black</color>
     <color name="search_icon_color">@color/hint_text_color</color>
+
+    <color name="text_day_night">#FFFFFF</color>
 </resources>

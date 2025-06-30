@@ -30,23 +30,19 @@
         android:textColor="@color/button_text_color"
         />
 
-
-
-
-    <Switch
-        android:layout_marginTop="24dp"
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/themeSwitcher"
+        android:layout_gravity="start"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         style="@style/ButtonStyle"
-
         android:text="@string/night_theme"
-        android:id="@+id/night_switch"
         android:background="@color/switch_track"
         android:stateListAnimator="@null"
         android:backgroundTint="@color/button_background"
         android:textColor="@color/button_text_color"
-        android:thumbTint="@color/switch_thumb_color"
-        android:trackTint="@color/switch_track_color"
-        />
-
+        app:thumbTint="@color/switch_thumb_color"
+        app:trackTint="@color/switch_track_color"/>
 
     <Button
         android:id="@+id/share_app_button"
@@ -86,7 +82,5 @@
         android:textColor="@color/button_text_color"
         app:iconSize="24dp"
         />
-
-
 
 </LinearLayout>
