@@ -6,6 +6,8 @@ import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -46,6 +48,22 @@ class SearchActivity : AppCompatActivity() {
         getSharedPreferences("search_history", Context.MODE_PRIVATE)
     }
 
+    private val searchHandler = Handler(Looper.getMainLooper())
+    private var searchRunnable: Runnable? = null
+    private lateinit var progressBar: ProgressBar
+
+    private var isClickAllowed = true
+    private val clickDebounceDelay = 1000L // 1 секунда
+    private val clickHandler = Handler(Looper.getMainLooper())
+
+    private fun debounceClick(action: () -> Unit) {
+        if (isClickAllowed) {
+            isClickAllowed = false
+            action()
+            clickHandler.postDelayed({ isClickAllowed = true }, clickDebounceDelay)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
@@ -57,13 +75,16 @@ class SearchActivity : AppCompatActivity() {
         errorStub = findViewById(R.id.error_stub)
         historyTitle = findViewById(R.id.historyTitle)
         clearHistoryButton = findViewById(R.id.clearHistoryButton)
+        progressBar = findViewById(R.id.progressBar)
 
         trackAdapter = TrackAdapter(emptyList()) { track ->
-            saveTrackToHistory(track)
-            val intent = Intent(this@SearchActivity, PlayerActivity::class.java).apply {
-                putExtra("track", track)
+            debounceClick {
+                saveTrackToHistory(track)
+                val intent = Intent(this@SearchActivity, PlayerActivity::class.java).apply {
+                    putExtra("track", track)
+                }
+                startActivity(intent)
             }
-            startActivity(intent)
         }
 
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -106,6 +127,20 @@ class SearchActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 clearButton.isVisible = s?.isNotEmpty() == true
                 showHistoryIfAvailable()
+
+                searchRunnable?.let { searchHandler.removeCallbacks(it) }
+                val query = s?.toString()?.trim() ?: ""
+                if (query.isNotEmpty()) {
+                    searchRunnable = Runnable {
+                        progressBar.visibility = View.VISIBLE
+                        searchTracks(query)
+                    }
+                    searchHandler.postDelayed(searchRunnable!!, 2000)
+                } else {
+                    trackAdapter.updateData(emptyList())
+                    recyclerView.isVisible = false
+                    progressBar.visibility = View.GONE
+                }
             }
             override fun afterTextChanged(s: Editable?) {}
         })
@@ -145,16 +180,19 @@ class SearchActivity : AppCompatActivity() {
 
     private fun searchTracks(query: String) {
         if (!isNetworkAvailable()) {
+            progressBar.visibility = View.GONE
             showErrorPlaceholder()
             return
         }
 
         hideAllPlaceholders()
+        progressBar.visibility = View.VISIBLE
 
         val call = NetworkClient.itunesApi.search(query)
 
         call.enqueue(object : Callback<SearchResponse> {
             override fun onResponse(call: Call<SearchResponse>, response: Response<SearchResponse>) {
+                progressBar.visibility = View.GONE
                 val hasResults = response.isSuccessful && (response.body()?.resultCount ?: 0) > 0
                 if (hasResults) {
                     val tracks = response.body()?.results ?: emptyList()
@@ -178,6 +216,7 @@ class SearchActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
+                progressBar.visibility = View.GONE
                 Log.e("SearchActivity", "Network failure", t)
                 showErrorPlaceholder()
             }
