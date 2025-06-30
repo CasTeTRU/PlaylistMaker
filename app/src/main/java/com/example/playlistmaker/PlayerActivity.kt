@@ -1,9 +1,6 @@
 package com.example.playlistmaker
 
-import android.media.MediaPlayer
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -20,22 +17,6 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private lateinit var track: Track
-    private var mediaPlayer: MediaPlayer? = null
-    private var isPlaying = false
-    private lateinit var playButton: ImageView
-    private lateinit var currentTimeTextView: TextView
-    private val handler = Handler(Looper.getMainLooper())
-    private val updateTimeRunnable = object : Runnable {
-        override fun run() {
-            mediaPlayer?.let {
-                val pos = it.currentPosition
-                currentTimeTextView.text = formatTrackTime(pos.toLong())
-                if (isPlaying && pos < it.duration) {
-                    handler.postDelayed(this, 300)
-                }
-            }
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,9 +27,6 @@ class PlayerActivity : AppCompatActivity() {
             finish()
             return
         }
-
-        playButton = findViewById(R.id.playButton)
-        currentTimeTextView = findViewById(R.id.currentTimeTextView)
 
         setupBackButton()
         setupCoverArt()
@@ -117,73 +95,9 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun setupPlaybackControls() {
-        playButton.setOnClickListener {
-            if (isPlaying) {
-                pausePlayer()
-            } else {
-                startPlayer()
-            }
+        findViewById<ImageView>(R.id.playButton).setOnClickListener {
+            Toast.makeText(this, "Воспроизведение", Toast.LENGTH_SHORT).show()
         }
-    }
-
-    private fun startPlayer() {
-        if (mediaPlayer == null) {
-            mediaPlayer = MediaPlayer().apply {
-                setDataSource(track.previewUrl)
-                setOnPreparedListener {
-                    start()
-                    this@PlayerActivity.isPlaying = true
-                    playButton.setImageResource(R.drawable.ic_pause)
-                    handler.post(updateTimeRunnable)
-                }
-                setOnCompletionListener {
-                    stopPlayer(resetTime = true)
-                }
-                prepareAsync()
-            }
-        } else {
-            mediaPlayer?.start()
-            isPlaying = true
-            playButton.setImageResource(R.drawable.ic_pause)
-            handler.post(updateTimeRunnable)
-        }
-    }
-
-    private fun pausePlayer() {
-        mediaPlayer?.pause()
-        isPlaying = false
-        playButton.setImageResource(R.drawable.ic_play)
-        handler.removeCallbacks(updateTimeRunnable)
-    }
-
-    private fun stopPlayer(resetTime: Boolean = false) {
-        mediaPlayer?.pause()
-        mediaPlayer?.seekTo(0)
-        isPlaying = false
-        playButton.setImageResource(R.drawable.ic_play)
-        handler.removeCallbacks(updateTimeRunnable)
-        if (resetTime) {
-            currentTimeTextView.text = formatTrackTime(0)
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        if (isPlaying) {
-            pausePlayer()
-        }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        mediaPlayer?.release()
-        mediaPlayer = null
-        handler.removeCallbacks(updateTimeRunnable)
-    }
-
-    override fun onBackPressed() {
-        stopPlayer(resetTime = true)
-        super.onBackPressed()
     }
 
     private fun updateLabelAndValue(labelId: Int, valueId: Int, value: String?) {

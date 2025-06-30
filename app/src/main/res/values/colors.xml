@@ -49,7 +49,5 @@
     <color name="search_icon_color">@color/hint_text_color</color>
 
     <color name="text_day_night">#1A1B22</color>
-
-    <color name="progress_bar">#3772E7</color>
 </resources>
 
