@@ -17,6 +17,7 @@ class PlayerActivity : AppCompatActivity() {
     companion object {
         const val EXTRA_TRACK = "track"
         private const val CORNER_RADIUS = 8f // Радиус скругления в dp
+        private const val UPDATE_TIME_DELAY_MS = 300L // Задержка обновления времени трека
     }
 
     private lateinit var track: Track
@@ -31,7 +32,7 @@ class PlayerActivity : AppCompatActivity() {
                 val pos = it.currentPosition
                 currentTimeTextView.text = formatTrackTime(pos.toLong())
                 if (isPlaying && pos < it.duration) {
-                    handler.postDelayed(this, 300)
+                    handler.postDelayed(this, UPDATE_TIME_DELAY_MS)
                 }
             }
         }
@@ -174,16 +175,16 @@ class PlayerActivity : AppCompatActivity() {
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+        stopPlayer(resetTime = false)
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         mediaPlayer?.release()
         mediaPlayer = null
         handler.removeCallbacks(updateTimeRunnable)
-    }
-
-    override fun onBackPressed() {
-        stopPlayer(resetTime = true)
-        super.onBackPressed()
     }
 
     private fun updateLabelAndValue(labelId: Int, valueId: Int, value: String?) {
