@@ -33,6 +33,7 @@ class PlayerActivity : AppCompatActivity() {
                 currentTimeTextView.text = formatTrackTime(pos.toLong())
                 if (isPlaying && pos < it.duration) {
                     handler.postDelayed(this, UPDATE_TIME_DELAY_MS)
+
                 }
             }
         }
@@ -173,11 +174,7 @@ class PlayerActivity : AppCompatActivity() {
         if (isPlaying) {
             pausePlayer()
         }
-    }
 
-    override fun onStop() {
-        super.onStop()
-        stopPlayer(resetTime = false)
     }
 
     override fun onDestroy() {
@@ -185,6 +182,12 @@ class PlayerActivity : AppCompatActivity() {
         mediaPlayer?.release()
         mediaPlayer = null
         handler.removeCallbacks(updateTimeRunnable)
+    }
+
+
+    override fun onBackPressed() {
+        stopPlayer(resetTime = true)
+        super.onBackPressed()
     }
 
     private fun updateLabelAndValue(labelId: Int, valueId: Int, value: String?) {

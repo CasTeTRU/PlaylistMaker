@@ -59,6 +59,22 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
+    private val searchHandler = Handler(Looper.getMainLooper())
+    private var searchRunnable: Runnable? = null
+    private lateinit var progressBar: ProgressBar
+
+    private var isClickAllowed = true
+    private val clickDebounceDelay = 1000L // 1 секунда
+    private val clickHandler = Handler(Looper.getMainLooper())
+
+    private fun debounceClick(action: () -> Unit) {
+        if (isClickAllowed) {
+            isClickAllowed = false
+            action()
+            clickHandler.postDelayed({ isClickAllowed = true }, clickDebounceDelay)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
@@ -121,22 +137,23 @@ class SearchActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 clearButton.isVisible = s?.isNotEmpty() == true
                 showHistoryIfAvailable()
+
                 searchRunnable?.let { searchHandler.removeCallbacks(it) }
                 val query = s?.toString()?.trim() ?: ""
                 if (query.isNotEmpty()) {
                     searchRunnable = Runnable {
                         progressBar.visibility = View.VISIBLE
-                        recyclerView.visibility = View.GONE
-                        hideAllPlaceholders()
-                        progressBar.postDelayed({
-                            searchTracks(query)
-                        }, 300)
+
+                        searchTracks(query)
+
                     }
                     searchHandler.postDelayed(searchRunnable!!, 2000)
                 } else {
                     trackAdapter.updateData(emptyList())
+
+                    recyclerView.isVisible = false
                     progressBar.visibility = View.GONE
-                    showHistoryIfAvailable()
+
                 }
             }
             override fun afterTextChanged(s: Editable?) {}
@@ -176,8 +193,15 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun searchTracks(query: String) {
+
+        if (!isNetworkAvailable()) {
+            progressBar.visibility = View.GONE
+            showErrorPlaceholder()
+            return
+        }
+
         hideAllPlaceholders()
-        recyclerView.visibility = View.GONE
+
         progressBar.visibility = View.VISIBLE
 
         val call = NetworkClient.itunesApi.search(query)
