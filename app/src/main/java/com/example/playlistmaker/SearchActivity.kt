@@ -31,21 +31,32 @@ private const val MAX_HISTORY_SIZE = 10
 private const val HISTORY_KEY = "history_tracks"
 
 class SearchActivity : AppCompatActivity() {
-
     private lateinit var searchEditText: EditText
     private lateinit var clearButton: ImageButton
     private lateinit var recyclerView: RecyclerView
     private lateinit var trackAdapter: TrackAdapter
     private lateinit var historyTitle: TextView
     private lateinit var clearHistoryButton: Button
-
     private lateinit var placeholderStub: ViewStub
     private lateinit var errorStub: ViewStub
     private var errorLayout: View? = null
     private var emptyLayout: View? = null
-
     private val sharedPreferences by lazy {
         getSharedPreferences("search_history", Context.MODE_PRIVATE)
+    }
+    private val searchHandler = Handler(Looper.getMainLooper())
+    private var searchRunnable: Runnable? = null
+    private lateinit var progressBar: ProgressBar
+    private var isClickAllowed = true
+    private val clickDebounceDelay = 1000L // 1 секунда
+    private val clickHandler = Handler(Looper.getMainLooper())
+
+    private fun debounceClick(action: () -> Unit) {
+        if (isClickAllowed) {
+            isClickAllowed = false
+            action()
+            clickHandler.postDelayed({ isClickAllowed = true }, clickDebounceDelay)
+        }
     }
 
     private val searchHandler = Handler(Looper.getMainLooper())
@@ -67,7 +78,6 @@ class SearchActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
-
         searchEditText = findViewById(R.id.searchEditText)
         clearButton = findViewById(R.id.clearButton)
         recyclerView = findViewById(R.id.tracksRecyclerView)
@@ -133,13 +143,17 @@ class SearchActivity : AppCompatActivity() {
                 if (query.isNotEmpty()) {
                     searchRunnable = Runnable {
                         progressBar.visibility = View.VISIBLE
+
                         searchTracks(query)
+
                     }
                     searchHandler.postDelayed(searchRunnable!!, 2000)
                 } else {
                     trackAdapter.updateData(emptyList())
+
                     recyclerView.isVisible = false
                     progressBar.visibility = View.GONE
+
                 }
             }
             override fun afterTextChanged(s: Editable?) {}
@@ -179,6 +193,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun searchTracks(query: String) {
+
         if (!isNetworkAvailable()) {
             progressBar.visibility = View.GONE
             showErrorPlaceholder()
@@ -186,6 +201,7 @@ class SearchActivity : AppCompatActivity() {
         }
 
         hideAllPlaceholders()
+
         progressBar.visibility = View.VISIBLE
 
         val call = NetworkClient.itunesApi.search(query)
@@ -196,14 +212,6 @@ class SearchActivity : AppCompatActivity() {
                 val hasResults = response.isSuccessful && (response.body()?.resultCount ?: 0) > 0
                 if (hasResults) {
                     val tracks = response.body()?.results ?: emptyList()
-
-                    if (tracks.isNotEmpty()) {
-                        tracks.firstOrNull()?.let {
-                            Log.d("SearchActivity", "First track: ${it.trackName}, " +
-                                    "Time: ${it.trackTimeMillis}, " +
-                                    "Artwork: ${it.artworkUrl100}")
-                        }
-                    }
 
                     trackAdapter.updateData(tracks)
                     recyclerView.visibility = View.VISIBLE
@@ -218,7 +226,11 @@ class SearchActivity : AppCompatActivity() {
             override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
                 progressBar.visibility = View.GONE
                 Log.e("SearchActivity", "Network failure", t)
-                showErrorPlaceholder()
+                if (!isNetworkAvailable()) {
+                    showErrorPlaceholder()
+                } else {
+                    showErrorPlaceholder()
+                }
             }
         })
     }
