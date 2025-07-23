@@ -8,27 +8,28 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.playlistmaker.Creator
 import com.example.playlistmaker.R
-import com.example.playlistmaker.data.dto.ThemeManager
 import com.example.playlistmaker.domain.interactor.SettingsInteractor
+import com.example.playlistmaker.domain.interactor.ThemeInteractor
 import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {
     private lateinit var settingsInteractor: SettingsInteractor
+    private lateinit var themeInteractor: ThemeInteractor
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
         settingsInteractor = Creator.provideSettingsInteractor(this)
-        val themeManager = ThemeManager(this)
+        themeInteractor = Creator.provideThemeInteractor()
 
         val btnBack = findViewById<Button>(R.id.btn_back)
         val themeSwitcher = findViewById<SwitchMaterial>(R.id.themeSwitcher)
 
-        themeSwitcher.isChecked = settingsInteractor.isDarkTheme()
+        themeSwitcher.isChecked = themeInteractor.isDarkTheme()
 
         themeSwitcher.setOnCheckedChangeListener { _, isChecked ->
             settingsInteractor.setDarkTheme(isChecked)
-            themeManager.applyTheme(isChecked)
+            themeInteractor.applyTheme(isChecked)
         }
 
         btnBack.setOnClickListener {

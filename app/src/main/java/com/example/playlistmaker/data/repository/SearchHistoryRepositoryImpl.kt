@@ -1,14 +1,13 @@
 package com.example.playlistmaker.data.repository
 
-import android.content.Context
+import android.content.SharedPreferences
 import com.example.playlistmaker.domain.api.SearchHistoryRepository
 import com.example.playlistmaker.domain.models.TrackDomainModel
 import com.example.playlistmaker.data.dto.Track
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
-class SearchHistoryRepositoryImpl(private val context: Context) : SearchHistoryRepository {
-    private val prefs = context.getSharedPreferences("search_history", Context.MODE_PRIVATE)
+class SearchHistoryRepositoryImpl(private val prefs: SharedPreferences) : SearchHistoryRepository {
     private val gson = Gson()
     private val key = "tracks"
 
