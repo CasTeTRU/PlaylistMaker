@@ -1,7 +1,6 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.ui.search
 
-import TrackAdapter
-import android.content.Context
+import com.example.playlistmaker.presentation.TrackAdapter
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
@@ -10,7 +9,6 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.view.ViewStub
 import android.view.inputmethod.EditorInfo
@@ -21,11 +19,17 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.example.playlistmaker.data.dto.Track
+import com.example.playlistmaker.domain.impl.SearchTracksInteractor
+import com.example.playlistmaker.domain.impl.SearchHistoryInteractor
+import com.example.playlistmaker.domain.models.TrackDomainModel
+import com.example.playlistmaker.Creator
+import com.example.playlistmaker.R
+import com.example.playlistmaker.ui.player.PlayerActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 private const val MAX_HISTORY_SIZE = 10
 private const val HISTORY_KEY = "history_tracks"
@@ -42,7 +46,7 @@ class SearchActivity : AppCompatActivity() {
     private var errorLayout: View? = null
     private var emptyLayout: View? = null
     private val sharedPreferences by lazy {
-        getSharedPreferences("search_history", Context.MODE_PRIVATE)
+        getSharedPreferences("search_history", MODE_PRIVATE)
     }
     private val searchHandler = Handler(Looper.getMainLooper())
     private var searchRunnable: Runnable? = null
@@ -50,22 +54,9 @@ class SearchActivity : AppCompatActivity() {
     private var isClickAllowed = true
     private val clickDebounceDelay = 1000L // 1 секунда
     private val clickHandler = Handler(Looper.getMainLooper())
-
-    private fun debounceClick(action: () -> Unit) {
-        if (isClickAllowed) {
-            isClickAllowed = false
-            action()
-            clickHandler.postDelayed({ isClickAllowed = true }, clickDebounceDelay)
-        }
-    }
-
-    private val searchHandler = Handler(Looper.getMainLooper())
-    private var searchRunnable: Runnable? = null
-    private lateinit var progressBar: ProgressBar
-
-    private var isClickAllowed = true
-    private val clickDebounceDelay = 1000L // 1 секунда
-    private val clickHandler = Handler(Looper.getMainLooper())
+    private lateinit var searchTracksInteractor: SearchTracksInteractor
+    private lateinit var searchHistoryInteractor: SearchHistoryInteractor
+    private val uiScope = CoroutineScope(Dispatchers.Main + Job())
 
     private fun debounceClick(action: () -> Unit) {
         if (isClickAllowed) {
@@ -86,6 +77,9 @@ class SearchActivity : AppCompatActivity() {
         historyTitle = findViewById(R.id.historyTitle)
         clearHistoryButton = findViewById(R.id.clearHistoryButton)
         progressBar = findViewById(R.id.progressBar)
+
+        searchTracksInteractor = Creator.provideSearchTracksInteractor()
+        searchHistoryInteractor = Creator.provideSearchHistoryInteractor(this)
 
         trackAdapter = TrackAdapter(emptyList()) { track ->
             debounceClick {
@@ -185,7 +179,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun isNetworkAvailable(): Boolean {
-        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val connectivityManager = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
         val network = connectivityManager.activeNetwork ?: return false
         val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
         return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
@@ -204,35 +198,16 @@ class SearchActivity : AppCompatActivity() {
 
         progressBar.visibility = View.VISIBLE
 
-        val call = NetworkClient.itunesApi.search(query)
-
-        call.enqueue(object : Callback<SearchResponse> {
-            override fun onResponse(call: Call<SearchResponse>, response: Response<SearchResponse>) {
-                progressBar.visibility = View.GONE
-                val hasResults = response.isSuccessful && (response.body()?.resultCount ?: 0) > 0
-                if (hasResults) {
-                    val tracks = response.body()?.results ?: emptyList()
-
-                    trackAdapter.updateData(tracks)
-                    recyclerView.visibility = View.VISIBLE
-                } else if (!response.isSuccessful) {
-                    Log.e("SearchActivity", "Error response: ${response.code()}")
-                    showErrorPlaceholder()
-                } else {
-                    showEmptyPlaceholder()
-                }
+        uiScope.launch {
+            val tracks = searchTracksInteractor.searchTracks(query)
+            progressBar.visibility = View.GONE
+            if (tracks.isNotEmpty()) {
+                trackAdapter.updateData(tracks.map { it.toDto() })
+                recyclerView.visibility = View.VISIBLE
+            } else {
+                showEmptyPlaceholder()
             }
-
-            override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
-                progressBar.visibility = View.GONE
-                Log.e("SearchActivity", "Network failure", t)
-                if (!isNetworkAvailable()) {
-                    showErrorPlaceholder()
-                } else {
-                    showErrorPlaceholder()
-                }
-            }
-        })
+        }
     }
 
     private fun showEmptyPlaceholder() {
@@ -272,44 +247,54 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun showKeyboard() {
-        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         searchEditText.requestFocus()
         imm.showSoftInput(searchEditText, InputMethodManager.SHOW_IMPLICIT)
     }
 
     private fun hideKeyboard() {
-        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         if (searchEditText.isFocused) {
             imm.hideSoftInputFromWindow(searchEditText.windowToken, 0)
         }
     }
 
     fun saveTrackToHistory(track: Track) {
-        val history = loadHistoryTracks().toMutableList()
-        history.removeAll { it.trackId == track.trackId }
-        history.add(0, track)
-        if (history.size > MAX_HISTORY_SIZE) {
-            saveHistory(history.take(MAX_HISTORY_SIZE))
-        } else {
-            saveHistory(history)
-        }
-    }
-
-    private fun saveHistory(history: List<Track>) {
-        val editor = sharedPreferences.edit()
-        val gson = Gson()
-        val json = gson.toJson(history)
-        editor.putString(HISTORY_KEY, json)
-        editor.apply()
+        searchHistoryInteractor.saveTrack(track.toDomain())
     }
 
     fun loadHistoryTracks(): List<Track> {
-        val json = sharedPreferences.getString(HISTORY_KEY, null)
-        val typeToken = object : TypeToken<List<Track>>() {}.type
-        return Gson().fromJson(json, typeToken) ?: emptyList()
+        return searchHistoryInteractor.getHistory().map { it.toDto() }
     }
 
     fun clearHistory() {
-        sharedPreferences.edit().remove(HISTORY_KEY).apply()
+        searchHistoryInteractor.clearHistory()
     }
 }
+
+// Мапперы между DTO и Domain
+fun Track.toDomain(): TrackDomainModel = TrackDomainModel(
+    trackId = this.trackId,
+    trackName = this.trackName,
+    artistName = this.artistName,
+    trackTimeMillis = this.trackTimeMillis,
+    artworkUrl100 = this.artworkUrl100,
+    collectionName = this.collectionName,
+    releaseDate = this.releaseDate,
+    primaryGenreName = this.primaryGenreName,
+    country = this.country,
+    previewUrl = this.previewUrl
+)
+
+fun TrackDomainModel.toDto(): Track = Track(
+    trackId = this.trackId,
+    trackName = this.trackName,
+    artistName = this.artistName,
+    trackTimeMillis = this.trackTimeMillis,
+    artworkUrl100 = this.artworkUrl100,
+    collectionName = this.collectionName,
+    releaseDate = this.releaseDate,
+    primaryGenreName = this.primaryGenreName,
+    country = this.country,
+    previewUrl = this.previewUrl
+)

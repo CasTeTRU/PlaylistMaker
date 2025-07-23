@@ -1,5 +1,6 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.ui.player
 
+import android.content.res.Configuration
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
@@ -11,6 +12,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.example.playlistmaker.R
+import com.example.playlistmaker.data.dto.Track
 
 class PlayerActivity : AppCompatActivity() {
 
@@ -93,12 +96,12 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun isInNightMode(): Boolean {
-        return (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
-                android.content.res.Configuration.UI_MODE_NIGHT_YES
+        return (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
+                Configuration.UI_MODE_NIGHT_YES
     }
 
     private fun formatTrackTime(millis: Long): String {
-        return Track.formatMillis(millis)
+        return Track.Companion.formatMillis(millis)
     }
 
     private fun setupTrackInfo() {
@@ -204,4 +207,3 @@ class PlayerActivity : AppCompatActivity() {
         }
     }
 }
-

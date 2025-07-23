@@ -1,15 +1,12 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.ui.library
 
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.util.TypedValue
 import android.widget.ImageView
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
+import com.example.playlistmaker.R
 
 class MediatekaActivity : Activity() {
 

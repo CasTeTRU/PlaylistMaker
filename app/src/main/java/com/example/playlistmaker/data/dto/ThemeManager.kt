@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.data.dto
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -27,4 +27,4 @@ class ThemeManager(private val context: Context) {
         private const val PREFS_NAME = "theme_prefs"
         private const val KEY_DARK_THEME = "dark_theme"
     }
-} 
+}

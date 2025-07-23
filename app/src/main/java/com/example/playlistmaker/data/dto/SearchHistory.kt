@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.data.dto
 
 import android.content.Context
 import com.google.gson.Gson
