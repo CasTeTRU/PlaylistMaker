@@ -4,7 +4,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.R
-import com.example.playlistmaker.presentation.TrackViewHolder
 import com.example.playlistmaker.data.dto.Track
 
 class TrackAdapter(

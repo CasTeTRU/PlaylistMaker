@@ -11,11 +11,6 @@ class ThemeManager(private val context: Context) {
         return prefs.getBoolean(KEY_DARK_THEME, false)
     }
 
-    fun setDarkTheme(isDark: Boolean) {
-        prefs.edit().putBoolean(KEY_DARK_THEME, isDark).apply()
-        applyTheme(isDark)
-    }
-
     fun applyTheme(isDark: Boolean) {
         AppCompatDelegate.setDefaultNightMode(
             if (isDark) AppCompatDelegate.MODE_NIGHT_YES
