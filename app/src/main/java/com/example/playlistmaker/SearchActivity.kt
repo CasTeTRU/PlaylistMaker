@@ -313,3 +313,4 @@ class SearchActivity : AppCompatActivity() {
         sharedPreferences.edit().remove(HISTORY_KEY).apply()
     }
 }
+
