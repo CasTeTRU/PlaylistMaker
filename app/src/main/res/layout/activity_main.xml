@@ -8,7 +8,7 @@
     android:orientation="vertical"
     android:padding="16dp"
     android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
-    tools:context=".ui.main.MainActivity"
+    tools:context=".main.ui.MainActivity"
     android:fitsSystemWindows="true"
     >
 
