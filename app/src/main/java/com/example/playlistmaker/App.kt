@@ -1,13 +1,13 @@
 package com.example.playlistmaker
 
 import android.app.Application
-import com.example.playlistmaker.data.dto.ThemeManager
+import com.example.playlistmaker.creator.Creator
 
 class App : Application() {
-
     override fun onCreate() {
         super.onCreate()
-        val themeManager = ThemeManager(this)
-        themeManager.applyTheme(themeManager.isDarkTheme())
+        Creator.appContext = applicationContext
+        val themeInteractor = Creator.provideThemeInteractor()
+        themeInteractor.applyTheme(themeInteractor.isDarkTheme())
     }
 }
