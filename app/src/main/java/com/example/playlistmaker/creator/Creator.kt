@@ -28,13 +28,13 @@ object Creator {
         return TrackRepositoryImpl(NetworkClient.itunesApi)
     }
 
-    fun provideSearchHistoryRepository(context: Context): SearchHistoryRepository {
-        val prefs = context.getSharedPreferences("search_history", Context.MODE_PRIVATE)
+    fun provideSearchHistoryRepository(): SearchHistoryRepository {
+        val prefs = appContext.getSharedPreferences("search_history", Context.MODE_PRIVATE)
         return SearchHistoryRepositoryImpl(prefs)
     }
 
-    fun provideSettingsRepository(context: Context): SettingsRepository {
-        val prefs = context.getSharedPreferences("settings_prefs", Context.MODE_PRIVATE)
+    fun provideSettingsRepository(): SettingsRepository {
+        val prefs = appContext.getSharedPreferences("settings_prefs", Context.MODE_PRIVATE)
         return SettingsRepositoryImpl(prefs)
     }
 
@@ -42,12 +42,12 @@ object Creator {
         return SearchTracksInteractorImpl(provideTrackRepository())
     }
 
-    fun provideSearchHistoryInteractor(context: Context): SearchHistoryInteractor {
-        return SearchHistoryInteractorImpl(provideSearchHistoryRepository(context))
+    fun provideSearchHistoryInteractor(): SearchHistoryInteractor {
+        return SearchHistoryInteractorImpl(provideSearchHistoryRepository())
     }
 
-    fun provideSettingsInteractor(context: Context): SettingsInteractor {
-        return SettingsInteractorImpl(provideSettingsRepository(context))
+    fun provideSettingsInteractor(): SettingsInteractor {
+        return SettingsInteractorImpl(provideSettingsRepository())
     }
 
     fun provideThemeRepository(): ThemeRepository {

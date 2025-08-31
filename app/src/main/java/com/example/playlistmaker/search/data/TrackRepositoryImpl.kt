@@ -2,6 +2,8 @@ package com.example.playlistmaker.search.data
 
 import com.example.playlistmaker.search.domain.TrackRepository
 import com.example.playlistmaker.search.domain.Track
+import com.example.playlistmaker.search.domain.TrackDomainModel
+import com.example.playlistmaker.search.data.toDomain
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -14,17 +16,4 @@ class TrackRepositoryImpl(private val apiService: ItunesApiService) : TrackRepos
             emptyList()
         }
     }
-}
-
-fun Track.toDomain(): TrackDomainModel = TrackDomainModel(
-    trackId = this.trackId,
-    trackName = this.trackName,
-    artistName = this.artistName,
-    trackTimeMillis = this.trackTimeMillis,
-    artworkUrl100 = this.artworkUrl100,
-    collectionName = this.collectionName,
-    releaseDate = this.releaseDate,
-    primaryGenreName = this.primaryGenreName,
-    country = this.country,
-    previewUrl = this.previewUrl
-) 
+} 

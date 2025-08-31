@@ -1,6 +1,7 @@
-package com.example.playlistmaker.search.domain
+package com.example.playlistmaker.search.data
 
-import com.example.playlistmaker.search.data.TrackDomainModel
+import com.example.playlistmaker.search.domain.Track
+import com.example.playlistmaker.search.domain.TrackDomainModel
 
 fun Track.toDomain(): TrackDomainModel = TrackDomainModel(
     trackId = this.trackId,

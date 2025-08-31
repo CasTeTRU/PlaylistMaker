@@ -3,6 +3,9 @@ package com.example.playlistmaker.search.data
 import android.content.SharedPreferences
 import com.example.playlistmaker.search.domain.SearchHistoryRepository
 import com.example.playlistmaker.search.domain.Track
+import com.example.playlistmaker.search.domain.TrackDomainModel
+import com.example.playlistmaker.search.data.toDomain
+import com.example.playlistmaker.search.data.toDto
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
@@ -14,7 +17,8 @@ class SearchHistoryRepositoryImpl(private val prefs: SharedPreferences) : Search
         val json = prefs.getString(key, null)
         return if (json != null) {
             val type = object : TypeToken<List<Track>>() {}.type
-            gson.fromJson<List<Track>>(json, type).map { it.toDomain() }
+            val tracks: List<Track> = gson.fromJson(json, type)
+            tracks.map { it.toDomain() }
         } else {
             emptyList()
         }
@@ -26,24 +30,11 @@ class SearchHistoryRepositoryImpl(private val prefs: SharedPreferences) : Search
         history.add(0, track)
         val maxSize = 10
         val trimmed = if (history.size > maxSize) history.take(maxSize) else history
-        val json = gson.toJson(trimmed.map { it.toDto() })
+        val json = gson.toJson(trimmed.map { track: TrackDomainModel -> track.toDto() })
         prefs.edit().putString(key, json).apply()
     }
 
     override fun clearHistory() {
         prefs.edit().remove(key).apply()
     }
-}
-
-fun TrackDomainModel.toDto(): Track = Track(
-    trackId = this.trackId,
-    trackName = this.trackName,
-    artistName = this.artistName,
-    trackTimeMillis = this.trackTimeMillis,
-    artworkUrl100 = this.artworkUrl100,
-    collectionName = this.collectionName,
-    releaseDate = this.releaseDate,
-    primaryGenreName = this.primaryGenreName,
-    country = this.country,
-    previewUrl = this.previewUrl
-) 
+} 
