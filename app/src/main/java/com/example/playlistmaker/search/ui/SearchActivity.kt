@@ -18,24 +18,18 @@ import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.R
-import com.example.playlistmaker.creator.Creator
 import com.example.playlistmaker.player.ui.PlayerActivity
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchActivity : AppCompatActivity() {
 
-    private val viewModel: SearchViewModel by viewModels {
-        SearchViewModelFactory(
-            Creator.provideSearchTracksInteractor(),
-            Creator.provideSearchHistoryInteractor(this)
-        )
-    }
+    private val viewModel: SearchViewModel by viewModel()
 
     private lateinit var searchEditText: EditText
     private lateinit var clearButton: ImageButton
@@ -149,20 +143,20 @@ class SearchActivity : AppCompatActivity() {
                     recyclerView.isVisible = false
                     historyTitle.isVisible = false
                     clearHistoryButton.isVisible = false
-                    progressBar.visibility = View.GONE
+                    progressBar.isVisible = false
                 }
                 is SearchState.Loading -> {
                     hideAllPlaceholders()
                     recyclerView.isVisible = false
                     historyTitle.isVisible = false
                     clearHistoryButton.isVisible = false
-                    progressBar.visibility = View.VISIBLE
+                    progressBar.isVisible = true
                 }
                 is SearchState.Content -> {
                     hideAllPlaceholders()
                     historyTitle.isVisible = false
                     clearHistoryButton.isVisible = false
-                    progressBar.visibility = View.GONE
+                    progressBar.isVisible = false
                     trackAdapter.updateData(state.tracks)
                     recyclerView.isVisible = true
                 }
@@ -171,7 +165,7 @@ class SearchActivity : AppCompatActivity() {
                     historyTitle.isVisible = false
                     clearHistoryButton.isVisible = false
                     recyclerView.isVisible = false
-                    progressBar.visibility = View.GONE
+                    progressBar.isVisible = false
                     showEmptyPlaceholder()
                 }
                 is SearchState.Error -> {
@@ -179,12 +173,12 @@ class SearchActivity : AppCompatActivity() {
                     historyTitle.isVisible = false
                     clearHistoryButton.isVisible = false
                     recyclerView.isVisible = false
-                    progressBar.visibility = View.GONE
+                    progressBar.isVisible = false
                     showErrorPlaceholder()
                 }
                 is SearchState.History -> {
                     hideAllPlaceholders()
-                    progressBar.visibility = View.GONE
+                    progressBar.isVisible = false
                     if (searchEditText.text.isEmpty() && searchEditText.hasFocus()) {
                         trackAdapter.updateData(state.tracks)
                         recyclerView.isVisible = true
@@ -216,7 +210,7 @@ class SearchActivity : AppCompatActivity() {
         if (emptyLayout == null) {
             emptyLayout = placeholderStub.inflate()
         }
-        emptyLayout?.visibility = View.VISIBLE
+        emptyLayout?.isVisible = true
     }
 
     private fun showErrorPlaceholder() {
@@ -238,12 +232,12 @@ class SearchActivity : AppCompatActivity() {
                 }
             }
         }
-        errorLayout?.visibility = View.VISIBLE
+        errorLayout?.isVisible = true
     }
 
     private fun hideAllPlaceholders() {
-        emptyLayout?.visibility = View.GONE
-        errorLayout?.visibility = View.GONE
+        emptyLayout?.isVisible = false
+        errorLayout?.isVisible = false
     }
 
     private fun showKeyboard() {
