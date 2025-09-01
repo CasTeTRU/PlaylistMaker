@@ -43,4 +43,58 @@
         <item name="android:trackTint">@color/switch_track</item>
 
     </style>
+
+    <style name="LibraryHeader">
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:textColor">@color/text_day_night</item>
+    </style>
+
+    <style name="MediatekaTabs.TextAppearance" parent="TextAppearance.AppCompat.Button">
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textFontWeight">500</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/text_day_night</item>
+        <item name="fontFamily">@font/ys_display_medium</item>
+        <item name="textAllCaps">false</item>
+    </style>
+
+    <style name="MediatekaTabs" parent="Widget.Design.TabLayout">
+        <item name="tabTextAppearance">@style/MediatekaTabs.TextAppearance</item>
+        <item name="tabTextColor">@color/text_day_night</item>
+        <item name="tabSelectedTextColor">@color/text_day_night</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="tabIndicator">@drawable/tab_indicator_dark</item>
+        <item name="tabIndicatorHeight">2dp</item>
+        <item name="tabIndicatorFullWidth">false</item>
+    </style>
+
+    <style name="LibraryInfoText">
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textSize">19sp</item>
+        <item name="android:textColor">@color/text_day_night</item>
+    </style>
+
+    <style name="ToolbarTitle" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">22sp</item>
+        <item name="titleTextColor">@color/yp_white</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textFontWeight">500</item>
+        <item name="navigationIconTint">@color/yp_white</item>
+    </style>
+
+    <style name="SearchButtons">
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:layout_marginTop">24dp</item>
+        <item name="android:backgroundTint">@color/text_day_night</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">@color/button_background</item>
+        <item name="android:textFontWeight">500</item>
+        <item name="android:textSize">14sp</item>
+        <item name="cornerRadius">54dp</item>
+    </style>
+
 </resources>

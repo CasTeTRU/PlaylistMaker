@@ -1,5 +1,5 @@
-package com.example.playlistmaker.library
+package com.example.playlistmaker.library.ui
 
 data class LibraryState(
-    val imageUrl: String = "https://img.freepik.com/free-vector/open-blue-book-white_1308-69339.jpg"
+    val currentTab: Int = 0
 )
