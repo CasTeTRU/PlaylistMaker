@@ -1,15 +1,7 @@
-package com.example.playlistmaker.library
+package com.example.playlistmaker.library.ui
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class LibraryViewModel : ViewModel() {
-
-    private val _state = MutableLiveData<LibraryState>()
-    val state: LiveData<LibraryState> get() = _state
-
-    init {
-        _state.value = LibraryState()
-    }
+    // TODO: Добавить логику для работы с медиатекой
 }

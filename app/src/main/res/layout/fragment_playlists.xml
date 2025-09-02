@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".library.ui.MediatekaActivity">
+
+    <Button
+        android:id="@+id/newPlaylistBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/SearchButtons"
+        android:text="@string/new_playlist"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="46dp"
+        android:src="@drawable/ic_nothing_found"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        style="@style/LibraryInfoText"
+        android:textFontWeight="500"
+        android:text="@string/playlist_not_yet_created"/>
+
+</LinearLayout>

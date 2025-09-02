@@ -42,7 +42,9 @@
     <color name="on_surface_dark">#FFFFFF</color>
 
     <color name="button_background">#FFFFFF</color>
+    <color name="button_background_playlist">#000000</color>
     <color name="button_text_color">#000000</color>
+    <color name="button_text_color_playlist">#000000</color>
     <color name="icon_color">#000000</color>
 
     <color name="hint_text_color">@color/yp_text_grey</color>

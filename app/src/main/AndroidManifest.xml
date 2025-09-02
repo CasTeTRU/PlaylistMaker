@@ -17,7 +17,7 @@
         android:theme="@style/Theme.PlaylistMaker"
         tools:targetApi="31">
         <activity
-            android:name=".library.MediatekaActivity"
+            android:name=".library.ui.MediatekaActivity"
             android:exported="true" />
         <activity
             android:name=".player.ui.PlayerActivity"
