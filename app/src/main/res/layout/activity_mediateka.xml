@@ -18,9 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         style="@style/MediatekaTabs"
-    />
-    <!-- Не получается отрисовать прямоугольник height 2dp в светлой теме
-         при этом в темной, всё нормально отображается    -->
+        />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager"

@@ -4,13 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.example.playlistmaker.R
+import com.example.playlistmaker.databinding.FragmentPlaylistsBinding
 
 class PlaylistsFragment : Fragment() {
 
+    private var _binding: FragmentPlaylistsBinding? = null
+    private val binding get() = _binding!!
+    
     private val viewModel: PlaylistsViewModel by viewModels()
 
     override fun onCreateView(
@@ -18,7 +20,8 @@ class PlaylistsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_playlists, container, false)
+        _binding = FragmentPlaylistsBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -29,14 +32,18 @@ class PlaylistsFragment : Fragment() {
     }
 
     private fun setupViews() {
-        val btnNewPlaylist = view?.findViewById<Button>(R.id.newPlaylistBtn)
-        btnNewPlaylist?.setOnClickListener {
+        binding.newPlaylistBtn.setOnClickListener {
 
         }
     }
 
     private fun observeViewModel() {
 
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     companion object {

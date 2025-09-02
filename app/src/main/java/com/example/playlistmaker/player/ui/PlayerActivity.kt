@@ -3,13 +3,12 @@ package com.example.playlistmaker.player.ui
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
-import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
+import com.example.playlistmaker.databinding.ActivityPlayerBinding
 import com.example.playlistmaker.search.domain.Track
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -21,13 +20,13 @@ class PlayerActivity : AppCompatActivity() {
         private const val CORNER_RADIUS = 8f
     }
 
+    private lateinit var binding: ActivityPlayerBinding
     private lateinit var viewModel: PlayerViewModel
-    private lateinit var playButton: ImageView
-    private lateinit var currentTimeTextView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_player)
+        binding = ActivityPlayerBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         val track = intent.getParcelableExtra<Track>(EXTRA_TRACK) ?: run {
             Toast.makeText(this, "Ошибка: трек не найден", Toast.LENGTH_SHORT).show()
@@ -43,14 +42,11 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun setupViews() {
-        playButton = findViewById(R.id.playButton)
-        currentTimeTextView = findViewById(R.id.currentTimeTextView)
-
-        findViewById<ImageView>(R.id.backButton).setOnClickListener {
+        binding.backButton.setOnClickListener {
             finish()
         }
 
-        playButton.setOnClickListener {
+        binding.playButton.setOnClickListener {
             viewModel.playbackControl()
         }
     }
@@ -65,7 +61,6 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun setupCoverArt(track: Track) {
-        val imageView = findViewById<ImageView>(R.id.coverArtImageView)
         val placeholderRes = if (isInNightMode()) {
             R.drawable.ic_cover_placeholder_night
         } else {
@@ -80,29 +75,29 @@ class PlayerActivity : AppCompatActivity() {
                 .placeholder(placeholderRes)
                 .error(placeholderRes)
                 .transform(RoundedCorners(dpToPx(CORNER_RADIUS)))
-                .into(imageView)
+                .into(binding.coverArtImageView)
         } else {
             Glide.with(this)
                 .load(placeholderRes)
-                .into(imageView)
+                .into(binding.coverArtImageView)
         }
     }
 
     private fun setupTrackInfo(track: Track) {
-        findViewById<TextView>(R.id.trackNameTextView).text = track.trackName
-        findViewById<TextView>(R.id.artistNameTextView).text = track.artistName
+        binding.trackNameTextView.text = track.trackName
+        binding.artistNameTextView.text = track.artistName
 
-        updateLabelAndValue(R.id.albumLabel, R.id.albumNameTextView, track.collectionName)
-        updateLabelAndValue(R.id.yearLabel, R.id.releaseYearTextView, track.getReleaseYear())
-        updateLabelAndValue(R.id.genreLabel, R.id.genreTextView, track.primaryGenreName)
-        updateLabelAndValue(R.id.countryLabel, R.id.countryTextView, track.country)
+        updateLabelAndValue(binding.albumLabel, binding.albumNameTextView, track.collectionName)
+        updateLabelAndValue(binding.yearLabel, binding.releaseYearTextView, track.getReleaseYear())
+        updateLabelAndValue(binding.genreLabel, binding.genreTextView, track.primaryGenreName)
+        updateLabelAndValue(binding.countryLabel, binding.countryTextView, track.country)
 
         val trackTimeText = if (track.trackTimeMillis > 0) {
             formatTrackTime(track.trackTimeMillis)
         } else {
             "—"
         }
-        findViewById<TextView>(R.id.trackTimeTextView).text = trackTimeText
+        binding.trackTimeTextView.text = trackTimeText
     }
 
     private fun updatePlayButton(isPlaying: Boolean) {
@@ -111,11 +106,11 @@ class PlayerActivity : AppCompatActivity() {
         } else {
             R.drawable.ic_play
         }
-        playButton.setImageResource(iconRes)
+        binding.playButton.setImageResource(iconRes)
     }
 
     private fun updateCurrentTime(position: Long) {
-        currentTimeTextView.text = formatTrackTime(position)
+        binding.currentTimeTextView.text = formatTrackTime(position)
     }
 
     private fun formatTrackTime(millis: Long): String {
@@ -132,10 +127,7 @@ class PlayerActivity : AppCompatActivity() {
                 Configuration.UI_MODE_NIGHT_YES
     }
 
-    private fun updateLabelAndValue(labelId: Int, valueId: Int, value: String?) {
-        val labelView = findViewById<TextView>(labelId)
-        val valueView = findViewById<TextView>(valueId)
-
+    private fun updateLabelAndValue(labelView: android.widget.TextView, valueView: android.widget.TextView, value: String?) {
         if (value.isNullOrEmpty()) {
             labelView.visibility = View.GONE
             valueView.visibility = View.GONE

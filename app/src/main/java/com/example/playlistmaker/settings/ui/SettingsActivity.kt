@@ -3,59 +3,52 @@ package com.example.playlistmaker.settings.ui
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.playlistmaker.R
+import com.example.playlistmaker.databinding.ActivitySettingsBinding
 import com.example.playlistmaker.settings.ui.SettingsViewModel
-import com.google.android.material.switchmaterial.SwitchMaterial
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SettingsActivity : AppCompatActivity() {
 
+    private lateinit var binding: ActivitySettingsBinding
     private val viewModel: SettingsViewModel by viewModel()
-
-    private lateinit var themeSwitcher: SwitchMaterial
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_settings)
+        binding = ActivitySettingsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         setupViews()
         observeViewModel()
     }
 
     private fun setupViews() {
-        val btnBack = findViewById<Button>(R.id.btn_back)
-        themeSwitcher = findViewById(R.id.themeSwitcher)
-
-        btnBack.setOnClickListener {
+        binding.btnBack.setOnClickListener {
             finish()
         }
 
-        themeSwitcher.setOnCheckedChangeListener { _, isChecked ->
+        binding.themeSwitcher.setOnCheckedChangeListener { _, isChecked ->
             viewModel.toggleTheme(isChecked)
         }
 
-        val shareAppButton = findViewById<Button>(R.id.share_app_button)
-        shareAppButton.setOnClickListener {
+        binding.shareAppButton.setOnClickListener {
             shareApp()
         }
 
-        val contactSupportButton = findViewById<Button>(R.id.contact_support_button)
-        contactSupportButton.setOnClickListener {
+        binding.contactSupportButton.setOnClickListener {
             contactSupport()
         }
 
-        val termsOfServiceButton = findViewById<Button>(R.id.terms_of_service_button)
-        termsOfServiceButton.setOnClickListener {
+        binding.termsOfServiceButton.setOnClickListener {
             openTermsOfService()
         }
     }
 
     private fun observeViewModel() {
         viewModel.state.observe(this) { state ->
-            themeSwitcher.isChecked = state.isDarkTheme
+            binding.themeSwitcher.isChecked = state.isDarkTheme
         }
     }
 

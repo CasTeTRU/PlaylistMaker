@@ -6,10 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.example.playlistmaker.R
+import com.example.playlistmaker.databinding.FragmentFavouriteTracksBinding
 
 class FavouriteTracksFragment : Fragment() {
 
+    private var _binding: FragmentFavouriteTracksBinding? = null
+    private val binding get() = _binding!!
+    
     private val viewModel: FavouriteTracksViewModel by viewModels()
 
     override fun onCreateView(
@@ -17,7 +20,8 @@ class FavouriteTracksFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_favourite_tracks, container, false)
+        _binding = FragmentFavouriteTracksBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -28,6 +32,11 @@ class FavouriteTracksFragment : Fragment() {
 
     private fun observeViewModel() {
 
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     companion object {

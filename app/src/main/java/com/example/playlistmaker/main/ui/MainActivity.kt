@@ -2,39 +2,36 @@ package com.example.playlistmaker.main.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.example.playlistmaker.R
+import com.example.playlistmaker.databinding.ActivityMainBinding
 import com.example.playlistmaker.library.ui.MediatekaActivity
 import com.example.playlistmaker.search.ui.SearchActivity
 import com.example.playlistmaker.settings.ui.SettingsActivity
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var binding: ActivityMainBinding
     private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         setupViews()
     }
 
     private fun setupViews() {
-        val btnSearch = findViewById<Button>(R.id.btnSearch)
-        val btnLibrary = findViewById<Button>(R.id.btnLibrary)
-        val btnSettings = findViewById<Button>(R.id.btnSettings)
-
-        btnSearch.setOnClickListener {
+        binding.btnSearch.setOnClickListener {
             openSearchScreen()
         }
 
-        btnLibrary.setOnClickListener {
+        binding.btnLibrary.setOnClickListener {
             openLibraryScreen()
         }
 
-        btnSettings.setOnClickListener {
+        binding.btnSettings.setOnClickListener {
             openSettingsScreen()
         }
     }
