@@ -10,7 +10,6 @@
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolBar"
         style="@style/ToolbarTitle"
-        app:navigationIcon="@drawable/ic_arrow_back_24"
         app:title="@string/library" />
 
     <com.google.android.material.tabs.TabLayout

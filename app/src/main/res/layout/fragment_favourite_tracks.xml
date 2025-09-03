@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
-    tools:context=".library.ui.MediatekaActivity">
+    tools:context=".library.ui.FavouriteTracksFragment">
 
 
     <ImageView

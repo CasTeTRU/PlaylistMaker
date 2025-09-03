@@ -6,10 +6,7 @@ import com.example.playlistmaker.search.data.SearchHistoryRepositoryImpl
 import com.example.playlistmaker.search.data.TrackRepositoryImpl
 import com.example.playlistmaker.search.domain.SearchHistoryRepository
 import com.example.playlistmaker.search.domain.TrackRepository
-import com.example.playlistmaker.settings.data.SettingsRepositoryImpl
-import com.example.playlistmaker.settings.domain.SettingsRepository
-import com.example.playlistmaker.settings.domain.ThemeRepository
-import com.example.playlistmaker.settings.domain.ThemeRepositoryImpl
+
 import com.google.gson.Gson
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
@@ -39,14 +36,6 @@ val dataModule = module {
 
     single<SearchHistoryRepository> {
         SearchHistoryRepositoryImpl(get())
-    }
-
-    single<SettingsRepository> {
-        SettingsRepositoryImpl(get())
-    }
-
-    single<ThemeRepository> {
-        ThemeRepositoryImpl(get())
     }
 
 }

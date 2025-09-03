@@ -16,6 +16,8 @@
     <color name="yp_light_grey">#E6E8EB</color>
     <color name="switch_thumb">#FFFFFF</color>
     <color name="switch_track">#666666</color>
+    <color name="switch_thumb_color">#3772E7</color>
+    <color name="switch_track_color">#3772E7</color>
     <color name="colorPrimary">#BB86FC</color>
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
@@ -41,4 +43,10 @@
     <color name="search_icon_color">@color/hint_text_color</color>
 
     <color name="text_day_night">#FFFFFF</color>
+    <color name="text_color">#FFFFFF</color>
+    
+     <color name="settings_item_background">#1A1B22</color>
+    <color name="tab_indicator">@color/yp_white</color>
+    <color name="tab_selected_text">@color/yp_white</color>
+    <color name="tab_unselected_text">@color/yp_white</color>
 </resources>

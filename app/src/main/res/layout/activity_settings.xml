@@ -12,11 +12,6 @@
     >
 
     <Button
-        app:icon="@drawable/ic_arrow_back"
-        app:iconGravity="start"
-        app:iconTint="@color/icon_color"
-        app:iconPadding="24dp"
-
         android:id="@+id/btn_back"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -37,11 +32,11 @@
         android:layout_height="wrap_content"
         style="@style/ButtonStyle"
         android:text="@string/night_theme"
-        android:background="@color/switch_track"
+        android:background="@color/yp_white"
         android:stateListAnimator="@null"
         android:backgroundTint="@color/button_background"
         android:textColor="@color/button_text_color"
-        app:thumbTint="@color/switch_thumb_color"
+        app:thumbTint="@color/yp_white"
         app:trackTint="@color/switch_track_color"/>
 
     <Button

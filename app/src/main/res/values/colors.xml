@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="primary">#FFFFFF</color>
-    <color name="background">#3772E7</color>
+    <color name="background">#FFFFFF</color>
     <color name="background_settings">#FFFFFF</color>
     <color name="surface">#282828</color>
     <color name="text_primary">#FFFFFF</color>
@@ -16,12 +16,14 @@
 
     <color name="yp_black">#000000</color>
     <color name="yp_blue">#3772E7</color>
-    <color name="yp_blue_light">#9FBBF3</color>
+    <color name="yp_blue_light">#E6E8EB</color>
     <color name="yp_white">#FFFFFF</color>
     <color name="yp_light_grey">#E6E8EB</color>
     <color name="yp_text_grey">#AEAFB4</color>
     <color name="switch_thumb">#FFFFFF</color>
     <color name="switch_track">#E0E0E0</color>
+    <color name="switch_thumb_color">#AEAFB4</color>
+    <color name="switch_track_color">#E6E8EB</color>
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
@@ -36,7 +38,7 @@
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
 
-    <color name="background_main">#3772E7</color>
+    <color name="background_main">#FFFFFF</color>
 
     <color name="surface_dark">#1E1E1E</color>
     <color name="on_surface_dark">#FFFFFF</color>
@@ -52,6 +54,13 @@
 
     <color name="text_day_night">#1A1B22</color>
 
-    <color name="progress_bar">#3772E7</color>
+    <color name="progress_bar">#1A1B22</color>
+    
+
+    <color name="player_background">#1E1E1E</color>
+    <color name="settings_item_background">#FFFFFF</color>
+    <color name="tab_indicator">@color/yp_black</color>
+    <color name="tab_selected_text">@color/yp_black</color>
+    <color name="tab_unselected_text">@color/yp_black</color>
 </resources>
 
