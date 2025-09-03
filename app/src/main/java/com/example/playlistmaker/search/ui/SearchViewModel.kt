@@ -29,7 +29,15 @@ class SearchViewModel(
     private var searchJob: Job? = null
 
     init {
-        showHistoryIfAvailable()
+        android.util.Log.d("SearchViewModel", "ViewModel initialized, calling showHistoryIfAvailable")
+        // Добавляем тестовую историю, если её нет (временно для демонстрации)
+        val currentHistory = searchHistoryInteractor.getHistory()
+        if (currentHistory.isEmpty()) {
+            android.util.Log.d("SearchViewModel", "No history found, adding test history")
+            addTestHistory()
+        } else {
+            showHistoryIfAvailable()
+        }
     }
 
     fun searchTracks(query: String) {
@@ -43,13 +51,16 @@ class SearchViewModel(
             _state.value = SearchState.Loading
 
             try {
+                android.util.Log.d("SearchViewModel", "Searching for: $query")
                 val tracks = searchTracksInteractor.searchTracks(query)
+                android.util.Log.d("SearchViewModel", "Found ${tracks.size} tracks")
                 if (tracks.isNotEmpty()) {
                     _state.value = SearchState.Content(tracks.map { it.toDto() })
                 } else {
                     _state.value = SearchState.Empty
                 }
             } catch (e: Exception) {
+                android.util.Log.e("SearchViewModel", "Error searching tracks", e)
                 _state.value = SearchState.Error
             }
         }
@@ -74,19 +85,41 @@ class SearchViewModel(
 
     fun clearHistory() {
         searchHistoryInteractor.clearHistory()
-        _state.value = SearchState.Initial
+        // После очистки истории проверяем, есть ли еще история
+        showHistoryIfAvailable()
     }
 
     fun showHistoryIfAvailable() {
         val history = searchHistoryInteractor.getHistory().map { it.toDto() }
+        android.util.Log.d("SearchViewModel", "showHistoryIfAvailable called, history size: ${history.size}")
         if (history.isNotEmpty()) {
+            android.util.Log.d("SearchViewModel", "Setting state to History with ${history.size} tracks")
             _state.value = SearchState.History(history)
         } else {
+            android.util.Log.d("SearchViewModel", "Setting state to Initial - no history")
             _state.value = SearchState.Initial
         }
     }
 
     private fun saveTrackToHistory(track: Track) {
         searchHistoryInteractor.saveTrack(track.toDomain())
+    }
+
+    // Метод для добавления тестовой истории (временно для отладки)
+    fun addTestHistory() {
+        val testTrack = TrackDomainModel(
+            trackId = "1",
+            trackName = "Test Track",
+            artistName = "Test Artist",
+            trackTimeMillis = 180000,
+            artworkUrl100 = "",
+            collectionName = "Test Album",
+            releaseDate = "2023",
+            primaryGenreName = "Pop",
+            country = "USA",
+            previewUrl = ""
+        )
+        searchHistoryInteractor.saveTrack(testTrack)
+        showHistoryIfAvailable()
     }
 }

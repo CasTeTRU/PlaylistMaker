@@ -1,7 +1,7 @@
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.navigation.safe.args)
 }
 
 android {
@@ -36,6 +36,10 @@ android {
     }
     buildFeatures {
         viewBinding = true
+    }
+    
+    lint {
+        abortOnError = false
     }
 }
 

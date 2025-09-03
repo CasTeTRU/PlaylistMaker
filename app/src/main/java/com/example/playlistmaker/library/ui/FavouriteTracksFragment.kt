@@ -5,15 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import com.example.playlistmaker.databinding.FragmentFavouriteTracksBinding
 
 class FavouriteTracksFragment : Fragment() {
 
     private var _binding: FragmentFavouriteTracksBinding? = null
     private val binding get() = _binding!!
-    
-    private val viewModel: FavouriteTracksViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,

@@ -95,4 +95,15 @@
         <item name="cornerRadius">54dp</item>
     </style>
 
+    <style name="BottomNavigationStyle" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="android:background">@color/button_background</item>
+        <item name="itemIconTint">@color/bottom_nav_item_color</item>
+        <item name="itemTextColor">@color/bottom_nav_item_color</item>
+        <item name="itemRippleColor">@android:color/transparent</item>
+        <item name="itemIconSize">24dp</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="itemBackground">@drawable/bottom_nav_item_background</item>
+    </style>
+
 </resources>

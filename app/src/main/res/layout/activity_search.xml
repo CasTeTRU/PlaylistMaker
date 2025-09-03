@@ -9,8 +9,6 @@
         android:id="@+id/search_header"
         android:layout_width="0dp"
         android:layout_height="?attr/actionBarSize"
-        app:navigationIcon="@drawable/ic_arrow_back"
-        app:navigationIconTint="@color/button_text_color"
         app:title="@string/search"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -53,12 +51,12 @@
 
         <ImageButton
             android:id="@+id/clearButton"
-            android:layout_width="48dp"
+            android:layout_width="45dp"
             android:layout_height="48dp"
             android:layout_gravity="end|center_vertical"
-            app:srcCompat="@drawable/ic_clear"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:visibility="gone"
+            android:visibility="visible"
+            app:srcCompat="@drawable/ic_clear"
             app:tint="@color/arrow_color" />
     </FrameLayout>
 
@@ -75,7 +73,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginBottom="12dp"
         android:gravity="center"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintTop_toBottomOf="@id/searchInputContainer"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
@@ -110,7 +108,7 @@
         android:textColor="@color/button_background"
         android:backgroundTint="@color/button_text_color"
         android:stateListAnimator="@null"
-        android:visibility="gone"
+        android:visibility="visible"
         app:cornerRadius="54dp"
         android:textSize="14sp"
         android:layout_marginBottom="24dp"

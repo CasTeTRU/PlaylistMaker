@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background_settings"
+    android:theme="@style/Theme.PlaylistMaker"
+    android:fitsSystemWindows="true">
+
+
+
+    <!-- Свитчер темной темы -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="16dp"
+        android:background="@color/settings_item_background"
+        android:layout_marginHorizontal="16dp"
+        >
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/night_theme"
+            android:textSize="16sp"
+            android:textColor="@color/button_text_color" />
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/switchTheme"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:stateListAnimator="@null"
+            app:thumbTint="@color/switch_thumb_color"
+            app:trackTint="@color/switch_track_color" />
+
+    </LinearLayout>
+
+    <!-- Кнопка "Поделиться приложением" -->
+    <Button
+        android:id="@+id/shareAppButton"
+        style="@style/ButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:backgroundTint="@color/button_background"
+        android:stateListAnimator="@null"
+        android:text="@string/share"
+        android:textColor="@color/button_text_color"
+        app:icon="@drawable/ic_share"
+        app:iconGravity="end"
+        app:iconTint="@color/yp_text_grey"
+        app:iconSize="24dp" />
+
+    <!-- Кнопка "Написать в поддержку" -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/contactSupportButton"
+        style="@style/ButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:backgroundTint="@color/button_background"
+        android:stateListAnimator="@null"
+        android:text="@string/support"
+        android:textColor="@color/button_text_color"
+        app:icon="@drawable/ic_support"
+        app:iconGravity="end"
+        app:iconTint="@color/yp_text_grey"
+        app:iconSize="24dp" />
+
+    <!-- Кнопка "Пользовательское соглашение" -->
+    <Button
+        android:id="@+id/termsOfServiceButton"
+        style="@style/ButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:backgroundTint="@color/button_background"
+        android:stateListAnimator="@null"
+        android:text="@string/agreement"
+        android:textColor="@color/button_text_color"
+        app:icon="@drawable/ic_arrow_forward"
+        app:iconGravity="end"
+        app:iconTint="@color/yp_text_grey"
+        app:iconSize="24dp" />
+
+</LinearLayout>
