@@ -60,11 +60,26 @@ class SearchFragment : Fragment() {
             binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
             binding.recyclerView.adapter = adapter
             
+            // Настройка кнопки очистки
+            binding.clearButton.setOnClickListener {
+                android.util.Log.d("SearchFragment", "clearButton clicked")
+                binding.searchView.text.clear()
+            }
+            
+            // Настройка кнопки очистить историю
+            binding.clearHistoryButton.setOnClickListener {
+                android.util.Log.d("SearchFragment", "clearHistoryButton clicked")
+                viewModel.clearHistory()
+            }
+            
             // Настройка поиска
             binding.searchView.addTextChangedListener(object : android.text.TextWatcher {
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                     val query = s?.toString()?.trim() ?: ""
+                    val shouldShowClearButton = s?.isNotEmpty() == true
+                    binding.clearButton.isVisible = shouldShowClearButton
+                    
                     if (query.isNotEmpty()) {
                         viewModel.searchWithDebounce(query)
                     } else {
@@ -105,47 +120,72 @@ class SearchFragment : Fragment() {
     }
 
     private fun showInitialState() {
-        binding.searchView.isVisible = true
         binding.recyclerView.isVisible = false
+        binding.historyTitle.isVisible = false
+        binding.clearHistoryButton.isVisible = false
         binding.placeholderEmptySearch.root.isVisible = true
         binding.placeholderServerError.root.isVisible = false
+        // Управляем видимостью кнопки очистки в зависимости от наличия текста
+        val hasText = binding.searchView.text.isNotEmpty()
+        binding.clearButton.isVisible = hasText
     }
 
     private fun showLoadingState() {
-        binding.searchView.isVisible = true
         binding.recyclerView.isVisible = false
+        binding.historyTitle.isVisible = false
+        binding.clearHistoryButton.isVisible = false
         binding.placeholderEmptySearch.root.isVisible = false
         binding.placeholderServerError.root.isVisible = false
+        // Управляем видимостью кнопки очистки в зависимости от наличия текста
+        val hasText = binding.searchView.text.isNotEmpty()
+        binding.clearButton.isVisible = hasText
     }
 
     private fun showContentState(tracks: List<Track>) {
-        binding.searchView.isVisible = true
         binding.recyclerView.isVisible = true
+        binding.historyTitle.isVisible = false
+        binding.clearHistoryButton.isVisible = false
         binding.placeholderEmptySearch.root.isVisible = false
         binding.placeholderServerError.root.isVisible = false
         adapter.submitList(tracks)
+        // Управляем видимостью кнопки очистки в зависимости от наличия текста
+        val hasText = binding.searchView.text.isNotEmpty()
+        binding.clearButton.isVisible = hasText
     }
 
     private fun showHistoryState(tracks: List<Track>) {
-        binding.searchView.isVisible = true
         binding.recyclerView.isVisible = true
+        binding.historyTitle.isVisible = true
+        binding.clearHistoryButton.isVisible = true
         binding.placeholderEmptySearch.root.isVisible = false
         binding.placeholderServerError.root.isVisible = false
         adapter.submitList(tracks)
+        // Управляем видимостью кнопки очистки в зависимости от наличия текста
+        val hasText = binding.searchView.text.isNotEmpty()
+        binding.clearButton.isVisible = hasText
+        android.util.Log.d("SearchFragment", "History state - showing ${tracks.size} tracks")
     }
 
     private fun showEmptyState() {
-        binding.searchView.isVisible = true
         binding.recyclerView.isVisible = false
+        binding.historyTitle.isVisible = false
+        binding.clearHistoryButton.isVisible = false
         binding.placeholderEmptySearch.root.isVisible = true
         binding.placeholderServerError.root.isVisible = false
+        // Управляем видимостью кнопки очистки в зависимости от наличия текста
+        val hasText = binding.searchView.text.isNotEmpty()
+        binding.clearButton.isVisible = hasText
     }
 
     private fun showErrorState() {
-        binding.searchView.isVisible = false
         binding.recyclerView.isVisible = false
+        binding.historyTitle.isVisible = false
+        binding.clearHistoryButton.isVisible = false
         binding.placeholderEmptySearch.root.isVisible = false
         binding.placeholderServerError.root.isVisible = true
+        // Управляем видимостью кнопки очистки в зависимости от наличия текста
+        val hasText = binding.searchView.text.isNotEmpty()
+        binding.clearButton.isVisible = hasText
     }
 
     override fun onDestroyView() {
