@@ -1,9 +1,11 @@
 package com.example.playlistmaker.search.domain
 
+import kotlinx.coroutines.flow.Flow
+
 interface SearchTracksInteractor {
-    suspend fun searchTracks(query: String): List<TrackDomainModel>
+    fun searchTracks(query: String): Flow<List<TrackDomainModel>>
 }
 
 class SearchTracksInteractorImpl(private val repository: TrackRepository) : SearchTracksInteractor {
-    override suspend fun searchTracks(query: String): List<TrackDomainModel> = repository.searchTracks(query)
+    override fun searchTracks(query: String): Flow<List<TrackDomainModel>> = repository.searchTracks(query)
 } 

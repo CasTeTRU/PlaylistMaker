@@ -52,12 +52,13 @@ class SearchViewModel(
 
             try {
                 android.util.Log.d("SearchViewModel", "Searching for: $query")
-                val tracks = searchTracksInteractor.searchTracks(query)
-                android.util.Log.d("SearchViewModel", "Found ${tracks.size} tracks")
-                if (tracks.isNotEmpty()) {
-                    _state.value = SearchState.Content(tracks.map { it.toDto() })
-                } else {
-                    _state.value = SearchState.Empty
+                searchTracksInteractor.searchTracks(query).collect { tracks ->
+                    android.util.Log.d("SearchViewModel", "Found ${tracks.size} tracks")
+                    if (tracks.isNotEmpty()) {
+                        _state.value = SearchState.Content(tracks.map { it.toDto() })
+                    } else {
+                        _state.value = SearchState.Empty
+                    }
                 }
             } catch (e: Exception) {
                 android.util.Log.e("SearchViewModel", "Error searching tracks", e)

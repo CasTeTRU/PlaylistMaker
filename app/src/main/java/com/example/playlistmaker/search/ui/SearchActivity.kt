@@ -4,8 +4,10 @@ import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import androidx.lifecycle.lifecycleScope
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -45,7 +47,7 @@ class SearchActivity : AppCompatActivity() {
 
     private var isClickAllowed = true
     private val clickDebounceDelay = 1000L
-    private val clickHandler = Handler(Looper.getMainLooper())
+    private var clickDebounceJob: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -251,7 +253,11 @@ class SearchActivity : AppCompatActivity() {
         if (isClickAllowed) {
             isClickAllowed = false
             action()
-            clickHandler.postDelayed({ isClickAllowed = true }, clickDebounceDelay)
+            clickDebounceJob?.cancel()
+            clickDebounceJob = lifecycleScope.launch {
+                delay(clickDebounceDelay)
+                isClickAllowed = true
+            }
         }
     }
 
