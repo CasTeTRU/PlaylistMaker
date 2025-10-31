@@ -92,7 +92,7 @@
         android:id="@+id/progressBar"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:indeterminateTint="@color/progress_bar"
+        android:indeterminateTint="@color/yp_blue"
         android:visibility="gone"
 
         app:layout_constraintTop_toBottomOf="@id/historyTitle"

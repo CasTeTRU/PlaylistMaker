@@ -51,16 +51,13 @@ class SearchActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        android.util.Log.d("SearchActivity", "onCreate called")
         setContentView(R.layout.activity_search)
 
         setupViews()
         observeViewModel()
-        android.util.Log.d("SearchActivity", "onCreate completed")
     }
 
     private fun setupViews() {
-        android.util.Log.d("SearchActivity", "setupViews called")
         searchEditText = findViewById(R.id.searchEditText)
         clearButton = findViewById(R.id.clearButton)
         recyclerView = findViewById(R.id.tracksRecyclerView)
@@ -69,9 +66,6 @@ class SearchActivity : AppCompatActivity() {
         historyTitle = findViewById(R.id.historyTitle)
         clearHistoryButton = findViewById(R.id.clearHistoryButton)
         progressBar = findViewById(R.id.progressBar)
-        
-        android.util.Log.d("SearchActivity", "Views found - clearHistoryButton: $clearHistoryButton, historyTitle: $historyTitle, clearButton: $clearButton")
-        android.util.Log.d("SearchActivity", "clearButton properties - isVisible: ${clearButton.isVisible}, width: ${clearButton.width}, height: ${clearButton.height}")
 
         trackAdapter = TrackAdapter { track ->
             debounceClick {
@@ -90,20 +84,16 @@ class SearchActivity : AppCompatActivity() {
         findViewById<Toolbar>(R.id.search_header).setNavigationOnClickListener { finish() }
 
         clearButton.setOnClickListener {
-            android.util.Log.d("SearchActivity", "clearButton clicked - clearing text and hiding keyboard")
             searchEditText.text.clear()
             hideKeyboard()
         }
-        android.util.Log.d("SearchActivity", "clearButton OnClickListener set")
 
         clearHistoryButton.setOnClickListener {
-            android.util.Log.d("SearchActivity", "clearHistoryButton clicked")
             viewModel.clearHistory()
         }
 
         // Временная кнопка для добавления тестовой истории (для отладки)
         historyTitle.setOnLongClickListener {
-            android.util.Log.d("SearchActivity", "Adding test history")
             viewModel.addTestHistory()
             true
         }
@@ -129,18 +119,12 @@ class SearchActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val query = s?.toString()?.trim() ?: ""
                 val shouldShowClearButton = s?.isNotEmpty() == true
-                android.util.Log.d("SearchActivity", "onTextChanged: before setting - query='$query', shouldShowClearButton=$shouldShowClearButton, clearButton.isVisible=${clearButton.isVisible}")
                 clearButton.isVisible = shouldShowClearButton
-                android.util.Log.d("SearchActivity", "onTextChanged: after setting - clearButton.isVisible=${clearButton.isVisible}")
-                android.util.Log.d("SearchActivity", "onTextChanged: query='$query'")
 
                 if (query.isEmpty()) {
-                    android.util.Log.d("SearchActivity", "Query is empty, calling showHistoryIfAvailable")
                     viewModel.showHistoryIfAvailable()
                 } else {
                     // Скрываем кнопку очистить историю только когда пользователь вводит текст
-                    android.util.Log.d("SearchActivity", "Query is not empty, hiding history elements")
-                    
                     if (isNetworkAvailable()) {
                         viewModel.searchWithDebounce(query)
                     }
@@ -150,32 +134,22 @@ class SearchActivity : AppCompatActivity() {
         })
 
         searchEditText.setOnFocusChangeListener { _, hasFocus ->
-            android.util.Log.d("SearchActivity", "onFocusChange: hasFocus=$hasFocus, text='${searchEditText.text}'")
             if (hasFocus) {
                 showKeyboard()
                 if (searchEditText.text.isEmpty()) {
-                    android.util.Log.d("SearchActivity", "Field focused and empty, calling showHistoryIfAvailable")
                     viewModel.showHistoryIfAvailable()
                 }
             }
         }
 
         searchEditText.requestFocus()
-        android.util.Log.d("SearchActivity", "Search field focused, text: '${searchEditText.text}'")
         showKeyboard()
-        android.util.Log.d("SearchActivity", "setupViews completed - clearButton.isVisible=${clearButton.isVisible}")
-        android.util.Log.d("SearchActivity", "setupViews completed - clearButton final state: isVisible=${clearButton.isVisible}")
-        android.util.Log.d("SearchActivity", "setupViews completed - clearButton final state: isVisible=${clearButton.isVisible}")
-        android.util.Log.d("SearchActivity", "setupViews completed - clearButton final state: isVisible=${clearButton.isVisible}")
-        android.util.Log.d("SearchActivity", "setupViews completed - clearButton final state: isVisible=${clearButton.isVisible}")
     }
 
     private fun observeViewModel() {
         viewModel.state.observe(this) { state ->
-            android.util.Log.d("SearchActivity", "State changed to: $state")
             when (state) {
                 is SearchState.Initial -> {
-                    android.util.Log.d("SearchActivity", "Initial state - no content to show")
                     hideAllPlaceholders()
                     recyclerView.isVisible = false
                     historyTitle.isVisible = false
@@ -184,10 +158,8 @@ class SearchActivity : AppCompatActivity() {
                     // Управляем видимостью кнопки очистки в зависимости от наличия текста
                     val hasText = searchEditText.text.isNotEmpty()
                     clearButton.isVisible = hasText
-                    android.util.Log.d("SearchActivity", "Initial state - clearButton.isVisible=$hasText")
                 }
                 is SearchState.Loading -> {
-                    android.util.Log.d("SearchActivity", "Loading state - hiding history elements")
                     hideAllPlaceholders()
                     recyclerView.isVisible = false
                     historyTitle.isVisible = false
@@ -196,7 +168,6 @@ class SearchActivity : AppCompatActivity() {
 
                 }
                 is SearchState.Content -> {
-                    android.util.Log.d("SearchActivity", "Content state - hiding history elements")
                     hideAllPlaceholders()
                     historyTitle.isVisible = false
                     clearHistoryButton.isVisible = false
@@ -206,7 +177,6 @@ class SearchActivity : AppCompatActivity() {
 
                 }
                 is SearchState.Empty -> {
-                    android.util.Log.d("SearchActivity", "Empty state - showing empty placeholder")
                     hideAllPlaceholders()
                     historyTitle.isVisible = false
                     clearHistoryButton.isVisible = false
@@ -216,10 +186,8 @@ class SearchActivity : AppCompatActivity() {
                     // Управляем видимостью кнопки очистки в зависимости от наличия текста
                     val hasText = searchEditText.text.isNotEmpty()
                     clearButton.isVisible = hasText
-                    android.util.Log.d("SearchActivity", "Empty state - clearButton.isVisible=$hasText")
                 }
                 is SearchState.Error -> {
-                    android.util.Log.d("SearchActivity", "Error state - showing error placeholder")
                     hideAllPlaceholders()
                     historyTitle.isVisible = false
                     clearHistoryButton.isVisible = false
@@ -229,10 +197,8 @@ class SearchActivity : AppCompatActivity() {
                     // Управляем видимостью кнопки очистки в зависимости от наличия текста
                     val hasText = searchEditText.text.isNotEmpty()
                     clearButton.isVisible = hasText
-                    android.util.Log.d("SearchActivity", "Error state - clearButton.isVisible=$hasText")
                 }
                 is SearchState.History -> {
-                    android.util.Log.d("SearchActivity", "History state - tracks: ${state.tracks.size}")
                     hideAllPlaceholders()
                     progressBar.isVisible = false
                     trackAdapter.submitList(state.tracks)
@@ -242,8 +208,6 @@ class SearchActivity : AppCompatActivity() {
                     // Управляем видимостью кнопки очистки в зависимости от наличия текста
                     val hasText = searchEditText.text.isNotEmpty()
                     clearButton.isVisible = hasText
-                    android.util.Log.d("SearchActivity", "History state - showing ${state.tracks.size} tracks")
-                    android.util.Log.d("SearchActivity", "History elements - title: visible, clearHistoryButton: visible, clearButton: $hasText")
                 }
             }
         }

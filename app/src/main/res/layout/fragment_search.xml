@@ -65,6 +65,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="106dp"
+        android:indeterminateTint="@color/yp_blue"
         android:visibility="gone" />
 
     <androidx.recyclerview.widget.RecyclerView

@@ -20,13 +20,11 @@ class SearchFragment : Fragment() {
     
     private val viewModel: SearchViewModel by inject()
     private val adapter = TrackAdapter { track -> 
-        android.util.Log.d("SearchFragment", "Track clicked: ${track.trackName} by ${track.artistName}")
         viewModel.onTrackClick(track)
 
         val intent = android.content.Intent(requireContext(), com.example.playlistmaker.player.ui.PlayerActivity::class.java).apply {
             putExtra("track", track)
         }
-        android.util.Log.d("SearchFragment", "Starting PlayerActivity with track: ${track.trackId}")
         startActivity(intent)
     }
 
@@ -42,12 +40,8 @@ class SearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         try {
-            Log.d("SearchFragment", "onViewCreated started")
-            
             setupViews()
             observeState()
-            
-            Log.d("SearchFragment", "onViewCreated completed successfully")
         } catch (e: Exception) {
             Log.e("SearchFragment", "Error in onViewCreated", e)
             showErrorState()
@@ -62,13 +56,11 @@ class SearchFragment : Fragment() {
             
             // Настройка кнопки очистки
             binding.clearButton.setOnClickListener {
-                android.util.Log.d("SearchFragment", "clearButton clicked")
                 binding.searchView.text.clear()
             }
             
             // Настройка кнопки очистить историю
             binding.clearHistoryButton.setOnClickListener {
-                android.util.Log.d("SearchFragment", "clearHistoryButton clicked")
                 viewModel.clearHistory()
             }
             
@@ -167,7 +159,6 @@ class SearchFragment : Fragment() {
         // Управляем видимостью кнопки очистки в зависимости от наличия текста
         val hasText = binding.searchView.text.isNotEmpty()
         binding.clearButton.isVisible = hasText
-        android.util.Log.d("SearchFragment", "History state - showing ${tracks.size} tracks")
     }
 
     private fun showEmptyState() {

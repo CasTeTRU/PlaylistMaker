@@ -61,10 +61,9 @@
         <item name="tabTextColor">@color/text_day_night</item>
         <item name="tabSelectedTextColor">@color/text_day_night</item>
         <item name="android:textAllCaps">false</item>
-        <item name="tabIndicator">@drawable/tab_indicator_dark</item>
+        <item name="tabIndicator">@drawable/tab_indicator_light</item>
         <item name="tabIndicatorHeight">2dp</item>
         <item name="tabIndicatorFullWidth">false</item>
-        <item name="tabIndicatorColor">@color/yp_black</item>
     </style>
 
     <style name="LibraryInfoText">

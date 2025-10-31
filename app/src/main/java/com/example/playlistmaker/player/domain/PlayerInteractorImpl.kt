@@ -13,15 +13,12 @@ class PlayerInteractorImpl : PlayerInteractor {
             return
         }
 
-        android.util.Log.d("PlayerInteractorImpl", "Preparing player with URL: $url")
         mediaPlayer = MediaPlayer().apply {
             setDataSource(url)
             setOnPreparedListener {
-                android.util.Log.d("PlayerInteractorImpl", "Player prepared successfully")
                 onPrepared()
             }
             setOnCompletionListener {
-                android.util.Log.d("PlayerInteractorImpl", "Player completed")
                 onCompletion()
             }
             setOnErrorListener { mp, what, extra ->
