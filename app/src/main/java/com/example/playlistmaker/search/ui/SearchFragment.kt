@@ -125,6 +125,7 @@ class SearchFragment : Fragment() {
         binding.clearHistoryButton.isVisible = false
         binding.placeholderEmptySearch.root.isVisible = true
         binding.placeholderServerError.root.isVisible = false
+        binding.progressBar.isVisible = false
         // Управляем видимостью кнопки очистки в зависимости от наличия текста
         val hasText = binding.searchView.text.isNotEmpty()
         binding.clearButton.isVisible = hasText
@@ -136,6 +137,7 @@ class SearchFragment : Fragment() {
         binding.clearHistoryButton.isVisible = false
         binding.placeholderEmptySearch.root.isVisible = false
         binding.placeholderServerError.root.isVisible = false
+        binding.progressBar.isVisible = true
         // Управляем видимостью кнопки очистки в зависимости от наличия текста
         val hasText = binding.searchView.text.isNotEmpty()
         binding.clearButton.isVisible = hasText
@@ -147,6 +149,7 @@ class SearchFragment : Fragment() {
         binding.clearHistoryButton.isVisible = false
         binding.placeholderEmptySearch.root.isVisible = false
         binding.placeholderServerError.root.isVisible = false
+        binding.progressBar.isVisible = false
         adapter.submitList(tracks)
         // Управляем видимостью кнопки очистки в зависимости от наличия текста
         val hasText = binding.searchView.text.isNotEmpty()
@@ -159,6 +162,7 @@ class SearchFragment : Fragment() {
         binding.clearHistoryButton.isVisible = true
         binding.placeholderEmptySearch.root.isVisible = false
         binding.placeholderServerError.root.isVisible = false
+        binding.progressBar.isVisible = false
         adapter.submitList(tracks)
         // Управляем видимостью кнопки очистки в зависимости от наличия текста
         val hasText = binding.searchView.text.isNotEmpty()
@@ -172,6 +176,7 @@ class SearchFragment : Fragment() {
         binding.clearHistoryButton.isVisible = false
         binding.placeholderEmptySearch.root.isVisible = true
         binding.placeholderServerError.root.isVisible = false
+        binding.progressBar.isVisible = false
         // Управляем видимостью кнопки очистки в зависимости от наличия текста
         val hasText = binding.searchView.text.isNotEmpty()
         binding.clearButton.isVisible = hasText
@@ -183,6 +188,7 @@ class SearchFragment : Fragment() {
         binding.clearHistoryButton.isVisible = false
         binding.placeholderEmptySearch.root.isVisible = false
         binding.placeholderServerError.root.isVisible = true
+        binding.progressBar.isVisible = false
         // Управляем видимостью кнопки очистки в зависимости от наличия текста
         val hasText = binding.searchView.text.isNotEmpty()
         binding.clearButton.isVisible = hasText

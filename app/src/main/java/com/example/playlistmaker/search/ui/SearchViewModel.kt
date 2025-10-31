@@ -29,15 +29,9 @@ class SearchViewModel(
     private var searchJob: Job? = null
 
     init {
-        android.util.Log.d("SearchViewModel", "ViewModel initialized, calling showHistoryIfAvailable")
-        // Добавляем тестовую историю, если её нет (временно для демонстрации)
-        val currentHistory = searchHistoryInteractor.getHistory()
-        if (currentHistory.isEmpty()) {
-            android.util.Log.d("SearchViewModel", "No history found, adding test history")
-            addTestHistory()
-        } else {
-            showHistoryIfAvailable()
-        }
+        android.util.Log.d("SearchViewModel", "ViewModel initialized")
+        // При инициализации не добавляем тестовые данные — только отображаем историю, если она есть
+        showHistoryIfAvailable()
     }
 
     fun searchTracks(query: String) {

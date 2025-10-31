@@ -62,5 +62,9 @@
     <color name="tab_indicator">@color/yp_black</color>
     <color name="tab_selected_text">@color/yp_black</color>
     <color name="tab_unselected_text">@color/yp_black</color>
+    
+    <!-- Search-specific colors (default/light theme) -->
+    <color name="search_text_color">@color/text_color</color>
+    <color name="search_hint_color">@color/hint_text_color</color>
 </resources>
 

@@ -36,6 +36,7 @@
         android:stateListAnimator="@null"
         android:backgroundTint="@color/button_background"
         android:textColor="@color/button_text_color"
+        android:fontFamily="@font/ys_display_medium"
         app:thumbTint="@color/yp_white"
         app:trackTint="@color/switch_track_color"/>
 
@@ -45,6 +46,7 @@
         android:backgroundTint="@color/button_background"
         android:stateListAnimator="@null"
         android:text="@string/share"
+        android:fontFamily="@font/ys_display_medium"
         android:textColor="@color/button_text_color"
         app:icon="@drawable/ic_share"
         app:iconGravity="end"
@@ -60,6 +62,7 @@
         style="@style/ButtonStyle"
         android:id="@+id/contact_support_button"
         android:text="@string/support"
+        android:fontFamily="@font/ys_display_medium"
         android:backgroundTint="@color/button_background"
         android:textColor="@color/button_text_color"
         app:iconSize="24dp"
@@ -73,6 +76,7 @@
         style="@style/ButtonStyle"
         android:id="@+id/terms_of_service_button"
         android:text="@string/agreement"
+        android:fontFamily="@font/ys_display_medium"
         android:backgroundTint="@color/button_background"
         android:textColor="@color/button_text_color"
         app:iconSize="24dp"

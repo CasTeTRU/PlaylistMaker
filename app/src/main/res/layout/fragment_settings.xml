@@ -25,7 +25,8 @@
             android:layout_weight="1"
             android:text="@string/night_theme"
             android:textSize="16sp"
-            android:textColor="@color/button_text_color" />
+            android:textColor="@color/button_text_color"
+            android:fontFamily="@font/ys_display_medium" />
 
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/switchTheme"
@@ -48,6 +49,7 @@
         android:backgroundTint="@color/button_background"
         android:stateListAnimator="@null"
         android:text="@string/share"
+        android:fontFamily="@font/ys_display_medium"
         android:textColor="@color/button_text_color"
         app:icon="@drawable/ic_share"
         app:iconGravity="end"
@@ -65,6 +67,7 @@
         android:backgroundTint="@color/button_background"
         android:stateListAnimator="@null"
         android:text="@string/support"
+        android:fontFamily="@font/ys_display_medium"
         android:textColor="@color/button_text_color"
         app:icon="@drawable/ic_support"
         app:iconGravity="end"
@@ -82,6 +85,7 @@
         android:backgroundTint="@color/button_background"
         android:stateListAnimator="@null"
         android:text="@string/agreement"
+        android:fontFamily="@font/ys_display_medium"
         android:textColor="@color/button_text_color"
         app:icon="@drawable/ic_arrow_forward"
         app:iconGravity="end"
