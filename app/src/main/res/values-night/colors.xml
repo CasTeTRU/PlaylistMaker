@@ -37,7 +37,7 @@
     <color name="yp_blue">#3772E7</color>
     <color name="yp_blue_light">#9FBBF3</color>
 
-    <color name="arrow_color">@color/yp_white</color>
+    <color name="arrow_color">@color/yp_black</color>
 
     <color name="hint_text_color">@color/yp_white</color>
     <color name="search_icon_color">@color/yp_black</color>
@@ -45,7 +45,6 @@
     <color name="text_day_night">#FFFFFF</color>
     <color name="text_color">@color/yp_white</color>
     
-    <!-- Search-specific colors (night overrides) -->
     <color name="search_text_color">@color/yp_black</color>
     <color name="search_hint_color">@color/yp_black</color>
     
@@ -54,6 +53,5 @@
     <color name="tab_selected_text">@color/yp_white</color>
     <color name="tab_unselected_text">@color/yp_white</color>
     
-    <!-- Override for dark theme -->
     <color name="yp_text_grey">@color/yp_white</color>
 </resources>

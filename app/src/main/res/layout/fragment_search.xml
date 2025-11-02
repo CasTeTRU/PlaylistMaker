@@ -27,6 +27,7 @@
             android:textSize="16sp"
             android:textColor="@color/search_text_color"
             android:textColorHint="@color/search_hint_color"
+            android:textCursorDrawable="@drawable/cursor_color"
             android:maxLines="1"
             android:ellipsize="end"
             android:background="@android:color/transparent"

@@ -115,7 +115,7 @@ class SearchFragment : Fragment() {
         binding.recyclerView.isVisible = false
         binding.historyTitle.isVisible = false
         binding.clearHistoryButton.isVisible = false
-        binding.placeholderEmptySearch.root.isVisible = true
+        binding.placeholderEmptySearch.root.isVisible = false
         binding.placeholderServerError.root.isVisible = false
         binding.progressBar.isVisible = false
         // Управляем видимостью кнопки очистки в зависимости от наличия текста
