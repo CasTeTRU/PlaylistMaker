@@ -16,6 +16,7 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentSearchBinding
 import com.example.playlistmaker.search.domain.Track
 import com.example.playlistmaker.player.ui.PlayerFragment
+import com.google.android.material.internal.ViewUtils.hideKeyboard
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -79,7 +80,7 @@ class SearchFragment : Fragment() {
 
             binding.clearButton.setOnClickListener {
                 binding.searchView.text.clear()
-                hideKeyboard()
+
             }
 
             binding.clearHistoryButton.setOnClickListener {
@@ -89,7 +90,14 @@ class SearchFragment : Fragment() {
             }
 
             binding.searchView.addTextChangedListener(object : android.text.TextWatcher {
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                }
+
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                     val query = s?.toString()?.trim() ?: ""
                     val shouldShowClearButton = s?.isNotEmpty() == true
@@ -107,6 +115,7 @@ class SearchFragment : Fragment() {
 
                     inputValue = query
                 }
+
                 override fun afterTextChanged(s: android.text.Editable?) {
                     binding.placeholderEmptySearch.root.isVisible = false
                     binding.placeholderServerError.root.isVisible = false
@@ -124,8 +133,7 @@ class SearchFragment : Fragment() {
                     if (query.isNotEmpty()) {
                         viewModel.searchTracks(query)
                     }
-                    hideKeyboard()
-                    true
+                                        true
                 } else {
                     false
                 }
@@ -224,24 +232,28 @@ class SearchFragment : Fragment() {
 
 
     private fun historyActions(track: Track) {
-    private fun removeAt(position: Int) {
-        // no-op
-    }
+        fun removeAt(position: Int) {
+            // no-op
+        }
 
-    private fun showToast(text: String?) {
-        Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT).show()
-    }
+        fun showToast(text: String?) {
+            Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT).show()
+        }
 
-    private fun hideKeyboard() {
-        val inputMethodManager = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
-        inputMethodManager?.hideSoftInputFromWindow(binding.searchView.windowToken, 0)
-    }
+        fun hideKeyboard() {
+            val inputMethodManager =
+                requireActivity().getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
+            inputMethodManager?.hideSoftInputFromWindow(binding.searchView.windowToken, 0)
+        }
 
-    override fun onResume() { super.onResume() }
+        fun onResume() {
+            super.onResume()
+        }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        textWatcher?.let { binding.searchView.removeTextChangedListener(it) }
-        _binding = null
+        fun onDestroyView() {
+            super.onDestroyView()
+            textWatcher?.let { binding.searchView.removeTextChangedListener(it) }
+            _binding = null
+        }
     }
 }
