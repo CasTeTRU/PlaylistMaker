@@ -23,23 +23,18 @@ class SettingsViewModel(
 
     private fun loadCurrentTheme() {
         val isDarkTheme = themeInteractor.isDarkTheme()
-        android.util.Log.d("SettingsViewModel", "loadCurrentTheme: isDarkTheme = $isDarkTheme")
         _state.value = SettingsState(isDarkTheme = isDarkTheme)
     }
 
     fun toggleTheme(isDarkTheme: Boolean) {
         try {
-            android.util.Log.d("SettingsViewModel", "toggleTheme called with isDarkTheme: $isDarkTheme")
             settingsInteractor.setDarkTheme(isDarkTheme)
-            android.util.Log.d("SettingsViewModel", "Theme saved to settings")
             themeInteractor.applyTheme(isDarkTheme)
-            android.util.Log.d("SettingsViewModel", "Theme applied")
             _state.value = _state.value?.copy(isDarkTheme = isDarkTheme)
             _themeChanged.value = isDarkTheme
             
             // Уведомляем об изменении темы
             _themeChanged.value = true
-            android.util.Log.d("SettingsViewModel", "Theme toggle completed successfully")
         } catch (e: Exception) {
             android.util.Log.e("SettingsViewModel", "Error toggling theme", e)
             // В случае ошибки возвращаем предыдущее состояние

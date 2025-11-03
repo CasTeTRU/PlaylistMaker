@@ -16,7 +16,9 @@
         <item name="android:statusBarColor">@color/background</item>
         <item name="android:navigationBarColor">@color/background</item>
         <item name="android:textSize">22sp</item>
-        <item name="android:background">@color/yp_white</item>
+
+
+
 
 
     </style>

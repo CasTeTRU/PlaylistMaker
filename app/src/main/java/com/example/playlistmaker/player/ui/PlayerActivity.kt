@@ -29,7 +29,6 @@ class PlayerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
 
-        android.util.Log.d("PlayerActivity", "onCreate started")
         val track = intent.getParcelableExtra<Track>(EXTRA_TRACK) ?: run {
             android.util.Log.e("PlayerActivity", "No track found in intent")
             Toast.makeText(this, "Ошибка: трек не найден", Toast.LENGTH_SHORT).show()
@@ -37,15 +36,11 @@ class PlayerActivity : AppCompatActivity() {
             return
         }
         
-        android.util.Log.d("PlayerActivity", "Received track: ${track.trackName} by ${track.artistName}")
-
         val viewModelInstance: PlayerViewModel by viewModel { parametersOf(track) }
         viewModel = viewModelInstance
 
         setupViews()
         observeViewModel()
-        
-        android.util.Log.d("PlayerActivity", "onCreate completed successfully")
     }
 
     private fun setupViews() {

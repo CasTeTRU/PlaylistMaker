@@ -25,8 +25,9 @@
             android:paddingStart="12dp"
             android:paddingEnd="40dp"
             android:textSize="16sp"
-            android:textColor="@color/text_color"
-            android:textColorHint="@color/hint_text_color"
+            android:textColor="@color/search_text_color"
+            android:textColorHint="@color/search_hint_color"
+            android:textCursorDrawable="@drawable/cursor_color"
             android:maxLines="1"
             android:ellipsize="end"
             android:background="@android:color/transparent"
@@ -59,12 +60,20 @@
         android:gravity="center"
         android:visibility="visible" />
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="106dp"
+        android:indeterminateTint="@color/yp_blue"
+        android:visibility="gone" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginBottom="24dp"
         android:visibility="gone" />
 
     <Button

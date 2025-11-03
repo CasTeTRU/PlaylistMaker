@@ -43,11 +43,9 @@ class MainActivity : AppCompatActivity() {
         // Получаем текущую тему из SharedPreferences
         val prefs = getSharedPreferences("playlist_maker_storage", MODE_PRIVATE)
         val isDarkTheme = prefs.getBoolean("dark_theme", false)
-        android.util.Log.d("MainActivity", "Current theme from prefs: isDarkTheme = $isDarkTheme")
         
         // Применяем тему
         val mode = if (isDarkTheme) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
-        android.util.Log.d("MainActivity", "Setting initial night mode to: $mode")
         AppCompatDelegate.setDefaultNightMode(mode)
     }
 
@@ -79,7 +77,6 @@ class MainActivity : AppCompatActivity() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent?.action == ACTION_THEME_CHANGED) {
                 val isDarkTheme = intent.getBooleanExtra(EXTRA_IS_DARK_THEME, false)
-                android.util.Log.d("MainActivity", "Theme changed to dark: $isDarkTheme")
                 applyTheme(isDarkTheme)
                 // Обновляем UI без пересоздания активности
                 updateUIForTheme()
@@ -88,9 +85,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun applyTheme(isDarkTheme: Boolean) {
-        android.util.Log.d("MainActivity", "Applying theme: isDarkTheme = $isDarkTheme")
         val mode = if (isDarkTheme) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
-        android.util.Log.d("MainActivity", "Setting night mode to: $mode")
         AppCompatDelegate.setDefaultNightMode(mode)
     }
 
@@ -106,8 +101,6 @@ class MainActivity : AppCompatActivity() {
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val currentDestination = navHostFragment.navController.currentDestination
         updateScreenTitle(currentDestination?.label?.toString())
-        
-        android.util.Log.d("MainActivity", "UI updated for theme")
     }
 
     private fun updateBottomNavigationColors() {
@@ -120,7 +113,6 @@ class MainActivity : AppCompatActivity() {
     private fun updateScreenTitle(title: String?) {
         title?.let {
             binding.screenTitle.text = it
-            android.util.Log.d("MainActivity", "Screen title updated to: $it")
         }
     }
 

@@ -29,15 +29,8 @@ class SearchViewModel(
     private var searchJob: Job? = null
 
     init {
-        android.util.Log.d("SearchViewModel", "ViewModel initialized, calling showHistoryIfAvailable")
-        // Добавляем тестовую историю, если её нет (временно для демонстрации)
-        val currentHistory = searchHistoryInteractor.getHistory()
-        if (currentHistory.isEmpty()) {
-            android.util.Log.d("SearchViewModel", "No history found, adding test history")
-            addTestHistory()
-        } else {
-            showHistoryIfAvailable()
-        }
+        // При инициализации не добавляем тестовые данные — только отображаем историю, если она есть
+        showHistoryIfAvailable()
     }
 
     fun searchTracks(query: String) {
@@ -51,13 +44,12 @@ class SearchViewModel(
             _state.value = SearchState.Loading
 
             try {
-                android.util.Log.d("SearchViewModel", "Searching for: $query")
-                val tracks = searchTracksInteractor.searchTracks(query)
-                android.util.Log.d("SearchViewModel", "Found ${tracks.size} tracks")
-                if (tracks.isNotEmpty()) {
-                    _state.value = SearchState.Content(tracks.map { it.toDto() })
-                } else {
-                    _state.value = SearchState.Empty
+                searchTracksInteractor.searchTracks(query).collect { tracks ->
+                    if (tracks.isNotEmpty()) {
+                        _state.value = SearchState.Content(tracks.map { it.toDto() })
+                    } else {
+                        _state.value = SearchState.Empty
+                    }
                 }
             } catch (e: Exception) {
                 android.util.Log.e("SearchViewModel", "Error searching tracks", e)
@@ -91,12 +83,9 @@ class SearchViewModel(
 
     fun showHistoryIfAvailable() {
         val history = searchHistoryInteractor.getHistory().map { it.toDto() }
-        android.util.Log.d("SearchViewModel", "showHistoryIfAvailable called, history size: ${history.size}")
         if (history.isNotEmpty()) {
-            android.util.Log.d("SearchViewModel", "Setting state to History with ${history.size} tracks")
             _state.value = SearchState.History(history)
         } else {
-            android.util.Log.d("SearchViewModel", "Setting state to Initial - no history")
             _state.value = SearchState.Initial
         }
     }

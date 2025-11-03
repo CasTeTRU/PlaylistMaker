@@ -15,14 +15,11 @@ class SearchHistoryRepositoryImpl(private val prefs: SharedPreferences) : Search
 
     override fun getHistory(): List<TrackDomainModel> {
         val json = prefs.getString(key, null)
-        android.util.Log.d("SearchHistoryRepository", "getHistory called, json: $json")
         return if (json != null) {
             val type = object : TypeToken<List<Track>>() {}.type
             val tracks: List<Track> = gson.fromJson(json, type)
-            android.util.Log.d("SearchHistoryRepository", "Parsed ${tracks.size} tracks from history")
             tracks.map { it.toDomain() }
         } else {
-            android.util.Log.d("SearchHistoryRepository", "No history found in SharedPreferences")
             emptyList()
         }
     }
@@ -34,12 +31,10 @@ class SearchHistoryRepositoryImpl(private val prefs: SharedPreferences) : Search
         val maxSize = 10
         val trimmed = if (history.size > maxSize) history.take(maxSize) else history
         val json = gson.toJson(trimmed.map { track: TrackDomainModel -> track.toDto() })
-        android.util.Log.d("SearchHistoryRepository", "Saving track to history: ${track.trackName}, total history size: ${trimmed.size}")
         prefs.edit().putString(key, json).apply()
     }
 
     override fun clearHistory() {
-        android.util.Log.d("SearchHistoryRepository", "Clearing history")
         prefs.edit().remove(key).apply()
     }
 } 

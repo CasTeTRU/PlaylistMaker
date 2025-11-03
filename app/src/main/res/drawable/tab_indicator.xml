@@ -2,7 +2,8 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:gravity="center">
         <shape android:shape="rectangle">
-            <size android:width="148dp" />
+            <size android:width="148dp"
+                android:height="2dp" />
             <solid android:color="@color/tab_indicator" />
         </shape>
     </item>
