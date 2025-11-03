@@ -77,8 +77,9 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="titleTextColor">@color/yp_black</item>
         <item name="navigationIconTint">@color/yp_black</item>
-        <item name="contentInsetStart">16dp</item>
-        <item name="contentInsetStartWithNavigation">16dp</item>
+        <item name="contentInsetStart">0dp</item>
+        <item name="contentInsetStartWithNavigation">0dp</item>
+        <item name="titleMarginStart">100dp</item>
         <item name="titleTextAppearance">@style/ToolbarTitleTextAppearance</item>
     </style>
 

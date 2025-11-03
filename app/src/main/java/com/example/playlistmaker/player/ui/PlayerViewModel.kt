@@ -1,28 +1,27 @@
 package com.example.playlistmaker.player.ui
 
+import android.media.MediaPlayer
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.search.domain.Track
-import com.example.playlistmaker.player.domain.PlayerInteractor
-import kotlinx.coroutines.Job
+import com.example.playlistmaker.search.domain.db.FavoriteInteractor
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class PlayerViewModel(
-    private val playerInteractor: PlayerInteractor,
-    track: Track
+    private val track: Track,
+    private val mediaPlayer: MediaPlayer,
+    private val favoritesInteractor: FavoriteInteractor
 ) : ViewModel() {
 
-    companion object {
-        private const val UPDATE_TIME_DELAY_MS = 300L
-    }
+    companion object { private const val UPDATE_TIME_DELAY_MS = 300L }
 
     private val _state = MutableLiveData<PlayerState>()
     val state: LiveData<PlayerState> get() = _state
-
-    private var updateTimeJob: Job? = null
 
     init {
         _state.value = PlayerState(track = track)
@@ -31,76 +30,73 @@ class PlayerViewModel(
 
     private fun preparePlayer(url: String?) {
         _state.value = _state.value?.copy(isLoading = true)
-        
-        playerInteractor.preparePlayer(
-            url = url,
-            onPrepared = {
-                _state.value = _state.value?.copy(isLoading = false)
-            },
-            onCompletion = {
-                stopPlayer()
+        url?.let {
+            mediaPlayer.setDataSource(it)
+            mediaPlayer.prepareAsync()
+            mediaPlayer.setOnPreparedListener {
+                _state.postValue(_state.value?.copy(isLoading = false))
             }
-        )
+            mediaPlayer.setOnCompletionListener {
+                _state.postValue(_state.value?.copy(isPlaying = false, currentPosition = 0))
+            }
+        }
     }
 
     fun playbackControl() {
         val currentState = _state.value ?: return
-        
-        if (currentState.isPlaying) {
-            pausePlayer()
-        } else {
-            startPlayer()
-        }
+        if (currentState.isPlaying) pausePlayer() else startPlayer()
     }
 
     private fun startPlayer() {
-        playerInteractor.startPlayer()
         _state.value = _state.value?.copy(isPlaying = true)
-        startUpdateTime()
+        mediaPlayer.start()
+        updateTimer()
     }
 
     private fun pausePlayer() {
-        playerInteractor.pausePlayer()
         _state.value = _state.value?.copy(isPlaying = false)
-        stopUpdateTime()
+        mediaPlayer.pause()
     }
 
     private fun stopPlayer() {
-        playerInteractor.stopPlayer()
-        _state.value = _state.value?.copy(
-            isPlaying = false,
-            currentPosition = 0
-        )
-        stopUpdateTime()
+        _state.value = _state.value?.copy(isPlaying = false, currentPosition = 0)
+        mediaPlayer.stop()
+        mediaPlayer.reset()
     }
 
-    fun onPause() {
-        if (_state.value?.isPlaying == true) {
-            pausePlayer()
-        }
-    }
+    fun onPause() { if (_state.value?.isPlaying == true) pausePlayer() }
 
-    fun onStop() {
-        stopPlayer()
-    }
+    fun onStop() { stopPlayer() }
 
-    private fun startUpdateTime() {
-        updateTimeJob = viewModelScope.launch {
-            while (_state.value?.isPlaying == true) {
-                val position = playerInteractor.getCurrentPosition()
-                _state.value = _state.value?.copy(currentPosition = position)
+    private fun updateTimer() {
+        viewModelScope.launch {
+            while (mediaPlayer.isPlaying) {
                 delay(UPDATE_TIME_DELAY_MS)
+                val pos = mediaPlayer.currentPosition.toLong()
+                _state.postValue(_state.value?.copy(currentPosition = pos))
             }
         }
     }
 
-    private fun stopUpdateTime() {
-        updateTimeJob?.cancel()
+    private fun getCurrentPlayerPosition(): String {
+        return SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
+    }
+
+    fun onFavoriteClicked(track: Track) {
+        viewModelScope.launch {
+            if (!track.isFavorite) {
+                favoritesInteractor.addTrack(track)
+                track.isFavorite = true
+            } else {
+                favoritesInteractor.removeTrack(track)
+                track.isFavorite = false
+            }
+            _state.postValue(_state.value?.copy())
+        }
     }
 
     override fun onCleared() {
         super.onCleared()
-        playerInteractor.releasePlayer()
-        stopUpdateTime()
+        mediaPlayer.release()
     }
 }

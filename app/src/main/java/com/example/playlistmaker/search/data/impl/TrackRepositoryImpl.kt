@@ -1,10 +1,10 @@
-package com.example.playlistmaker.search.data
+package com.example.playlistmaker.search.data.impl
 
 import android.util.Log
-import com.example.playlistmaker.search.domain.TrackRepository
-import com.example.playlistmaker.search.domain.Track
-import com.example.playlistmaker.search.domain.TrackDomainModel
+import com.example.playlistmaker.search.data.ItunesApiService
 import com.example.playlistmaker.search.data.toDomain
+import com.example.playlistmaker.search.domain.TrackDomainModel
+import com.example.playlistmaker.search.domain.TrackRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -23,4 +23,4 @@ class TrackRepositoryImpl(private val apiService: ItunesApiService) : TrackRepos
             emit(emptyList())
         }
     }
-} 
+}

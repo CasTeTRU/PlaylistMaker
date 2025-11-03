@@ -16,13 +16,12 @@
         android:gravity="center_vertical"
         android:padding="16dp"
         android:background="@color/settings_item_background"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
+
         android:layout_marginTop="16dp"
         android:fontFamily="@font/ys_display_regular">
 
         <TextView
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/night_theme"
@@ -47,8 +46,6 @@
         style="@style/ButtonStyle"
         android:layout_width="match_parent"
         android:layout_height="61dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
         android:layout_marginTop="16dp"
         android:backgroundTint="@color/button_background"
         android:stateListAnimator="@null"
@@ -70,8 +67,6 @@
         style="@style/ButtonStyle"
         android:layout_width="match_parent"
         android:layout_height="61dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
         android:layout_marginTop="16dp"
         android:backgroundTint="@color/button_background"
         android:stateListAnimator="@null"
@@ -93,8 +88,8 @@
         style="@style/ButtonStyle"
         android:layout_width="match_parent"
         android:layout_height="61dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
+
+
         android:layout_marginTop="16dp"
         android:backgroundTint="@color/button_background"
         android:stateListAnimator="@null"

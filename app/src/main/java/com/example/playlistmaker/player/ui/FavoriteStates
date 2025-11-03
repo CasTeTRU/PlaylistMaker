@@ -1,0 +1,6 @@
+package com.example.playlistmaker.player.ui
+
+data class PlayerData(
+    val playerState: PlayerStates,
+    val timer: String,
+    val isFavorite: Boolean)

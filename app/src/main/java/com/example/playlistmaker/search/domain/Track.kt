@@ -13,7 +13,8 @@ data class Track(
     val releaseDate: String? = null,
     val primaryGenreName: String? = null,
     val country: String? = null,
-    val previewUrl: String? = null
+    val previewUrl: String? = null,
+    var isFavorite: Boolean = false
 ) : Parcelable {
 
     val formattedTrackTime: String
