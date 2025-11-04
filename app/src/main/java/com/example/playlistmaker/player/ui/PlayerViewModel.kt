@@ -91,13 +91,17 @@ class PlayerViewModel(
 
     private fun startPlayer() {
         try {
-            if (isPlayerPrepared && !mediaPlayer.isPlaying) {
-                _state.value = _state.value?.copy(isPlaying = true)
-                mediaPlayer.start()
-                android.util.Log.d("PlayerViewModel", "MediaPlayer started")
+            if (isPlayerPrepared) {
+                if (!mediaPlayer.isPlaying) {
+                    mediaPlayer.start()
+                    android.util.Log.d("PlayerViewModel", "MediaPlayer.start() called, isPlaying=${mediaPlayer.isPlaying}")
+                }
+                val currentState = _state.value
+                _state.postValue(currentState?.copy(isPlaying = true))
+                android.util.Log.d("PlayerViewModel", "State updated: isPlaying=true")
                 updateTimer()
             } else {
-                android.util.Log.w("PlayerViewModel", "Cannot start: prepared=$isPlayerPrepared, isPlaying=${mediaPlayer.isPlaying}")
+                android.util.Log.w("PlayerViewModel", "Cannot start: player not prepared")
             }
         } catch (e: Exception) {
             android.util.Log.e("PlayerViewModel", "Error starting player", e)
@@ -106,14 +110,25 @@ class PlayerViewModel(
     }
 
     private fun pausePlayer() {
-        _state.value = _state.value?.copy(isPlaying = false)
-        mediaPlayer.pause()
+        try {
+            mediaPlayer.pause()
+            val currentState = _state.value
+            _state.postValue(currentState?.copy(isPlaying = false))
+            android.util.Log.d("PlayerViewModel", "MediaPlayer paused")
+        } catch (e: Exception) {
+            android.util.Log.e("PlayerViewModel", "Error pausing player", e)
+        }
     }
 
     private fun stopPlayer() {
-        _state.value = _state.value?.copy(isPlaying = false, currentPosition = 0)
-        mediaPlayer.stop()
-        mediaPlayer.reset()
+        try {
+            mediaPlayer.stop()
+            mediaPlayer.reset()
+            val currentState = _state.value
+            _state.postValue(currentState?.copy(isPlaying = false, currentPosition = 0))
+        } catch (e: Exception) {
+            android.util.Log.e("PlayerViewModel", "Error stopping player", e)
+        }
     }
 
     fun onPause() { if (_state.value?.isPlaying == true) pausePlayer() }
@@ -122,10 +137,21 @@ class PlayerViewModel(
 
     private fun updateTimer() {
         viewModelScope.launch {
-            while (mediaPlayer.isPlaying) {
+            while (true) {
                 delay(UPDATE_TIME_DELAY_MS)
-                val pos = mediaPlayer.currentPosition.toLong()
-                _state.postValue(_state.value?.copy(currentPosition = pos))
+                val isPlaying = mediaPlayer.isPlaying
+                val currentState = _state.value
+                
+                if (isPlaying) {
+                    val pos = mediaPlayer.currentPosition.toLong()
+                    _state.postValue(currentState?.copy(isPlaying = true, currentPosition = pos))
+                } else {
+                    // Если MediaPlayer перестал играть, обновляем состояние
+                    if (currentState?.isPlaying == true) {
+                        _state.postValue(currentState.copy(isPlaying = false))
+                    }
+                    break
+                }
             }
         }
     }

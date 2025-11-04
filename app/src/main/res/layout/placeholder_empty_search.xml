@@ -24,9 +24,13 @@
         android:id="@+id/placeholderImage"
         android:layout_width="120dp"
         android:layout_height="120dp"
-        android:layout_marginTop="106dp"
-        android:layout_marginHorizontal="120dp"
-        android:src="@drawable/ic_nothing_found" />
+        android:src="@drawable/ic_nothing_found"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_bias="0.4"
+        android:contentDescription="@string/nothing_found" />
 
     <TextView
         android:id="@+id/placeholderText"
@@ -37,5 +41,8 @@
         android:textColor="@color/button_text_color"
         android:layout_marginTop="16dp"
         android:fontFamily="@font/ys_display_medium"
-        android:gravity="center"/>
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/placeholderImage"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
