@@ -61,10 +61,6 @@ class SearchHistoryRepositoryImpl(
         return gson.fromJson(json, trackType)
     }
 
-    private fun createJsonFromTracksList(tracks: MutableList<Track>): String {
-        return gson.toJson(tracks)
-    }
-
     private fun createJsonFromTrack(track: Track): String {
         return gson.toJson(track)
     }
@@ -75,13 +71,4 @@ class SearchHistoryRepositoryImpl(
         }
     }
 
-    fun getTrack(): Track? {
-        val trackString = prefs.getString(SEARCH_HISTORY_KEY, null)
-        return trackString?.let { createTracksFromJson(it) }
-    }
-
-    fun getTrackList(): MutableList<Track>? {
-        val tracksH = prefs.getString(SEARCH_HISTORY_LIST_KEY, null)
-        return tracksH?.let { createTracksListFromJson(it) }
-    }
 }

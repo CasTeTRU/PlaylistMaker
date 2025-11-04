@@ -9,8 +9,6 @@ import com.example.playlistmaker.search.domain.Track
 import com.example.playlistmaker.search.domain.db.FavoriteInteractor
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 class PlayerViewModel(
     private val track: Track,
@@ -154,10 +152,6 @@ class PlayerViewModel(
                 }
             }
         }
-    }
-
-    private fun getCurrentPlayerPosition(): String {
-        return SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
     }
 
     fun onFavoriteClicked() {

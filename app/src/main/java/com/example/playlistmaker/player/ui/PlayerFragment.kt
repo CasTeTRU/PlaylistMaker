@@ -6,14 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.databinding.FragmentPlayerBinding
 import com.example.playlistmaker.search.domain.Track
-import android.widget.Toast
-import androidx.appcompat.content.res.AppCompatResources.getDrawable
-import androidx.core.os.bundleOf
-import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.example.playlistmaker.R
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -65,11 +60,11 @@ class PlayerFragment : Fragment() {
         }
 
         binding.btnPrevious.setOnClickListener {
-            // TODO: Реализовать предыдущий трек
+
         }
 
         binding.btnNext.setOnClickListener {
-            // TODO: Реализовать следующий трек
+
         }
 
         binding.btnLike.setOnClickListener {
@@ -77,7 +72,7 @@ class PlayerFragment : Fragment() {
         }
 
         binding.btnShare.setOnClickListener {
-            // TODO: Реализовать шаринг
+
         }
     }
 
@@ -105,7 +100,7 @@ class PlayerFragment : Fragment() {
 
 
     private fun bind(item: Track) {
-        val formatter = SimpleDateFormat("mm:ss", Locale.getDefault())
+        SimpleDateFormat("mm:ss", Locale.getDefault())
         // Загрузка обложки с Glide
         item.getCoverArtwork()?.let { coverUrl ->
             Glide.with(this)
@@ -124,10 +119,6 @@ class PlayerFragment : Fragment() {
         }
     }
 
-
-    private fun likeCheck(item: Boolean) {
-        binding.btnLike.setImageResource(if (item) R.drawable.ic_favourite_checked else R.drawable.ic_like_off)
-    }
 
     override fun onPause() {
         super.onPause()
@@ -152,7 +143,5 @@ class PlayerFragment : Fragment() {
 
         private const val ARGS_TRACK = "chosen_Track_Key"
 
-        fun createArgs(chosenTrack: String): Bundle =
-            bundleOf(ARGS_TRACK to chosenTrack)
     }
 }

@@ -27,8 +27,6 @@ import org.koin.dsl.module
 val repositoryModule = module {
 
     factory { TrackDbConverter() }
-
-    // MediaPlayer для плеера
     factory { MediaPlayer() }
 
     // SharedPreferences для хранения настроек

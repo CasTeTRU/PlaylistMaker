@@ -20,6 +20,7 @@
     <color name="yp_white">#FFFFFF</color>
     <color name="yp_light_grey">#E6E8EB</color>
     <color name="yp_text_grey">#AEAFB4</color>
+    <color name="yp_red">#F56B6C</color>
     <color name="switch_thumb">#FFFFFF</color>
     <color name="switch_track">#E0E0E0</color>
     <color name="switch_thumb_color">#AEAFB4</color>

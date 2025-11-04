@@ -1,13 +1,10 @@
 package com.example.playlistmaker.search.ui
 
-import android.content.Context.INPUT_METHOD_SERVICE
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import android.content.Intent
@@ -15,7 +12,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.playlistmaker.databinding.FragmentSearchBinding
 import com.example.playlistmaker.player.ui.PlayerActivity
 import com.example.playlistmaker.search.domain.Track
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchFragment : Fragment() {
@@ -31,7 +27,6 @@ class SearchFragment : Fragment() {
         startActivity(intent)
     }
 
-    private var textWatcher: android.text.TextWatcher? = null
     private var inputValue: String = INPUT_DEF
 
     companion object {
@@ -231,29 +226,4 @@ class SearchFragment : Fragment() {
     }
 
 
-    private fun historyActions(track: Track) {
-        fun removeAt(position: Int) {
-            // no-op
-        }
-
-        fun showToast(text: String?) {
-            Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT).show()
-        }
-
-        fun hideKeyboard() {
-            val inputMethodManager =
-                requireActivity().getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
-            inputMethodManager?.hideSoftInputFromWindow(binding.searchView.windowToken, 0)
-        }
-
-        fun onResume() {
-            super.onResume()
-        }
-
-        fun onDestroyView() {
-            super.onDestroyView()
-            textWatcher?.let { binding.searchView.removeTextChangedListener(it) }
-            _binding = null
-        }
-    }
 }
