@@ -73,14 +73,7 @@ class PlayerFragment : Fragment() {
         }
 
         binding.btnLike.setOnClickListener {
-            getTrackFromArguments()?.let { track ->
-                viewModel.onFavoriteClicked(track)
-                Toast.makeText(
-                    context,
-                    if (track.isFavorite) R.string.add_to_favorite else R.string.remove_from_favorite,
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+            viewModel.onFavoriteClicked()
         }
 
         binding.btnShare.setOnClickListener {
@@ -99,6 +92,11 @@ class PlayerFragment : Fragment() {
                 btnPlayPause.setImageResource(
                     if (state.isPlaying) android.R.drawable.ic_media_pause
                     else android.R.drawable.ic_media_play
+                )
+                
+                btnLike.setImageResource(
+                    if (state.track.isFavorite) R.drawable.ic_favourite_checked 
+                    else R.drawable.ic_like_off
                 )
             }
         }

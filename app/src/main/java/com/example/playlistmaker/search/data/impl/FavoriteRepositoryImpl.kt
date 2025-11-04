@@ -9,7 +9,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class FavoriteRepositoryImpl(
@@ -32,9 +32,14 @@ class FavoriteRepositoryImpl(
         }
     }
 
-    override fun getFavorites(): Flow<List<Track>> = flow {
-        val tracks = appDatabase.trackDao().getTracks()
-        emit(convertFromTrackEntity(tracks))
+    override fun getFavorites(): Flow<List<Track>> {
+        return appDatabase.trackDao().getTracks()
+            .map { tracks -> convertFromTrackEntity(tracks) }
+    }
+
+    override suspend fun isTrackFavorite(trackId: String): Boolean {
+        val trackIds = appDatabase.trackDao().getTracksId()
+        return trackIds.contains(trackId)
     }
 
     private fun convertFromTrackEntity(tracks: List<TrackEntity>): List<Track> {

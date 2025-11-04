@@ -31,7 +31,8 @@ class TrackDbConverter {
             track.releaseDate,
             track.primaryGenreName,
             track.country,
-            track.previewUrl
+            track.previewUrl,
+            isFavorite = true // Треки из базы данных всегда избранные
         )
     }
 

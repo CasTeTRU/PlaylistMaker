@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.example.playlistmaker.player.domain.PlayerInteractor
 import com.example.playlistmaker.player.domain.PlayerInteractorImpl
+import android.media.MediaPlayer
 import com.example.playlistmaker.search.data.impl.SearchHistoryRepositoryImpl
 import com.example.playlistmaker.search.data.TrackDbConverter
 import com.example.playlistmaker.search.domain.SearchHistoryInteractor
@@ -26,6 +27,9 @@ import org.koin.dsl.module
 val repositoryModule = module {
 
     factory { TrackDbConverter() }
+
+    // MediaPlayer для плеера
+    factory { MediaPlayer() }
 
     // SharedPreferences для хранения настроек
     single<SharedPreferences> { 

@@ -20,4 +20,8 @@ class FavoriteInteractorImpl(private val favoriteRepository: FavoriteRepository)
     override fun removeTrack(track: Track) {
         favoriteRepository.removeTrack(track)
     }
+    
+    override suspend fun isTrackFavorite(trackId: String): Boolean {
+        return favoriteRepository.isTrackFavorite(trackId)
+    }
 }

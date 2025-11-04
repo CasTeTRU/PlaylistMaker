@@ -10,13 +10,11 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
+import android.content.Intent
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentSearchBinding
+import com.example.playlistmaker.player.ui.PlayerActivity
 import com.example.playlistmaker.search.domain.Track
-import com.example.playlistmaker.player.ui.PlayerFragment
-import com.google.android.material.internal.ViewUtils.hideKeyboard
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -27,8 +25,10 @@ class SearchFragment : Fragment() {
 
     private val viewModel: SearchViewModel by viewModel()
     private val trackAdapter = TrackAdapter { track ->
-        val args = Bundle().apply { putParcelable("track", track) }
-        findNavController().navigate(R.id.playerFragment, args)
+        val intent = Intent(requireContext(), PlayerActivity::class.java).apply {
+            putExtra(PlayerActivity.EXTRA_TRACK, track)
+        }
+        startActivity(intent)
     }
 
     private var textWatcher: android.text.TextWatcher? = null

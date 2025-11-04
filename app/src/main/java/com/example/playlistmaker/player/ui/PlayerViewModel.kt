@@ -22,35 +22,87 @@ class PlayerViewModel(
 
     private val _state = MutableLiveData<PlayerState>()
     val state: LiveData<PlayerState> get() = _state
+    
+    private var isPlayerPrepared = false
+    private var shouldStartWhenPrepared = false
 
     init {
-        _state.value = PlayerState(track = track)
-        preparePlayer(track.previewUrl)
+        viewModelScope.launch {
+            val isFavorite = favoritesInteractor.isTrackFavorite(track.trackId)
+            val trackWithFavoriteStatus = track.copy(isFavorite = isFavorite)
+            _state.value = PlayerState(track = trackWithFavoriteStatus)
+            preparePlayer(track.previewUrl)
+        }
     }
 
     private fun preparePlayer(url: String?) {
         _state.value = _state.value?.copy(isLoading = true)
+        isPlayerPrepared = false
         url?.let {
-            mediaPlayer.setDataSource(it)
-            mediaPlayer.prepareAsync()
-            mediaPlayer.setOnPreparedListener {
-                _state.postValue(_state.value?.copy(isLoading = false))
+            try {
+                mediaPlayer.reset()
+                mediaPlayer.setDataSource(it)
+                mediaPlayer.setOnPreparedListener { mp ->
+                    isPlayerPrepared = true
+                    _state.postValue(_state.value?.copy(isLoading = false))
+                    android.util.Log.d("PlayerViewModel", "MediaPlayer prepared, shouldStart=$shouldStartWhenPrepared")
+                    if (shouldStartWhenPrepared) {
+                        shouldStartWhenPrepared = false
+                        startPlayer()
+                    }
+                }
+                mediaPlayer.setOnErrorListener { _, what, extra ->
+                    android.util.Log.e("PlayerViewModel", "MediaPlayer error: what=$what, extra=$extra")
+                    isPlayerPrepared = false
+                    shouldStartWhenPrepared = false
+                    _state.postValue(_state.value?.copy(isLoading = false, errorMessage = "Ошибка воспроизведения"))
+                    false
+                }
+                mediaPlayer.setOnCompletionListener {
+                    _state.postValue(_state.value?.copy(isPlaying = false, currentPosition = 0))
+                }
+                mediaPlayer.prepareAsync()
+                android.util.Log.d("PlayerViewModel", "Started preparing MediaPlayer with URL: $it")
+            } catch (e: Exception) {
+                android.util.Log.e("PlayerViewModel", "Error preparing player", e)
+                isPlayerPrepared = false
+                shouldStartWhenPrepared = false
+                _state.postValue(_state.value?.copy(isLoading = false, errorMessage = "Ошибка загрузки: ${e.message}"))
             }
-            mediaPlayer.setOnCompletionListener {
-                _state.postValue(_state.value?.copy(isPlaying = false, currentPosition = 0))
-            }
+        } ?: run {
+            android.util.Log.e("PlayerViewModel", "Preview URL is null")
+            _state.postValue(_state.value?.copy(isLoading = false, errorMessage = "URL трека недоступен"))
         }
     }
 
     fun playbackControl() {
         val currentState = _state.value ?: return
-        if (currentState.isPlaying) pausePlayer() else startPlayer()
+        if (currentState.isPlaying) {
+            pausePlayer()
+        } else {
+            if (isPlayerPrepared) {
+                startPlayer()
+            } else {
+                android.util.Log.d("PlayerViewModel", "Player not ready yet, will start when prepared")
+                shouldStartWhenPrepared = true
+            }
+        }
     }
 
     private fun startPlayer() {
-        _state.value = _state.value?.copy(isPlaying = true)
-        mediaPlayer.start()
-        updateTimer()
+        try {
+            if (isPlayerPrepared && !mediaPlayer.isPlaying) {
+                _state.value = _state.value?.copy(isPlaying = true)
+                mediaPlayer.start()
+                android.util.Log.d("PlayerViewModel", "MediaPlayer started")
+                updateTimer()
+            } else {
+                android.util.Log.w("PlayerViewModel", "Cannot start: prepared=$isPlayerPrepared, isPlaying=${mediaPlayer.isPlaying}")
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("PlayerViewModel", "Error starting player", e)
+            _state.postValue(_state.value?.copy(isPlaying = false, errorMessage = "Ошибка воспроизведения: ${e.message}"))
+        }
     }
 
     private fun pausePlayer() {
@@ -82,16 +134,19 @@ class PlayerViewModel(
         return SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
     }
 
-    fun onFavoriteClicked(track: Track) {
+    fun onFavoriteClicked() {
         viewModelScope.launch {
-            if (!track.isFavorite) {
-                favoritesInteractor.addTrack(track)
-                track.isFavorite = true
+            val currentState = _state.value ?: return@launch
+            val track = currentState.track
+            val updatedTrack = track.copy(isFavorite = !track.isFavorite)
+            
+            if (updatedTrack.isFavorite) {
+                favoritesInteractor.addTrack(updatedTrack)
             } else {
-                favoritesInteractor.removeTrack(track)
-                track.isFavorite = false
+                favoritesInteractor.removeTrack(updatedTrack)
             }
-            _state.postValue(_state.value?.copy())
+            
+            _state.postValue(currentState.copy(track = updatedTrack))
         }
     }
 

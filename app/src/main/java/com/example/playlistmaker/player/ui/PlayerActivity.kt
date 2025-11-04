@@ -54,6 +54,10 @@ class PlayerActivity : AppCompatActivity() {
         playButton.setOnClickListener {
             viewModel.playbackControl()
         }
+
+        findViewById<ImageView>(R.id.favoriteButton).setOnClickListener {
+            viewModel.onFavoriteClicked()
+        }
     }
 
     private fun observeViewModel() {
@@ -62,7 +66,18 @@ class PlayerActivity : AppCompatActivity() {
             setupTrackInfo(state.track)
             updatePlayButton(state.isPlaying)
             updateCurrentTime(state.currentPosition)
+            updateFavoriteButton(state.track.isFavorite)
         }
+    }
+    
+    private fun updateFavoriteButton(isFavorite: Boolean) {
+        val favoriteButton = findViewById<ImageView>(R.id.favoriteButton)
+        val iconRes = if (isFavorite) {
+            R.drawable.ic_favourite_checked
+        } else {
+            R.drawable.ic_like_off
+        }
+        favoriteButton.setImageResource(iconRes)
     }
 
     private fun setupCoverArt(track: Track) {

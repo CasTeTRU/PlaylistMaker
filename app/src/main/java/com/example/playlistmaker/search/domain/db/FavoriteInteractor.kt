@@ -10,6 +10,7 @@ interface FavoriteInteractor {
     fun addTrack(track: Track)
 
     fun removeTrack(track: Track)
-
+    
+    suspend fun isTrackFavorite(trackId: String): Boolean
 
 }
