@@ -7,6 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.library.ui.FavoriteStates
 import com.example.playlistmaker.search.domain.db.FavoriteInteractor
 import com.example.playlistmaker.search.domain.Track
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class FavoriteViewModel(private val favoritesInteractor: FavoriteInteractor
@@ -44,9 +46,10 @@ class FavoriteViewModel(private val favoritesInteractor: FavoriteInteractor
         viewModelScope.launch {
             favoritesInteractor
                 .favoriteTracks()
-                .collect { tracks ->
+                .onEach { tracks ->
                     processResult(tracks)
                 }
+                .launchIn(viewModelScope)
         }
     }
 }

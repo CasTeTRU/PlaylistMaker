@@ -9,6 +9,7 @@ import com.example.playlistmaker.search.domain.Track
 import com.example.playlistmaker.search.domain.db.FavoriteInteractor
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Job
 
 class PlayerViewModel(
     private val track: Track,
@@ -23,6 +24,7 @@ class PlayerViewModel(
     
     private var isPlayerPrepared = false
     private var shouldStartWhenPrepared = false
+    private var updateTimeJob: Job? = null
 
     init {
         viewModelScope.launch {
@@ -134,7 +136,8 @@ class PlayerViewModel(
     fun onStop() { stopPlayer() }
 
     private fun updateTimer() {
-        viewModelScope.launch {
+        updateTimeJob?.cancel()
+        updateTimeJob = viewModelScope.launch {
             while (true) {
                 delay(UPDATE_TIME_DELAY_MS)
                 val isPlaying = mediaPlayer.isPlaying
@@ -172,6 +175,7 @@ class PlayerViewModel(
 
     override fun onCleared() {
         super.onCleared()
+        updateTimeJob?.cancel()
         mediaPlayer.release()
     }
 }
