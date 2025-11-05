@@ -11,6 +11,8 @@ import com.example.playlistmaker.settings.domain.SettingsInteractorImpl
 import com.example.playlistmaker.settings.domain.ThemeInteractor
 import com.example.playlistmaker.settings.domain.ThemeInteractorImpl
 import org.koin.dsl.module
+import com.example.playlistmaker.search.domain.db.FavoriteInteractor
+import com.example.playlistmaker.search.domain.impl.FavoriteInteractorImpl
 
 val interactorModule = module {
 
@@ -34,4 +36,7 @@ val interactorModule = module {
         PlayerInteractorImpl()
     }
 
+    single<FavoriteInteractor>{
+        FavoriteInteractorImpl(get())
+    }
 }

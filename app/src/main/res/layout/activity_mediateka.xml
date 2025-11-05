@@ -11,6 +11,7 @@
         android:id="@+id/toolBar"
         style="@style/ToolbarTitle"
         android:layout_marginTop="14dp"
+        android:paddingStart="100dp"
         app:title="@string/library" />
 
     <com.google.android.material.tabs.TabLayout

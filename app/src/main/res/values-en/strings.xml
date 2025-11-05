@@ -42,4 +42,6 @@
     <string name="new_playlist">New playlist</string>
     <string name="mediateka_empty">Your mediateka is empty</string>
     <string name="playlist_not_yet_created">You haven\'t created any playlists yet</string>
+    <string name="add_to_favorite">Added to favourite</string>
+    <string name="remove_from_favorite">Deleted from favourite</string>
 </resources>

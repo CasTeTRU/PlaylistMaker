@@ -4,7 +4,9 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.example.playlistmaker.player.domain.PlayerInteractor
 import com.example.playlistmaker.player.domain.PlayerInteractorImpl
-import com.example.playlistmaker.search.data.SearchHistoryRepositoryImpl
+import android.media.MediaPlayer
+import com.example.playlistmaker.search.data.impl.SearchHistoryRepositoryImpl
+import com.example.playlistmaker.search.data.TrackDbConverter
 import com.example.playlistmaker.search.domain.SearchHistoryInteractor
 import com.example.playlistmaker.search.domain.SearchHistoryInteractorImpl
 import com.example.playlistmaker.search.domain.SearchHistoryRepository
@@ -19,13 +21,17 @@ import com.example.playlistmaker.settings.domain.ThemeInteractor
 import com.example.playlistmaker.settings.domain.ThemeInteractorImpl
 import com.example.playlistmaker.settings.domain.ThemeRepository
 import com.example.playlistmaker.settings.domain.ThemeRepositoryImpl
+import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 val repositoryModule = module {
 
+    factory { TrackDbConverter() }
+    factory { MediaPlayer() }
+
     // SharedPreferences для хранения настроек
     single<SharedPreferences> { 
-        get<Context>().getSharedPreferences("playlist_maker_storage", Context.MODE_PRIVATE) 
+        androidContext().getSharedPreferences("playlist_maker_storage", Context.MODE_PRIVATE) 
     }
 
     single<PlayerInteractor> { PlayerInteractorImpl() }

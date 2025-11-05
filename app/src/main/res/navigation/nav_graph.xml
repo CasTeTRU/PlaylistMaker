@@ -28,9 +28,12 @@
         android:name="com.example.playlistmaker.player.ui.PlayerFragment"
         android:label="Player"
         tools:layout="@layout/fragment_player">
+
         <argument
             android:name="track"
             app:argType="com.example.playlistmaker.search.domain.Track" />
+        <action
+            android:id="@+id/action_mediaFragment_to_playerFragment"
+            app:destination="@id/playerFragment" />
     </fragment>
-
 </navigation>

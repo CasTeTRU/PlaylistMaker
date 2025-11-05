@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.navigation.safe.args)
+    kotlin("kapt")
+    id("kotlin-parcelize")
 }
 
 android {
@@ -75,5 +77,7 @@ dependencies {
     // Koin
     implementation("io.insert-koin:koin-android:3.3.0")
 
-
+    implementation("androidx.room:room-runtime:2.6.0")
+    implementation("androidx.room:room-ktx:2.6.0")
+    kapt("androidx.room:room-compiler:2.6.0")
 }

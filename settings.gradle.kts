@@ -13,7 +13,7 @@ pluginManagement {
     plugins {
         kotlin("jvm") version "1.9.0"
         id("org.jetbrains.kotlin.android") version "1.9.0"
-        id("kotlin-kapt") version "1.9.0" 
+        id("kotlin-kapt") version "1.9.0"
     }
 }
 dependencyResolutionManagement {

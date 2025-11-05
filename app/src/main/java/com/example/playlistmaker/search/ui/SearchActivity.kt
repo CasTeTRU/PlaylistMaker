@@ -46,7 +46,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var progressBar: ProgressBar
 
     private var isClickAllowed = true
-    private val clickDebounceDelay = 1000L
+    private val CLICK_DEBOUNCE_DELAY = 1000L
     private var clickDebounceJob: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -92,7 +92,7 @@ class SearchActivity : AppCompatActivity() {
             viewModel.clearHistory()
         }
 
-        // Временная кнопка для добавления тестовой истории (для отладки)
+
         historyTitle.setOnLongClickListener {
             viewModel.addTestHistory()
             true
@@ -124,7 +124,7 @@ class SearchActivity : AppCompatActivity() {
                 if (query.isEmpty()) {
                     viewModel.showHistoryIfAvailable()
                 } else {
-                    // Скрываем кнопку очистить историю только когда пользователь вводит текст
+
                     if (isNetworkAvailable()) {
                         viewModel.searchWithDebounce(query)
                     }
@@ -183,7 +183,7 @@ class SearchActivity : AppCompatActivity() {
                     recyclerView.isVisible = false
                     progressBar.isVisible = false
                     showEmptyPlaceholder()
-                    // Управляем видимостью кнопки очистки в зависимости от наличия текста
+
                     val hasText = searchEditText.text.isNotEmpty()
                     clearButton.isVisible = hasText
                 }
@@ -194,7 +194,7 @@ class SearchActivity : AppCompatActivity() {
                     recyclerView.isVisible = false
                     progressBar.isVisible = false
                     showErrorPlaceholder()
-                    // Управляем видимостью кнопки очистки в зависимости от наличия текста
+
                     val hasText = searchEditText.text.isNotEmpty()
                     clearButton.isVisible = hasText
                 }
@@ -205,7 +205,7 @@ class SearchActivity : AppCompatActivity() {
                     recyclerView.isVisible = true
                     historyTitle.isVisible = true
                     clearHistoryButton.isVisible = true
-                    // Управляем видимостью кнопки очистки в зависимости от наличия текста
+
                     val hasText = searchEditText.text.isNotEmpty()
                     clearButton.isVisible = hasText
                 }
@@ -219,7 +219,7 @@ class SearchActivity : AppCompatActivity() {
             action()
             clickDebounceJob?.cancel()
             clickDebounceJob = lifecycleScope.launch {
-                delay(clickDebounceDelay)
+                delay(CLICK_DEBOUNCE_DELAY)
                 isClickAllowed = true
             }
         }

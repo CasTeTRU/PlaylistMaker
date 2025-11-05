@@ -29,10 +29,9 @@ class SearchViewModel(
     private var searchJob: Job? = null
 
     init {
-        // При инициализации не добавляем тестовые данные — только отображаем историю, если она есть
+
         showHistoryIfAvailable()
     }
-
     fun searchTracks(query: String) {
         if (query.isBlank()) {
             showHistoryIfAvailable()
@@ -63,7 +62,6 @@ class SearchViewModel(
             showHistoryIfAvailable()
             return
         }
-
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
             delay(SEARCH_DEBOUNCE_DELAY)
@@ -77,7 +75,7 @@ class SearchViewModel(
 
     fun clearHistory() {
         searchHistoryInteractor.clearHistory()
-        // После очистки истории проверяем, есть ли еще история
+
         showHistoryIfAvailable()
     }
 
@@ -94,7 +92,7 @@ class SearchViewModel(
         searchHistoryInteractor.saveTrack(track.toDomain())
     }
 
-    // Метод для добавления тестовой истории (временно для отладки)
+
     fun addTestHistory() {
         val testTrack = TrackDomainModel(
             trackId = "1",

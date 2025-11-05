@@ -8,4 +8,5 @@ data class PlayerState(
     val currentPosition: Long = 0,
     val isLoading: Boolean = false,
     val errorMessage: String? = null
+
 )

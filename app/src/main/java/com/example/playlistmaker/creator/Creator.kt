@@ -2,10 +2,10 @@ package com.example.playlistmaker.creator
 
 import android.content.Context
 import com.example.playlistmaker.search.data.NetworkClient
-import com.example.playlistmaker.search.data.SearchHistoryRepositoryImpl
+import com.example.playlistmaker.search.data.impl.SearchHistoryRepositoryImpl
 import com.example.playlistmaker.settings.data.SettingsRepositoryImpl
 import com.example.playlistmaker.settings.domain.ThemeRepositoryImpl
-import com.example.playlistmaker.search.data.TrackRepositoryImpl
+import com.example.playlistmaker.search.data.impl.TrackRepositoryImpl
 import com.example.playlistmaker.search.domain.SearchHistoryRepository
 import com.example.playlistmaker.settings.domain.SettingsRepository
 import com.example.playlistmaker.settings.domain.ThemeRepository

@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
         setupNavigation()
         setupThemeBroadcastReceiver()
         
-        // Устанавливаем начальный заголовок
+        // Устанавливаем начальный экран
         binding.screenTitle.text = getString(R.string.library)
     }
 

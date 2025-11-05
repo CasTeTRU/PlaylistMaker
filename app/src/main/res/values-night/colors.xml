@@ -53,5 +53,6 @@
     <color name="tab_selected_text">@color/yp_white</color>
     <color name="tab_unselected_text">@color/yp_white</color>
     
-    <color name="yp_text_grey">@color/yp_white</color>
+    <color name="yp_text_grey">#AEAFB4</color>
+    <color name="yp_red">#F56B6C</color>
 </resources>
