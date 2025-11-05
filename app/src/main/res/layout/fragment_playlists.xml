@@ -15,20 +15,38 @@
         style="@style/SearchButtons"
         android:text="@string/new_playlist"/>
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="46dp"
-        android:src="@drawable/ic_nothing_found"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/playlistsRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:layout_marginTop="16dp"
-        style="@style/LibraryInfoText"
-        android:textFontWeight="500"
-        android:text="@string/playlist_not_yet_created"/>
+        android:visibility="gone"
+        tools:listitem="@layout/item_playlist" />
+
+    <LinearLayout
+        android:id="@+id/emptyPlaceholder"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="46dp"
+            android:src="@drawable/ic_nothing_found"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            style="@style/LibraryInfoText"
+            android:textFontWeight="500"
+            android:text="@string/playlist_not_yet_created"/>
+
+    </LinearLayout>
 
 </LinearLayout>

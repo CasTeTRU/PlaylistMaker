@@ -4,16 +4,26 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.navigation.fragment.findNavController
+import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlaylistsBinding
+import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistsFragment : Fragment() {
 
     private var _binding: FragmentPlaylistsBinding? = null
     private val binding get() = _binding!!
     
-    private val viewModel: PlaylistsViewModel by viewModels()
+    private val viewModel: PlaylistsViewModel by viewModel()
+
+    private val playlistAdapter = PlaylistAdapter { playlist ->
+        // Переход на экран плейлиста пока не реализован
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,12 +43,34 @@ class PlaylistsFragment : Fragment() {
 
     private fun setupViews() {
         binding.newPlaylistBtn.setOnClickListener {
-
+            findNavController().navigate(R.id.action_libraryFragment_to_createPlaylistFragment)
         }
+
+        binding.playlistsRecyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
+        binding.playlistsRecyclerView.adapter = playlistAdapter
     }
 
     private fun observeViewModel() {
+        lifecycleScope.launch {
+            viewModel.playlistsFlow.collect { playlists ->
+                if (playlists.isEmpty()) {
+                    showEmpty()
+                } else {
+                    showContent(playlists)
+                }
+            }
+        }
+    }
 
+    private fun showContent(playlists: List<com.example.playlistmaker.playlist.domain.Playlist>) {
+        binding.playlistsRecyclerView.isVisible = true
+        binding.emptyPlaceholder.isVisible = false
+        playlistAdapter.submitList(playlists)
+    }
+
+    private fun showEmpty() {
+        binding.playlistsRecyclerView.isVisible = false
+        binding.emptyPlaceholder.isVisible = true
     }
 
     override fun onDestroyView() {

@@ -15,6 +15,12 @@ import retrofit2.converter.gson.GsonConverterFactory
 import com.example.playlistmaker.search.data.db.AppDatabase
 import com.example.playlistmaker.search.data.impl.FavoriteRepositoryImpl
 import com.example.playlistmaker.search.domain.db.FavoriteRepository
+import com.example.playlistmaker.playlist.data.PlaylistConverter
+import com.example.playlistmaker.playlist.data.PlaylistTrackConverter
+import com.example.playlistmaker.playlist.data.impl.PlaylistRepositoryImpl
+import com.example.playlistmaker.playlist.domain.PlaylistRepository
+import com.example.playlistmaker.playlist.domain.PlaylistInteractor
+import com.example.playlistmaker.playlist.domain.impl.PlaylistInteractorImpl
 
 val dataModule = module {
 
@@ -49,6 +55,18 @@ val dataModule = module {
 
     single<FavoriteRepository> {
         FavoriteRepositoryImpl(get(), get())
+    }
+
+    factory { PlaylistConverter(get()) }
+
+    factory { PlaylistTrackConverter() }
+
+    single<PlaylistRepository> {
+        PlaylistRepositoryImpl(get(), get(), get())
+    }
+
+    single<PlaylistInteractor> {
+        PlaylistInteractorImpl(get())
     }
 
 }

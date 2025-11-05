@@ -5,22 +5,32 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.playlistmaker.playlist.domain.AddTrackResult
+import com.example.playlistmaker.playlist.domain.Playlist
+import com.example.playlistmaker.playlist.domain.PlaylistInteractor
 import com.example.playlistmaker.search.domain.Track
 import com.example.playlistmaker.search.domain.db.FavoriteInteractor
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Job
 
 class PlayerViewModel(
     private val track: Track,
     private val mediaPlayer: MediaPlayer,
-    private val favoritesInteractor: FavoriteInteractor
+    private val favoritesInteractor: FavoriteInteractor,
+    private val playlistInteractor: PlaylistInteractor
 ) : ViewModel() {
 
     companion object { private const val UPDATE_TIME_DELAY_MS = 300L }
 
     private val _state = MutableLiveData<PlayerState>()
     val state: LiveData<PlayerState> get() = _state
+    
+    val playlistsFlow: Flow<List<Playlist>> = playlistInteractor.getAllPlaylists()
+
+    private val _addTrackResult = MutableLiveData<AddTrackResult?>()
+    val addTrackResult: LiveData<AddTrackResult?> = _addTrackResult
     
     private var isPlayerPrepared = false
     private var shouldStartWhenPrepared = false
@@ -171,6 +181,23 @@ class PlayerViewModel(
             
             _state.postValue(currentState.copy(track = updatedTrack))
         }
+    }
+
+    fun onPlaylistSelected(playlist: Playlist) {
+        viewModelScope.launch {
+            // Проверяем, есть ли трек уже в плейлисте
+            if (playlist.trackIds.contains(track.trackId)) {
+                _addTrackResult.postValue(AddTrackResult.AlreadyExists(playlist.name))
+            } else {
+                // Добавляем трек через интерактор
+                val result = playlistInteractor.addTrackToPlaylist(playlist, track)
+                _addTrackResult.postValue(result)
+            }
+        }
+    }
+
+    fun clearAddTrackResult() {
+        _addTrackResult.postValue(null)
     }
 
     override fun onCleared() {

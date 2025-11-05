@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -63,6 +64,14 @@ class MainActivity : AppCompatActivity() {
         // Настраиваем обновление заголовка при изменении экрана
         navController.addOnDestinationChangedListener { _, destination, _ ->
             updateScreenTitle(destination.label?.toString())
+            // Скрываем нижнюю панель навигации на экране создания плейлиста
+            if (destination.id == R.id.createPlaylistFragment) {
+                binding.bottomNavigation.visibility = View.GONE
+                binding.bottomDivider.visibility = View.GONE
+            } else {
+                binding.bottomNavigation.visibility = View.VISIBLE
+                binding.bottomDivider.visibility = View.VISIBLE
+            }
         }
     }
 

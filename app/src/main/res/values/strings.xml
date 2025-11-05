@@ -57,4 +57,21 @@
 
     <string name="add_to_favorite">Добавлено в избранное</string>
     <string name="remove_from_favorite">Удалено из избранного</string>
+    
+    <string name="create_playlist">Создать плейлист</string>
+    <string name="playlist_name">Название</string>
+    <string name="playlist_description">Описание</string>
+    <string name="playlist_cover">Обложка</string>
+    <string name="create">Создать</string>
+    <string name="finish_playlist_creation">Завершить создание плейлиста?</string>
+    <string name="unsaved_data_warning">Все несохраненные данные будут потеряны</string>
+    <string name="cancel">Отмена</string>
+    <string name="finish">Завершить</string>
+    <string name="playlist_created">Плейлист %s создан</string>
+    <string name="playlist_track_count_zero">0 треков</string>
+    <string name="playlist_track_count_one">1 трек</string>
+    <string name="playlist_track_count_few">%d трека</string>
+    <string name="playlist_track_count_many">%d треков</string>
+    <string name="added_to_playlist">Добавлено в плейлист %s</string>
+    <string name="track_already_in_playlist">Трек уже добавлен в плейлист %s</string>
 </resources>
