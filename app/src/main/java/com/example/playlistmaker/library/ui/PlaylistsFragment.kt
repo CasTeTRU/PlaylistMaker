@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.R
@@ -51,12 +52,14 @@ class PlaylistsFragment : Fragment() {
     }
 
     private fun observeViewModel() {
-        lifecycleScope.launch {
-            viewModel.playlistsFlow.collect { playlists ->
-                if (playlists.isEmpty()) {
-                    showEmpty()
-                } else {
-                    showContent(playlists)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
+                viewModel.playlistsFlow.collect { playlists ->
+                    if (playlists.isEmpty()) {
+                        showEmpty()
+                    } else {
+                        showContent(playlists)
+                    }
                 }
             }
         }
