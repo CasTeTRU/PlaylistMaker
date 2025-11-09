@@ -8,7 +8,8 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import android.widget.TextView
+import com.google.android.material.snackbar.Snackbar
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
@@ -80,7 +81,7 @@ class CreatePlaylistFragment : Fragment() {
     }
 
     private fun setupViews() {
-        binding.backButton.setOnClickListener {
+        binding.headerContainer.setOnClickListener {
             handleBackPress()
         }
 
@@ -157,20 +158,13 @@ class CreatePlaylistFragment : Fragment() {
 
         viewModel.isPlaylistCreated.observe(viewLifecycleOwner) { playlistName ->
             playlistName?.let {
-                val context = context
-                if (context != null) {
-                    Toast.makeText(
-                        context,
-                        getString(R.string.playlist_created, it),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-                // Откладываем навигацию, чтобы Toast успел показаться и фрагмент был в правильном состоянии
+                showSnackbar(getString(R.string.playlist_created, it))
+                // Откладываем навигацию, чтобы Snackbar успел показаться и фрагмент был в правильном состоянии
                 view?.postDelayed({
                     if (isAdded && !isRemoving) {
                         navigateBack()
                     }
-                }, 100)
+                }, 2000) // Snackbar показывается дольше, чем Toast
             }
         }
     }
@@ -282,6 +276,36 @@ class CreatePlaylistFragment : Fragment() {
                 android.util.Log.e("CreatePlaylistFragment", "Error copying image", e)
             }
         }
+    }
+
+    private fun showSnackbar(message: String) {
+        val snackbarView = LayoutInflater.from(requireContext())
+            .inflate(R.layout.custom_snackbar, null)
+        
+        val textView = snackbarView.findViewById<TextView>(R.id.snackbar_text)
+        textView.text = message
+        
+        val snackbar = Snackbar.make(binding.root, "", Snackbar.LENGTH_SHORT)
+        snackbar.view.setBackgroundColor(android.graphics.Color.TRANSPARENT)
+        snackbar.view.alpha = 0f
+        
+        val snackbarLayout = snackbar.view as Snackbar.SnackbarLayout
+        snackbarLayout.removeAllViews()
+        snackbarLayout.setPadding(0, 0, 0, 0)
+        snackbarLayout.addView(snackbarView)
+        
+        val params = snackbarLayout.layoutParams as android.view.ViewGroup.MarginLayoutParams
+        val screenWidth = resources.displayMetrics.widthPixels
+        val leftMargin = (7 * resources.displayMetrics.density).toInt()
+        val rightMargin = (8 * resources.displayMetrics.density).toInt()
+        params.width = screenWidth - leftMargin - rightMargin
+        params.height = (48 * resources.displayMetrics.density).toInt()
+        params.topMargin = (736 * resources.displayMetrics.density).toInt()
+        params.leftMargin = leftMargin
+        params.rightMargin = rightMargin
+        snackbarLayout.layoutParams = params
+        
+        snackbar.show()
     }
 
     override fun onDestroyView() {

@@ -35,16 +35,20 @@ class PlaylistViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
                     .placeholder(placeholderRes)
                     .error(placeholderRes)
                     .centerCrop()
-                    .transform(RoundedCorners(dpToPx(itemView.context, 12)))
+                    .transform(RoundedCorners(dpToPx(itemView.context, 8)))
                     .into(coverImageView)
             } else {
                 Glide.with(itemView)
                     .load(placeholderRes)
+                    .centerCrop()
+                    .transform(RoundedCorners(dpToPx(itemView.context, 8)))
                     .into(coverImageView)
             }
         } else {
             Glide.with(itemView)
                 .load(placeholderRes)
+                .centerCrop()
+                .transform(RoundedCorners(dpToPx(itemView.context, 8)))
                 .into(coverImageView)
         }
     }

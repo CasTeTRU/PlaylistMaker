@@ -40,11 +40,15 @@ class PlaylistBottomSheetViewHolder(itemView: View) : RecyclerView.ViewHolder(it
             } else {
                 Glide.with(itemView)
                     .load(placeholderRes)
+                    .centerCrop()
+                    .transform(RoundedCorners(dpToPx(itemView.context, 8)))
                     .into(coverImageView)
             }
         } else {
             Glide.with(itemView)
                 .load(placeholderRes)
+                .centerCrop()
+                .transform(RoundedCorners(dpToPx(itemView.context, 8)))
                 .into(coverImageView)
         }
     }

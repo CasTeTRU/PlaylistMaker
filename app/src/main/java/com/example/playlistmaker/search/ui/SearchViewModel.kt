@@ -42,7 +42,7 @@ class SearchViewModel(
         searchJob = viewModelScope.launch {
             _state.value = SearchState.Loading
 
-            try {
+            runCatching {
                 searchTracksInteractor.searchTracks(query).collect { tracks ->
                     if (tracks.isNotEmpty()) {
                         _state.value = SearchState.Content(tracks.map { it.toDto() })
@@ -50,10 +50,13 @@ class SearchViewModel(
                         _state.value = SearchState.Empty
                     }
                 }
-            } catch (e: Exception) {
-                android.util.Log.e("SearchViewModel", "Error searching tracks", e)
-                _state.value = SearchState.Error
-            }
+            }.fold(
+                onSuccess = { },
+                onFailure = { exception ->
+                    android.util.Log.e("SearchViewModel", "Error searching tracks", exception)
+                    _state.value = SearchState.Error
+                }
+            )
         }
     }
 

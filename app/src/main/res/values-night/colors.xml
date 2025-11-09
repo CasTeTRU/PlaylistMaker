@@ -55,4 +55,9 @@
     
     <color name="yp_text_grey">#AEAFB4</color>
     <color name="yp_red">#F56B6C</color>
+    <color name="description_hint_color">@color/yp_white</color>
+    <color name="playlist_name_hint_color">@color/yp_white</color>
+    <color name="bottom_sheet_indicator_color">@color/yp_white</color>
+    <color name="snackbar_background_color">@color/yp_white</color>
+    <color name="snackbar_text_color">@color/yp_black</color>
 </resources>

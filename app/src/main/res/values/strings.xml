@@ -58,8 +58,8 @@
     <string name="add_to_favorite">Добавлено в избранное</string>
     <string name="remove_from_favorite">Удалено из избранного</string>
     
-    <string name="create_playlist">Создать плейлист</string>
-    <string name="playlist_name">Название</string>
+    <string name="create_playlist">Новый плейлист</string>
+    <string name="playlist_name">Название*</string>
     <string name="playlist_description">Описание</string>
     <string name="playlist_cover">Обложка</string>
     <string name="create">Создать</string>

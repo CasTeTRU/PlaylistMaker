@@ -12,15 +12,21 @@ import kotlinx.coroutines.withContext
 
 class TrackRepositoryImpl(private val apiService: ItunesApiService) : TrackRepository {
     override fun searchTracks(query: String): Flow<List<TrackDomainModel>> = flow {
-        try {
-            val results = withContext(Dispatchers.IO) {
+        val result = runCatching {
+            withContext(Dispatchers.IO) {
                 val response = apiService.search(query)
                 response.results?.map { it.toDomain() } ?: emptyList()
             }
-            emit(results)
-        } catch (e: Exception) {
-            Log.e("TrackRepositoryImpl", "API request failed", e)
-            emit(emptyList())
         }
+        
+        result.fold(
+            onSuccess = { tracks ->
+                emit(tracks)
+            },
+            onFailure = { exception ->
+                Log.e("TrackRepositoryImpl", "API request failed", exception)
+                emit(emptyList())
+            }
+        )
     }
 }

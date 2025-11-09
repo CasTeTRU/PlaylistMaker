@@ -67,5 +67,10 @@
     <!-- Search-specific colors (default/light theme) -->
     <color name="search_text_color">@color/text_color</color>
     <color name="search_hint_color">@color/hint_text_color</color>
+    <color name="description_hint_color">@color/yp_black</color>
+    <color name="playlist_name_hint_color">@color/yp_black</color>
+    <color name="bottom_sheet_indicator_color">@color/yp_light_grey</color>
+    <color name="snackbar_background_color">#1A1B22</color>
+    <color name="snackbar_text_color">@color/yp_white</color>
 </resources>
 

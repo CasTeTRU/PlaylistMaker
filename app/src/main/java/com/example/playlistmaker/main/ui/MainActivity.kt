@@ -63,14 +63,16 @@ class MainActivity : AppCompatActivity() {
         
         // Настраиваем обновление заголовка при изменении экрана
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            updateScreenTitle(destination.label?.toString())
             // Скрываем нижнюю панель навигации на экране создания плейлиста
             if (destination.id == R.id.createPlaylistFragment) {
                 binding.bottomNavigation.visibility = View.GONE
                 binding.bottomDivider.visibility = View.GONE
+                binding.screenTitle.visibility = View.GONE
             } else {
                 binding.bottomNavigation.visibility = View.VISIBLE
                 binding.bottomDivider.visibility = View.VISIBLE
+                binding.screenTitle.visibility = View.VISIBLE
+                updateScreenTitle(destination.label?.toString())
             }
         }
     }
@@ -109,7 +111,14 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val currentDestination = navHostFragment.navController.currentDestination
-        updateScreenTitle(currentDestination?.label?.toString())
+        
+        // Скрываем заголовок на экране создания плейлиста
+        if (currentDestination?.id == R.id.createPlaylistFragment) {
+            binding.screenTitle.visibility = View.GONE
+        } else {
+            binding.screenTitle.visibility = View.VISIBLE
+            updateScreenTitle(currentDestination?.label?.toString())
+        }
     }
 
     private fun updateBottomNavigationColors() {

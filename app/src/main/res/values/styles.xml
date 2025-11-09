@@ -116,4 +116,9 @@
         <item name="itemBackground">@drawable/bottom_nav_item_background</item>
     </style>
 
+    <style name="PlaylistCoverShapeAppearance" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
+
 </resources>

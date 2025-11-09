@@ -288,6 +288,15 @@ class PlayerActivity : AppCompatActivity() {
                 // Скрываем контейнер после того, как транзакция завершена
                 findViewById<View>(R.id.fragment_container_create_playlist).post {
                     findViewById<View>(R.id.fragment_container_create_playlist).visibility = View.GONE
+                    // Обновляем список плейлистов после возврата из создания плейлиста
+                    if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
+                        playlistsJob?.cancel()
+                        playlistsJob = lifecycleScope.launch {
+                            viewModel.playlistsFlow.collect { playlists ->
+                                playlistAdapter.submitList(playlists)
+                            }
+                        }
+                    }
                 }
             } catch (e: Exception) {
                 android.util.Log.e("PlayerActivity", "Error popping back stack", e)
