@@ -10,6 +10,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.search.domain.Track
+import com.example.playlistmaker.util.dpToPxConvert
 
 class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val artwork: ImageView = itemView.findViewById(R.id.artworkImageView)
@@ -35,13 +36,8 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             .placeholder(placeholderRes)
             .error(placeholderRes)
             .centerCrop()
-            .transform(RoundedCorners(dpToPx(itemView.context, 12)))
+            .transform(RoundedCorners(dpToPxConvert.dpToPx(itemView.context, 12)))
             .into(artwork)
-    }
-
-    private fun dpToPx(context: Context, dp: Int): Int {
-        val density = context.resources.displayMetrics.density
-        return (dp * density + 0.5f).toInt()
     }
 
     private fun isInNightMode(context: Context): Boolean {

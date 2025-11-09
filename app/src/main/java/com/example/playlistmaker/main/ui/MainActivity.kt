@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.fragment.NavHostFragment
@@ -62,7 +63,17 @@ class MainActivity : AppCompatActivity() {
         
         // Настраиваем обновление заголовка при изменении экрана
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            updateScreenTitle(destination.label?.toString())
+            // Скрываем нижнюю панель навигации на экране создания плейлиста
+            if (destination.id == R.id.createPlaylistFragment) {
+                binding.bottomNavigation.isVisible = false
+                binding.bottomDivider.isVisible = false
+                binding.screenTitle.isVisible = false
+            } else {
+                binding.bottomNavigation.isVisible = true
+                binding.bottomDivider.isVisible = true
+                binding.screenTitle.isVisible = true
+                updateScreenTitle(destination.label?.toString())
+            }
         }
     }
 
@@ -100,7 +111,14 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val currentDestination = navHostFragment.navController.currentDestination
-        updateScreenTitle(currentDestination?.label?.toString())
+        
+        // Скрываем заголовок на экране создания плейлиста
+        if (currentDestination?.id == R.id.createPlaylistFragment) {
+            binding.screenTitle.isVisible = false
+        } else {
+            binding.screenTitle.isVisible = true
+            updateScreenTitle(currentDestination?.label?.toString())
+        }
     }
 
     private fun updateBottomNavigationColors() {

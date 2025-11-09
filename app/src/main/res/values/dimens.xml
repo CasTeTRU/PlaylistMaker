@@ -1,6 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="fab_margin">16dp</dimen>
-    <dimen name="button_margin">16dp</dimen>
-    <dimen name="corner_radius">2dp</dimen>
-    <dimen name="dp_8">8dp</dimen>
+    <dimen name="dialog_button_padding_horizontal">16dp</dimen>
+    <dimen name="dialog_button_padding_vertical">8dp</dimen>
+    <dimen name="dialog_button_min_height">36dp</dimen>
+    
+    <dimen name="snackbar_left_margin">7dp</dimen>
+    <dimen name="snackbar_right_margin">8dp</dimen>
+    <dimen name="snackbar_height">48dp</dimen>
+    <dimen name="snackbar_top_margin">736dp</dimen>
 </resources>

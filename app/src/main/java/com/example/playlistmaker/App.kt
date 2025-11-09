@@ -7,6 +7,7 @@ import com.example.playlistmaker.di.interactorModule
 import com.example.playlistmaker.di.repositoryModule
 import com.example.playlistmaker.di.viewModelModule
 import com.example.playlistmaker.settings.domain.ThemeInteractor
+import com.markodevcic.peko.PermissionRequester
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import org.koin.core.component.KoinComponent
@@ -18,6 +19,9 @@ class App : Application(), KoinComponent {
     
     override fun onCreate() {
         super.onCreate()
+        
+        // Инициализация Peko для работы с разрешениями
+        PermissionRequester.initialize(applicationContext)
         
         startKoin {
             androidContext(this@App)
