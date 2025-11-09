@@ -41,7 +41,10 @@ class PlaylistRepositoryImpl(
         return playlistConverter.map(entity)
     }
 
-    override suspend fun addTrackToPlaylist(playlist: Playlist, track: Track): AddTrackResult {
+    override suspend fun addTrackToPlaylist(playlistId: Long, track: Track): AddTrackResult {
+        // Получаем плейлист по id
+        val playlist = getPlaylistById(playlistId) ?: return AddTrackResult.AlreadyExists("")
+        
         // Проверяем, есть ли уже трек в плейлисте
         if (playlist.trackIds.contains(track.trackId)) {
             return AddTrackResult.AlreadyExists(playlist.name)

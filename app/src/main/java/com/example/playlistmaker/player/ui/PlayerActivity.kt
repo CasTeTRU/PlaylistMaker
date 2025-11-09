@@ -1,22 +1,24 @@
 package com.example.playlistmaker.player.ui
 
-import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
+import androidx.core.view.isVisible
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.playlist.domain.AddTrackResult
-import com.example.playlistmaker.playlist.ui.CreatePlaylistFragment
 import com.example.playlistmaker.search.domain.Track
+import com.example.playlistmaker.util.dpToPxConvert
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -56,6 +58,7 @@ class PlayerActivity : AppCompatActivity() {
 
         setupViews()
         setupBottomSheet()
+        setupNavigation()
         observeViewModel()
     }
 
@@ -107,10 +110,10 @@ class PlayerActivity : AppCompatActivity() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 when (newState) {
                     BottomSheetBehavior.STATE_HIDDEN -> {
-                        overlay.visibility = View.GONE
+                        overlay.isVisible = false
                     }
                     else -> {
-                        overlay.visibility = View.VISIBLE
+                        overlay.isVisible = true
                     }
                 }
             }
@@ -138,18 +141,20 @@ class PlayerActivity : AppCompatActivity() {
         playlistsJob = null
     }
 
+    private fun setupNavigation() {
+        // Настройка навигации для отслеживания возврата из CreatePlaylistFragment
+        // CreatePlaylistFragment сам скрывает контейнер при возврате
+    }
+
     private fun navigateToCreatePlaylist() {
         hideBottomSheet()
-        val fragmentContainer = findViewById<View>(R.id.fragment_container_create_playlist)
-        fragmentContainer.visibility = View.VISIBLE
-        
-        try {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container_create_playlist, CreatePlaylistFragment())
-                .addToBackStack("create_playlist")
-                .commitAllowingStateLoss()
-        } catch (e: Exception) {
-            android.util.Log.e("PlayerActivity", "Error showing CreatePlaylistFragment", e)
+        val navHostFragment = supportFragmentManager
+            .findFragmentById(R.id.nav_host_fragment_player) as? NavHostFragment
+        navHostFragment?.let {
+            val navController = it.findNavController()
+            val fragmentContainer = findViewById<View>(R.id.nav_host_fragment_player)
+            fragmentContainer.isVisible = true
+            navController.navigate(R.id.createPlaylistFragment)
         }
     }
 
@@ -212,7 +217,7 @@ class PlayerActivity : AppCompatActivity() {
                 .load(coverUrl)
                 .placeholder(placeholderRes)
                 .error(placeholderRes)
-                .transform(RoundedCorners(dpToPx(CORNER_RADIUS)))
+                .transform(RoundedCorners(dpToPxConvert.dpToPx(this, CORNER_RADIUS)))
                 .into(imageView)
         } else {
             Glide.with(this)
@@ -255,11 +260,6 @@ class PlayerActivity : AppCompatActivity() {
         return Track.Companion.formatMillis(millis)
     }
 
-    private fun dpToPx(dp: Float): Int {
-        val scale = resources.displayMetrics.scaledDensity
-        return (dp * scale + 0.5f).toInt()
-    }
-
     private fun isInNightMode(): Boolean {
         return (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
                 Configuration.UI_MODE_NIGHT_YES
@@ -270,11 +270,11 @@ class PlayerActivity : AppCompatActivity() {
         val valueView = findViewById<TextView>(valueId)
 
         if (value.isNullOrEmpty()) {
-            labelView.visibility = View.GONE
-            valueView.visibility = View.GONE
+            labelView.isVisible = false
+            valueView.isVisible = false
         } else {
-            labelView.visibility = View.VISIBLE
-            valueView.visibility = View.VISIBLE
+            labelView.isVisible = true
+            valueView.isVisible = true
             valueView.text = value
         }
     }
@@ -282,28 +282,20 @@ class PlayerActivity : AppCompatActivity() {
     override fun onBackPressed() {
         if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
             hideBottomSheet()
-        } else if (supportFragmentManager.backStackEntryCount > 0) {
-            try {
-                supportFragmentManager.popBackStack()
-                // Скрываем контейнер после того, как транзакция завершена
-                findViewById<View>(R.id.fragment_container_create_playlist).post {
-                    findViewById<View>(R.id.fragment_container_create_playlist).visibility = View.GONE
-                    // Обновляем список плейлистов после возврата из создания плейлиста
-                    if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
-                        playlistsJob?.cancel()
-                        playlistsJob = lifecycleScope.launch {
-                            viewModel.playlistsFlow.collect { playlists ->
-                                playlistAdapter.submitList(playlists)
-                            }
-                        }
-                    }
-                }
-            } catch (e: Exception) {
-                android.util.Log.e("PlayerActivity", "Error popping back stack", e)
-            }
         } else {
-            viewModel.onStop()
-            super.onBackPressed()
+            val navHostFragment = supportFragmentManager
+                .findFragmentById(R.id.nav_host_fragment_player) as? NavHostFragment
+            val navController = navHostFragment?.findNavController()
+            
+            if (navController?.currentDestination?.id == R.id.createPlaylistFragment) {
+                // Если мы на экране создания плейлиста, позволяем фрагменту обработать нажатие
+                // OnBackPressedCallback в CreatePlaylistFragment покажет диалог, если есть несохраненные изменения
+                // Если диалог не показан, фрагмент сам вызовет navigateBack()
+                super.onBackPressed()
+            } else {
+                viewModel.onStop()
+                super.onBackPressed()
+            }
         }
     }
 

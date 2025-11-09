@@ -60,4 +60,7 @@
     <color name="bottom_sheet_indicator_color">@color/yp_white</color>
     <color name="snackbar_background_color">@color/yp_white</color>
     <color name="snackbar_text_color">@color/yp_black</color>
+    <color name="new_playlist_button_bg_light">@color/yp_white</color>
+    <color name="new_playlist_button_text_light">@color/yp_black</color>
+    <color name="dialog_button_text_color">@color/yp_blue</color>
 </resources>

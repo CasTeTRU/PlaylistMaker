@@ -5,8 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.fragment.NavHostFragment
@@ -65,13 +65,13 @@ class MainActivity : AppCompatActivity() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             // Скрываем нижнюю панель навигации на экране создания плейлиста
             if (destination.id == R.id.createPlaylistFragment) {
-                binding.bottomNavigation.visibility = View.GONE
-                binding.bottomDivider.visibility = View.GONE
-                binding.screenTitle.visibility = View.GONE
+                binding.bottomNavigation.isVisible = false
+                binding.bottomDivider.isVisible = false
+                binding.screenTitle.isVisible = false
             } else {
-                binding.bottomNavigation.visibility = View.VISIBLE
-                binding.bottomDivider.visibility = View.VISIBLE
-                binding.screenTitle.visibility = View.VISIBLE
+                binding.bottomNavigation.isVisible = true
+                binding.bottomDivider.isVisible = true
+                binding.screenTitle.isVisible = true
                 updateScreenTitle(destination.label?.toString())
             }
         }
@@ -114,9 +114,9 @@ class MainActivity : AppCompatActivity() {
         
         // Скрываем заголовок на экране создания плейлиста
         if (currentDestination?.id == R.id.createPlaylistFragment) {
-            binding.screenTitle.visibility = View.GONE
+            binding.screenTitle.isVisible = false
         } else {
-            binding.screenTitle.visibility = View.VISIBLE
+            binding.screenTitle.isVisible = true
             updateScreenTitle(currentDestination?.label?.toString())
         }
     }

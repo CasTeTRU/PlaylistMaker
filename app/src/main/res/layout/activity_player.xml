@@ -313,10 +313,13 @@
         android:visibility="gone"
         android:clickable="true" />
 
-    <FrameLayout
-        android:id="@+id/fragment_container_create_playlist"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/nav_host_fragment_player"
+        android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/nav_graph_player"
         android:visibility="gone" />
 
     <LinearLayout
@@ -351,17 +354,21 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/newPlaylistButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
+            android:layout_width="135dp"
+            android:layout_height="36dp"
+            android:layout_gravity="center_horizontal"
             android:layout_marginTop="16dp"
             android:text="@string/new_playlist"
             android:textSize="16sp"
             android:textAllCaps="false"
             android:fontFamily="@font/ys_display_medium"
-            android:backgroundTint="@color/yp_blue"
-            android:textColor="@color/yp_white"
+            android:backgroundTint="@color/new_playlist_button_background"
+            android:textColor="@color/new_playlist_button_text"
+            android:paddingTop="0dp"
+            android:paddingBottom="0dp"
+            android:minHeight="36dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
             app:cornerRadius="8dp" />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -369,6 +376,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:layout_marginTop="24dp"
             android:paddingHorizontal="16dp" />
 
     </LinearLayout>

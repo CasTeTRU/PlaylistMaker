@@ -189,8 +189,8 @@ class PlayerViewModel(
             if (playlist.trackIds.contains(track.trackId)) {
                 _addTrackResult.postValue(AddTrackResult.AlreadyExists(playlist.name))
             } else {
-                // Добавляем трек через интерактор
-                val result = playlistInteractor.addTrackToPlaylist(playlist, track)
+                // Добавляем трек через интерактор, передавая только id плейлиста
+                val result = playlistInteractor.addTrackToPlaylist(playlist.id, track)
                 _addTrackResult.postValue(result)
             }
         }

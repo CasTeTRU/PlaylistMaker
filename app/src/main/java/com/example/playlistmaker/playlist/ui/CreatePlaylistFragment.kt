@@ -6,8 +6,10 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
+import androidx.core.widget.doAfterTextChanged
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import android.widget.TextView
 import com.google.android.material.snackbar.Snackbar
 import androidx.activity.OnBackPressedCallback
@@ -35,10 +37,9 @@ class CreatePlaylistFragment : Fragment() {
     private val pickImageLauncher = registerForActivityResult(
         ActivityResultContracts.PickVisualMedia()
     ) { uri: Uri? ->
-        if (uri != null) {
-            viewModel.updateCoverUri(uri)
-            copyImageToPrivateStorage(uri)
-        }
+        if (uri == null) return@registerForActivityResult
+        viewModel.updateCoverUri(uri)
+        copyImageToPrivateStorage(uri)
     }
 
     override fun onCreateView(
@@ -90,31 +91,21 @@ class CreatePlaylistFragment : Fragment() {
         }
 
         // Создаём TextWatcher для поля имени, избегая зацикливания при восстановлении состояния
-        val nameWatcher = object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) {
-                val newText = s?.toString() ?: ""
-                if (viewModel.state.value?.name != newText) {
-                    viewModel.updateName(newText)
-                }
+        val nameWatcher = binding.nameEditText.doAfterTextChanged { s: Editable? ->
+            val newText = s?.toString() ?: ""
+            if (viewModel.state.value?.name != newText) {
+                viewModel.updateName(newText)
             }
         }
-        binding.nameEditText.addTextChangedListener(nameWatcher)
         binding.nameEditText.tag = nameWatcher // Сохраняем ссылку для возможного удаления
 
         // Создаём TextWatcher для поля описания, избегая зацикливания при восстановлении состояния
-        val descriptionWatcher = object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) {
-                val newText = s?.toString() ?: ""
-                if (viewModel.state.value?.description != newText) {
-                    viewModel.updateDescription(newText)
-                }
+        val descriptionWatcher = binding.descriptionEditText.doAfterTextChanged { s: Editable? ->
+            val newText = s?.toString() ?: ""
+            if (viewModel.state.value?.description != newText) {
+                viewModel.updateDescription(newText)
             }
         }
-        binding.descriptionEditText.addTextChangedListener(descriptionWatcher)
         binding.descriptionEditText.tag = descriptionWatcher // Сохраняем ссылку для возможного удаления
 
         binding.createButton.setOnClickListener {
@@ -149,22 +140,19 @@ class CreatePlaylistFragment : Fragment() {
                 Glide.with(this)
                     .load(state.coverUri)
                     .into(binding.coverImageView)
-                binding.coverPlaceholder.visibility = View.GONE
+                binding.coverPlaceholder.isVisible = false
             } else {
                 binding.coverImageView.setImageDrawable(null)
-                binding.coverPlaceholder.visibility = View.VISIBLE
+                binding.coverPlaceholder.isVisible = true
             }
         }
 
         viewModel.isPlaylistCreated.observe(viewLifecycleOwner) { playlistName ->
             playlistName?.let {
                 showSnackbar(getString(R.string.playlist_created, it))
-                // Откладываем навигацию, чтобы Snackbar успел показаться и фрагмент был в правильном состоянии
-                view?.postDelayed({
-                    if (isAdded && !isRemoving) {
-                        navigateBack()
-                    }
-                }, 2000) // Snackbar показывается дольше, чем Toast
+                if (isAdded && !isRemoving) {
+                    navigateBack()
+                }
             }
         }
     }
@@ -182,67 +170,68 @@ class CreatePlaylistFragment : Fragment() {
             return // Фрагмент уже удаляется или не добавлен
         }
         
-        val activity = this.activity
-        if (activity == null) {
-            return
-        }
-        
-        // Проверяем, есть ли мы в back stack FragmentManager (это значит, что мы в Activity)
-        // Используем parentFragmentManager, так как это FragmentManager Activity
-        val isInFragmentManager = try {
-            parentFragmentManager.backStackEntryCount > 0
+        try {
+            val navController = findNavController()
+            val playerContainer = activity?.findViewById<View>(R.id.nav_host_fragment_player)
+            
+            // Проверяем, находимся ли мы в PlayerActivity (есть контейнер nav_host_fragment_player)
+            if (playerContainer != null) {
+                // Мы в PlayerActivity
+                // Пытаемся вернуться через Navigation
+                val canPop = navController.previousBackStackEntry != null && navController.popBackStack()
+                // Если не удалось вернуться (стек пуст) или мы на startDestination, скрываем контейнер
+                if (!canPop || navController.previousBackStackEntry == null) {
+                    playerContainer.isVisible = false
+                }
+            } else {
+                // Мы в MainActivity, используем стандартную навигацию
+                navController.popBackStack()
+            }
         } catch (e: Exception) {
-            false
-        }
-        
-        if (isInFragmentManager) {
-            // Если мы в Activity (PlayerActivity), используем FragmentManager
-            try {
-                parentFragmentManager.popBackStack()
-                // Скрываем контейнер после того, как транзакция завершена
-                view?.post {
-                    activity.findViewById<View>(R.id.fragment_container_create_playlist)?.visibility = View.GONE
-                }
-            } catch (e: IllegalStateException) {
-                android.util.Log.e("CreatePlaylistFragment", "FragmentManager in illegal state", e)
-                // Пытаемся скрыть контейнер напрямую
-                activity.findViewById<View>(R.id.fragment_container_create_playlist)?.visibility = View.GONE
-            } catch (e: Exception) {
-                android.util.Log.e("CreatePlaylistFragment", "Error navigating back via FragmentManager", e)
-            }
-        } else {
-            // Иначе используем Navigation (если мы в Navigation графе)
-            try {
-                val navController = findNavController()
-                if (navController.currentDestination?.id == R.id.createPlaylistFragment) {
-                    navController.popBackStack()
-                }
-            } catch (e: IllegalStateException) {
-                // Если Navigation недоступна, возможно мы в Activity
-                // Попробуем использовать FragmentManager как fallback
-                try {
-                    if (parentFragmentManager.backStackEntryCount > 0) {
-                        parentFragmentManager.popBackStack()
-                        activity.findViewById<View>(R.id.fragment_container_create_playlist)?.visibility = View.GONE
-                    }
-                } catch (ex: Exception) {
-                    android.util.Log.e("CreatePlaylistFragment", "Error navigating back", ex)
-                }
-            } catch (e: Exception) {
-                android.util.Log.e("CreatePlaylistFragment", "Error navigating back via Navigation", e)
-            }
+            android.util.Log.e("CreatePlaylistFragment", "Error navigating back via Navigation", e)
+            // В случае ошибки пытаемся скрыть контейнер напрямую (если мы в PlayerActivity)
+            activity?.findViewById<View>(R.id.nav_host_fragment_player)?.isVisible = false
         }
     }
 
     private fun showConfirmDialog() {
-        AlertDialog.Builder(requireContext())
+        val dialog = AlertDialog.Builder(requireContext())
             .setTitle(R.string.finish_playlist_creation)
             .setMessage(R.string.unsaved_data_warning)
             .setPositiveButton(R.string.finish) { _, _ ->
                 navigateBack()
             }
             .setNegativeButton(R.string.cancel, null)
-            .show()
+            .create()
+        
+        dialog.show()
+        
+        // Применяем стили к кнопкам после показа диалога
+        val buttonTextColor = androidx.core.content.ContextCompat.getColor(requireContext(), R.color.dialog_button_text_color)
+        val buttonTextSize = 14f // 14sp
+        
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.apply {
+            setTextColor(buttonTextColor)
+            textSize = buttonTextSize
+            setPadding(
+                resources.getDimensionPixelSize(R.dimen.dialog_button_padding_horizontal),
+                resources.getDimensionPixelSize(R.dimen.dialog_button_padding_vertical),
+                resources.getDimensionPixelSize(R.dimen.dialog_button_padding_horizontal),
+                resources.getDimensionPixelSize(R.dimen.dialog_button_padding_vertical)
+            )
+            minHeight = resources.getDimensionPixelSize(R.dimen.dialog_button_min_height)
+        }
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.apply {
+            setTextColor(buttonTextColor)
+            textSize = buttonTextSize
+            setPadding(
+                resources.getDimensionPixelSize(R.dimen.dialog_button_padding_horizontal),
+                resources.getDimensionPixelSize(R.dimen.dialog_button_padding_vertical),
+                resources.getDimensionPixelSize(R.dimen.dialog_button_padding_horizontal),
+                resources.getDimensionPixelSize(R.dimen.dialog_button_padding_vertical)
+            )
+            minHeight = resources.getDimensionPixelSize(R.dimen.dialog_button_min_height)
+        }
     }
 
     private fun copyImageToPrivateStorage(uri: Uri) {
@@ -296,11 +285,11 @@ class CreatePlaylistFragment : Fragment() {
         
         val params = snackbarLayout.layoutParams as android.view.ViewGroup.MarginLayoutParams
         val screenWidth = resources.displayMetrics.widthPixels
-        val leftMargin = (7 * resources.displayMetrics.density).toInt()
-        val rightMargin = (8 * resources.displayMetrics.density).toInt()
+        val leftMargin = resources.getDimensionPixelSize(R.dimen.snackbar_left_margin)
+        val rightMargin = resources.getDimensionPixelSize(R.dimen.snackbar_right_margin)
         params.width = screenWidth - leftMargin - rightMargin
-        params.height = (48 * resources.displayMetrics.density).toInt()
-        params.topMargin = (736 * resources.displayMetrics.density).toInt()
+        params.height = resources.getDimensionPixelSize(R.dimen.snackbar_height)
+        params.topMargin = resources.getDimensionPixelSize(R.dimen.snackbar_top_margin)
         params.leftMargin = leftMargin
         params.rightMargin = rightMargin
         snackbarLayout.layoutParams = params
