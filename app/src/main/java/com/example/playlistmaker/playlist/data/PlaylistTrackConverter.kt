@@ -18,5 +18,21 @@ class PlaylistTrackConverter {
             previewUrl = track.previewUrl ?: ""
         )
     }
+
+    fun map(entity: PlaylistTrackEntity): Track {
+        return Track(
+            trackId = entity.trackId,
+            trackName = entity.trackName,
+            artistName = entity.artistName,
+            trackTimeMillis = entity.trackTimeMillis,
+            artworkUrl100 = entity.artworkUrl100,
+            collectionName = entity.collectionName.takeIf { it.isNotEmpty() },
+            releaseDate = entity.releaseDate.takeIf { it.isNotEmpty() },
+            primaryGenreName = entity.primaryGenreName.takeIf { it.isNotEmpty() },
+            country = entity.country.takeIf { it.isNotEmpty() },
+            previewUrl = entity.previewUrl.takeIf { it.isNotEmpty() },
+            isFavorite = false
+        )
+    }
 }
 

@@ -27,12 +27,12 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
 import java.io.FileOutputStream
 
-class CreatePlaylistFragment : Fragment() {
+open class CreatePlaylistFragment : Fragment() {
 
-    private var _binding: FragmentCreatePlaylistBinding? = null
-    private val binding get() = _binding!!
+    protected var _binding: FragmentCreatePlaylistBinding? = null
+    protected val binding get() = _binding!!
 
-    private val viewModel: CreatePlaylistViewModel by viewModel()
+    protected open val viewModel: CreatePlaylistViewModel by viewModel()
 
     private val pickImageLauncher = registerForActivityResult(
         ActivityResultContracts.PickVisualMedia()
@@ -60,7 +60,7 @@ class CreatePlaylistFragment : Fragment() {
         restoreState()
     }
 
-    private fun restoreState() {
+    protected open fun restoreState() {
         // Восстанавливаем состояние из ViewModel при создании view
         // Это гарантирует, что при возврате из фонового режима данные будут восстановлены
         val currentState = viewModel.state.value ?: return
@@ -81,7 +81,7 @@ class CreatePlaylistFragment : Fragment() {
         }
     }
 
-    private fun setupViews() {
+    protected open fun setupViews() {
         binding.headerContainer.setOnClickListener {
             handleBackPress()
         }
@@ -124,8 +124,12 @@ class CreatePlaylistFragment : Fragment() {
         )
     }
 
-    private fun observeViewModel() {
+    protected open fun observeViewModel() {
         viewModel.state.observe(viewLifecycleOwner) { state ->
+            // Устанавливаем заголовок и текст кнопки для режима создания
+            binding.titleTextView.text = getString(R.string.new_playlist)
+            binding.createButton.text = getString(R.string.create)
+
             // Восстанавливаем состояние полей при изменении состояния
             if (binding.nameEditText.text.toString() != state.name) {
                 binding.nameEditText.setText(state.name)
@@ -157,7 +161,7 @@ class CreatePlaylistFragment : Fragment() {
         }
     }
 
-    private fun handleBackPress() {
+    protected open fun handleBackPress() {
         if (viewModel.hasUnsavedChanges()) {
             showConfirmDialog()
         } else {
@@ -165,7 +169,7 @@ class CreatePlaylistFragment : Fragment() {
         }
     }
 
-    private fun navigateBack() {
+    protected open fun navigateBack() {
         if (!isAdded || isRemoving) {
             return // Фрагмент уже удаляется или не добавлен
         }
@@ -194,7 +198,7 @@ class CreatePlaylistFragment : Fragment() {
         }
     }
 
-    private fun showConfirmDialog() {
+    protected open fun showConfirmDialog() {
         val dialog = AlertDialog.Builder(requireContext())
             .setTitle(R.string.finish_playlist_creation)
             .setMessage(R.string.unsaved_data_warning)
@@ -234,7 +238,7 @@ class CreatePlaylistFragment : Fragment() {
         }
     }
 
-    private fun copyImageToPrivateStorage(uri: Uri) {
+    protected open fun copyImageToPrivateStorage(uri: Uri) {
         lifecycleScope.launch {
             try {
                 val context = context ?: return@launch
@@ -267,7 +271,7 @@ class CreatePlaylistFragment : Fragment() {
         }
     }
 
-    private fun showSnackbar(message: String) {
+    protected open fun showSnackbar(message: String) {
         val snackbarView = LayoutInflater.from(requireContext())
             .inflate(R.layout.custom_snackbar, null)
         

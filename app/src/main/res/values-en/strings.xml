@@ -61,4 +61,15 @@
     </plurals>
     <string name="added_to_playlist">Added to playlist %s</string>
     <string name="track_already_in_playlist">Track already added to playlist</string>
+    <string name="share_playlist">Share</string>
+    <string name="menu">Menu</string>
+    <string name="delete_track_question">Confirm track deletion</string>
+    <string name="yes">YES</string>
+    <string name="no">NO</string>
+    <string name="no_tracks_to_share">There is no tracks to share</string>
+    <string name="delete_playlist">Delete playlist</string>
+    <string name="delete_playlist_question">Confirm playlist deletion</string>
+    <string name="edit_playlist_info">Edit info</string>
+    <string name="edit">Edit</string>
+    <string name="save">Save</string>
 </resources>

@@ -67,16 +67,18 @@ class SearchActivity : AppCompatActivity() {
         clearHistoryButton = findViewById(R.id.clearHistoryButton)
         progressBar = findViewById(R.id.progressBar)
 
-        trackAdapter = TrackAdapter { track ->
-            debounceClick {
-                viewModel.onTrackClick(track)
-                val intent = Intent(this@SearchActivity, PlayerActivity::class.java).apply {
-                    putExtra("track", track)
+        trackAdapter = TrackAdapter(
+            onTrackClick = { track ->
+                debounceClick {
+                    viewModel.onTrackClick(track)
+                    val intent = Intent(this@SearchActivity, PlayerActivity::class.java).apply {
+                        putExtra("track", track)
+                    }
+                    startActivity(intent)
                 }
-                startActivity(intent)
+                clearButton.isVisible = searchEditText.text.isNotEmpty()
             }
-            clearButton.isVisible = searchEditText.text.isNotEmpty()
-        }
+        )
 
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = trackAdapter

@@ -9,7 +9,8 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.search.domain.Track
 
 class TrackAdapter(
-    private val onTrackClick: (Track) -> Unit
+    private val onTrackClick: (Track) -> Unit,
+    private val onTrackLongClick: ((Track) -> Unit)? = null
 ) : ListAdapter<Track, TrackViewHolder>(TrackDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {
@@ -24,6 +25,17 @@ class TrackAdapter(
         holder.itemView.setOnClickListener {
             onTrackClick.invoke(track)
         }
+        onTrackLongClick?.let { longClick ->
+            holder.itemView.setOnLongClickListener {
+                longClick.invoke(track)
+                true
+            }
+        }
+    }
+
+    fun setOnItemLongClickListener(listener: (Track) -> Unit) {
+        // Этот метод не нужен, так как мы передаем callback в конструктор
+        // Оставлен для обратной совместимости
     }
 }
 

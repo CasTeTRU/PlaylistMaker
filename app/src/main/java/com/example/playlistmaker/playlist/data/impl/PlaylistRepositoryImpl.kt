@@ -9,6 +9,7 @@ import com.example.playlistmaker.playlist.domain.PlaylistRepository
 import com.example.playlistmaker.search.data.db.AppDatabase
 import com.example.playlistmaker.search.domain.Track
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 class PlaylistRepositoryImpl(
@@ -65,6 +66,66 @@ class PlaylistRepositoryImpl(
         playlistTrackDao.insertTrack(trackEntity)
 
         return AddTrackResult.Success(playlist.name)
+    }
+
+    override suspend fun getPlaylistTracks(playlistId: Long): List<Track> {
+        val playlist = getPlaylistById(playlistId) ?: return emptyList()
+        if (playlist.trackIds.isEmpty()) return emptyList()
+        
+        // Получаем все треки из таблицы плейлистов
+        val allTracks = playlistTrackDao.getAllTracks()
+        // Фильтруем только те треки, которые есть в плейлисте
+        val filteredTracks = allTracks.filter { playlist.trackIds.contains(it.trackId) }
+        return filteredTracks.map { playlistTrackConverter.map(it) }
+    }
+
+    override suspend fun removeTrackFromPlaylist(playlistId: Long, trackId: String) {
+        val playlist = getPlaylistById(playlistId) ?: return
+        
+        // Удаляем trackId из списка
+        val updatedTrackIds = playlist.trackIds.filter { it != trackId }
+        val updatedPlaylist = playlist.copy(
+            trackIds = updatedTrackIds,
+            trackCount = playlist.trackCount - 1
+        )
+        
+        // Обновляем плейлист в БД
+        updatePlaylist(updatedPlaylist)
+        
+        // Проверяем, используется ли трек в других плейлистах
+        checkAndRemoveUnusedTrack(trackId)
+    }
+
+    /**
+     * Проверяет, используется ли трек в других плейлистах.
+     * Если трек не используется ни в одном плейлисте, удаляет его из таблицы треков.
+     */
+    private suspend fun checkAndRemoveUnusedTrack(trackId: String) {
+        // Получаем все плейлисты
+        val allPlaylistsEntities = playlistDao.getAllPlaylists().first()
+        val allPlaylistsDomain = playlistConverter.map(allPlaylistsEntities)
+        
+        // Проверяем, есть ли трек хотя бы в одном плейлисте
+        val isTrackUsed = allPlaylistsDomain.any { playlist ->
+            playlist.trackIds.contains(trackId)
+        }
+        
+        // Если трек не используется ни в одном плейлисте, удаляем его из таблицы
+        if (!isTrackUsed) {
+            playlistTrackDao.deleteTrack(trackId)
+        }
+    }
+
+    override suspend fun deletePlaylist(playlistId: Long) {
+        val playlist = getPlaylistById(playlistId) ?: return
+        
+        // Удаляем все треки плейлиста из таблицы, если они не используются в других плейлистах
+        playlist.trackIds.forEach { trackId ->
+            checkAndRemoveUnusedTrack(trackId)
+        }
+        
+        // Удаляем плейлист из БД
+        playlistDao.deletePlaylist(playlistId)
     }
 }
 

@@ -21,6 +21,7 @@ import com.example.playlistmaker.playlist.data.impl.PlaylistRepositoryImpl
 import com.example.playlistmaker.playlist.domain.PlaylistRepository
 import com.example.playlistmaker.playlist.domain.PlaylistInteractor
 import com.example.playlistmaker.playlist.domain.impl.PlaylistInteractorImpl
+import com.example.playlistmaker.search.data.TrackDbConverter
 
 val dataModule = module {
 
@@ -60,6 +61,8 @@ val dataModule = module {
     factory { PlaylistConverter(get()) }
 
     factory { PlaylistTrackConverter() }
+
+    factory { TrackDbConverter() }
 
     single<PlaylistRepository> {
         PlaylistRepositoryImpl(get(), get(), get())

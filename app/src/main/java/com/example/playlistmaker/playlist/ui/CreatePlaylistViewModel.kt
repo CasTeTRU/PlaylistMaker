@@ -17,14 +17,14 @@ data class CreatePlaylistState(
     val isCreateButtonEnabled: Boolean = false
 )
 
-class CreatePlaylistViewModel(
-    private val playlistInteractor: PlaylistInteractor
+open class CreatePlaylistViewModel(
+    protected val playlistInteractor: PlaylistInteractor
 ) : ViewModel() {
 
-    private val _state = MutableLiveData<CreatePlaylistState>()
+    protected val _state = MutableLiveData<CreatePlaylistState>()
     val state: LiveData<CreatePlaylistState> = _state
 
-    private val _isPlaylistCreated = MutableLiveData<String?>()
+    protected val _isPlaylistCreated = MutableLiveData<String?>()
     val isPlaylistCreated: LiveData<String?> = _isPlaylistCreated
 
     init {
@@ -54,14 +54,14 @@ class CreatePlaylistViewModel(
         _state.value = currentState.copy(coverPath = path)
     }
 
-    fun hasUnsavedChanges(): Boolean {
+    open fun hasUnsavedChanges(): Boolean {
         val currentState = _state.value ?: return false
         return currentState.name.isNotBlank() ||
                 currentState.description.isNotBlank() ||
                 currentState.coverUri != null
     }
 
-    fun createPlaylist(coverPath: String?) {
+    open fun createPlaylist(coverPath: String?) {
         val currentState = _state.value ?: return
         if (currentState.name.isBlank()) return
 

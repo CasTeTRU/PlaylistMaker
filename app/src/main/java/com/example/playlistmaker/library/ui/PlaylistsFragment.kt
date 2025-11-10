@@ -23,7 +23,13 @@ class PlaylistsFragment : Fragment() {
     private val viewModel: PlaylistsViewModel by viewModel()
 
     private val playlistAdapter = PlaylistAdapter { playlist ->
-        // Переход на экран плейлиста пока не реализован
+        // Используем навигацию через родительский фрагмент
+        requireParentFragment().findNavController().navigate(
+            R.id.action_libraryFragment_to_playlistFragment,
+            android.os.Bundle().apply {
+                putLong("playlistId", playlist.id)
+            }
+        )
     }
 
     override fun onCreateView(

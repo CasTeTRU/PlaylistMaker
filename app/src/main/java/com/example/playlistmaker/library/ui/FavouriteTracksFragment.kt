@@ -20,12 +20,14 @@ class FavouriteTracksFragment : Fragment() {
     private var _binding: FragmentFavouriteTracksBinding? = null
     private val binding get() = _binding!!
 
-    private val trackAdapter = TrackAdapter { track ->
-        val intent = Intent(requireContext(), PlayerActivity::class.java).apply {
-            putExtra(PlayerActivity.EXTRA_TRACK, track)
+    private val trackAdapter = TrackAdapter(
+        onTrackClick = { track ->
+            val intent = Intent(requireContext(), PlayerActivity::class.java).apply {
+                putExtra(PlayerActivity.EXTRA_TRACK, track)
+            }
+            startActivity(intent)
         }
-        startActivity(intent)
-    }
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,

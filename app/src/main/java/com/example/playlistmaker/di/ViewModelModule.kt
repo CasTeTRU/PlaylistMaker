@@ -8,6 +8,8 @@ import com.example.playlistmaker.library.ui.LibraryViewModel
 import com.example.playlistmaker.library.ui.PlaylistsViewModel
 import com.example.playlistmaker.library.ui.FavoriteViewModel
 import com.example.playlistmaker.playlist.ui.CreatePlaylistViewModel
+import com.example.playlistmaker.playlist.ui.EditPlaylistViewModel
+import com.example.playlistmaker.playlist.ui.PlaylistViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -39,6 +41,14 @@ val viewModelModule = module {
 
     viewModel {
         CreatePlaylistViewModel(get())
+    }
+
+    viewModel {
+        EditPlaylistViewModel(get())
+    }
+
+    viewModel {
+        PlaylistViewModel(get())
     }
 
 }
