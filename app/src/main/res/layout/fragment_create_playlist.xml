@@ -121,7 +121,8 @@
                     android:inputType="text"
                     android:textColor="@color/text_color"
                     android:textSize="16sp"
-                    android:fontFamily="@font/ys_display_regular" />
+                    android:fontFamily="@font/ys_display_regular"
+                    android:textCursorDrawable="@drawable/cursor_color" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -143,10 +144,14 @@
                     android:layout_height="56dp"
                     android:hint="@string/playlist_description"
                     android:textColorHint="@color/description_hint_color"
-                    android:gravity="top|start"
+                    android:gravity="center_vertical|start"
                     android:textColor="@color/text_color"
                     android:textSize="16sp"
-                    android:fontFamily="@font/ys_display_regular" />
+                    android:fontFamily="@font/ys_display_regular"
+                    android:maxLines="1"
+                    android:inputType="text"
+                    android:imeOptions="actionDone"
+                    android:textCursorDrawable="@drawable/cursor_color" />
 
             </com.google.android.material.textfield.TextInputLayout>
 

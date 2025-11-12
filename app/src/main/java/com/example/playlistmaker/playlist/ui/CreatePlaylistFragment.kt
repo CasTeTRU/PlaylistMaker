@@ -17,6 +17,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentCreatePlaylistBinding
@@ -33,6 +34,9 @@ open class CreatePlaylistFragment : Fragment() {
     protected val binding get() = _binding!!
 
     protected open val viewModel: CreatePlaylistViewModel by viewModel()
+    
+    // Получаем nullable плейлист из аргументов навигации
+    private val args: CreatePlaylistFragmentArgs by navArgs()
 
     private val pickImageLauncher = registerForActivityResult(
         ActivityResultContracts.PickVisualMedia()
@@ -54,10 +58,24 @@ open class CreatePlaylistFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupViews()
-        observeViewModel()
-        // Восстанавливаем состояние при первом создании view
-        restoreState()
+        try {
+            // Инициализируем ViewModel переданным плейлистом (может быть null)
+            viewModel.initializePlaylist(args.playlist)
+            
+            setupViews()
+            observeViewModel()
+            // Восстанавливаем состояние при первом создании view
+            restoreState()
+        } catch (e: Exception) {
+            android.util.Log.e("CreatePlaylistFragment", "Error in onViewCreated", e)
+            e.printStackTrace()
+            // Пытаемся вернуться назад при ошибке
+            try {
+                navigateBack()
+            } catch (e2: Exception) {
+                android.util.Log.e("CreatePlaylistFragment", "Error navigating back", e2)
+            }
+        }
     }
 
     protected open fun restoreState() {
@@ -88,6 +106,30 @@ open class CreatePlaylistFragment : Fragment() {
 
         binding.coverContainer.setOnClickListener {
             pickImageLauncher.launch(androidx.activity.result.PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        }
+
+
+        binding.nameEditText.post {
+            setCursorColor(binding.nameEditText)
+        }
+        binding.descriptionEditText.post {
+            setCursorColor(binding.descriptionEditText)
+        }
+        
+
+        binding.nameEditText.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                binding.nameEditText.post {
+                    setCursorColor(binding.nameEditText)
+                }
+            }
+        }
+        binding.descriptionEditText.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                binding.descriptionEditText.post {
+                    setCursorColor(binding.descriptionEditText)
+                }
+            }
         }
 
         // Создаём TextWatcher для поля имени, избегая зацикливания при восстановлении состояния
@@ -126,9 +168,14 @@ open class CreatePlaylistFragment : Fragment() {
 
     protected open fun observeViewModel() {
         viewModel.state.observe(viewLifecycleOwner) { state ->
-            // Устанавливаем заголовок и текст кнопки для режима создания
-            binding.titleTextView.text = getString(R.string.new_playlist)
-            binding.createButton.text = getString(R.string.create)
+            val isEditMode = args.playlist != null
+            if (isEditMode) {
+                binding.titleTextView.text = getString(R.string.edit)
+                binding.createButton.text = getString(R.string.save)
+            } else {
+                binding.titleTextView.text = getString(R.string.new_playlist)
+                binding.createButton.text = getString(R.string.create)
+            }
 
             // Восстанавливаем состояние полей при изменении состояния
             if (binding.nameEditText.text.toString() != state.name) {
@@ -159,13 +206,25 @@ open class CreatePlaylistFragment : Fragment() {
                 }
             }
         }
+        
+        viewModel.isPlaylistUpdated.observe(viewLifecycleOwner) { isUpdated ->
+            if (isUpdated) {
+                if (isAdded && !isRemoving) {
+                    navigateBack()
+                }
+            }
+        }
     }
 
     protected open fun handleBackPress() {
-        if (viewModel.hasUnsavedChanges()) {
-            showConfirmDialog()
-        } else {
+        if (args.playlist != null) {
             navigateBack()
+        } else {
+            if (viewModel.hasUnsavedChanges()) {
+                showConfirmDialog()
+            } else {
+                navigateBack()
+            }
         }
     }
 
@@ -180,15 +239,14 @@ open class CreatePlaylistFragment : Fragment() {
             
             // Проверяем, находимся ли мы в PlayerActivity (есть контейнер nav_host_fragment_player)
             if (playerContainer != null) {
-                // Мы в PlayerActivity
-                // Пытаемся вернуться через Navigation
+                // Мы в PlayerActivity - используем Navigation Component для возврата
                 val canPop = navController.previousBackStackEntry != null && navController.popBackStack()
                 // Если не удалось вернуться (стек пуст) или мы на startDestination, скрываем контейнер
                 if (!canPop || navController.previousBackStackEntry == null) {
                     playerContainer.isVisible = false
                 }
             } else {
-                // Мы в MainActivity, используем стандартную навигацию
+                // Мы в MainActivity, используем стандартную навигацию через Navigation Component
                 navController.popBackStack()
             }
         } catch (e: Exception) {
@@ -299,6 +357,50 @@ open class CreatePlaylistFragment : Fragment() {
         snackbarLayout.layoutParams = params
         
         snackbar.show()
+    }
+
+    private fun setCursorColor(editText: android.widget.EditText) {
+        try {
+            val ypBlueColor = androidx.core.content.ContextCompat.getColor(requireContext(), R.color.yp_blue)
+            
+            // Создаем drawable для курсора
+            val cursorDrawable = android.graphics.drawable.GradientDrawable().apply {
+                setColor(ypBlueColor)
+                val widthPx = android.util.TypedValue.applyDimension(
+                    android.util.TypedValue.COMPLEX_UNIT_DIP, 2f, resources.displayMetrics
+                ).toInt()
+                setSize(widthPx, 0)
+            }
+            
+            // Для Android Q+ используем setTextCursorDrawable
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                editText.setTextCursorDrawable(cursorDrawable)
+            }
+            
+            // Дополнительно устанавливаем через рефлексию для надежности
+            try {
+                // Пробуем установить через mCursorDrawableRes
+                val field = android.widget.TextView::class.java.getDeclaredField("mCursorDrawableRes")
+                field.isAccessible = true
+                field.set(editText, R.drawable.cursor_color)
+            } catch (e: NoSuchFieldException) {
+                // Пробуем установить через mCursorDrawable (для старых версий)
+                try {
+                    val field = android.widget.TextView::class.java.getDeclaredField("mCursorDrawable")
+                    field.isAccessible = true
+                    val drawables = arrayOf(cursorDrawable, cursorDrawable)
+                    field.set(editText, drawables)
+                } catch (e2: Exception) {
+                    android.util.Log.d("CreatePlaylistFragment", "Could not set cursor via mCursorDrawable", e2)
+                }
+            }
+            
+            // Также устанавливаем цвет выделения текста (может влиять на курсор)
+            editText.highlightColor = ypBlueColor
+            
+        } catch (e: Exception) {
+            android.util.Log.e("CreatePlaylistFragment", "Error setting cursor color", e)
+        }
     }
 
     override fun onDestroyView() {

@@ -30,6 +30,13 @@
     <color name="on_surface_dark">#FFFFFF</color>
 
     <color name="background_main">#1A1B22</color>
+    <color name="background_playlist">@color/yp_light_grey</color>
+    <color name="playlist_name_color">@color/yp_black</color>
+    <color name="playlist_description_color">@color/yp_black</color>
+    <color name="playlist_info_color">@color/yp_black</color>
+    <color name="playlist_icon_color">@color/yp_black</color>
+    <color name="playlist_track_info_color">@color/yp_white</color>
+    <color name="playlist_track_name_color">@color/yp_white</color>
 
     <color name="button_background">#1A1B22</color>
     <color name="button_text_color">#FFFFFF</color>

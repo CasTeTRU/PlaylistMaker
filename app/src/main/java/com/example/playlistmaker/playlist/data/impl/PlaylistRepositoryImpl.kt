@@ -117,7 +117,7 @@ class PlaylistRepositoryImpl(
     }
 
     override suspend fun deletePlaylist(playlistId: Long) {
-        val playlist = getPlaylistById(playlistId) ?: return
+        val playlist = getPlaylistById(playlistId) ?: throw IllegalStateException("Playlist with id $playlistId not found")
         
         // Удаляем все треки плейлиста из таблицы, если они не используются в других плейлистах
         playlist.trackIds.forEach { trackId ->

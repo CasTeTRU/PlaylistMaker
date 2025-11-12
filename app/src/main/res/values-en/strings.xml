@@ -67,6 +67,7 @@
     <string name="yes">YES</string>
     <string name="no">NO</string>
     <string name="no_tracks_to_share">There is no tracks to share</string>
+    <string name="no_tracks_in_playlist">No tracks in playlist</string>
     <string name="delete_playlist">Delete playlist</string>
     <string name="delete_playlist_question">Confirm playlist deletion</string>
     <string name="edit_playlist_info">Edit info</string>

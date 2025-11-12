@@ -35,16 +35,13 @@
         android:id="@+id/createPlaylistFragment"
         android:name="com.example.playlistmaker.playlist.ui.CreatePlaylistFragment"
         android:label="@string/create_playlist"
-        tools:layout="@layout/fragment_create_playlist" />
-
-    <fragment
-        android:id="@+id/editPlaylistFragment"
-        android:name="com.example.playlistmaker.playlist.ui.EditPlaylistFragment"
-        android:label="@string/edit"
-        tools:layout="@layout/fragment_create_playlist">
+        tools:layout="@layout/fragment_create_playlist"
+        >
         <argument
-            android:name="playlistId"
-            app:argType="long" />
+            android:name="playlist"
+            app:argType="com.example.playlistmaker.playlist.domain.Playlist"
+            android:defaultValue="@null"
+            app:nullable="true"/>
     </fragment>
 
     <fragment
@@ -56,8 +53,8 @@
             android:name="playlistId"
             app:argType="long" />
         <action
-            android:id="@+id/action_playlistFragment_to_editPlaylistFragment"
-            app:destination="@id/editPlaylistFragment" />
+            android:id="@+id/action_playlistFragment_to_createPlaylistFragment"
+            app:destination="@id/createPlaylistFragment" />
     </fragment>
 
     <fragment

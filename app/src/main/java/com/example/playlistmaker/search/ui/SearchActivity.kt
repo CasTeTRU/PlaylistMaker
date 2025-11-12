@@ -72,7 +72,7 @@ class SearchActivity : AppCompatActivity() {
                 debounceClick {
                     viewModel.onTrackClick(track)
                     val intent = Intent(this@SearchActivity, PlayerActivity::class.java).apply {
-                        putExtra("track", track)
+                        putExtra(PlayerActivity.EXTRA_TRACK, track)
                     }
                     startActivity(intent)
                 }

@@ -23,6 +23,9 @@ class PlaylistViewModel(
     private val _state = MutableLiveData<PlaylistState>()
     val state: LiveData<PlaylistState> = _state
 
+    private val _isPlaylistDeleted = MutableLiveData<Boolean>()
+    val isPlaylistDeleted: LiveData<Boolean> = _isPlaylistDeleted
+
     private var currentPlaylistId: Long = 0
 
     fun loadPlaylist(playlistId: Long) {
@@ -53,11 +56,17 @@ class PlaylistViewModel(
 
     fun deletePlaylist() {
         viewModelScope.launch {
-            playlistInteractor.deletePlaylist(currentPlaylistId)
+            try {
+                playlistInteractor.deletePlaylist(currentPlaylistId)
+                _isPlaylistDeleted.postValue(true)
+            } catch (e: Exception) {
+                android.util.Log.e("PlaylistViewModel", "Error deleting playlist", e)
+                _isPlaylistDeleted.postValue(false)
+            }
         }
     }
 
-    fun getPlaylistShareText(): String? {
+    fun getPlaylistShareText(resources: android.content.res.Resources): String? {
         val state = _state.value ?: return null
         val playlist = state.playlist ?: return null
         val tracks = state.tracks
@@ -71,7 +80,14 @@ class PlaylistViewModel(
             builder.append("\n").append(playlist.description)
         }
         
-        builder.append("\n").append("[").append(tracks.size).append("] треков")
+        val trackCountText = resources.getQuantityString(
+            com.example.playlistmaker.R.plurals.playlist_track_count,
+            tracks.size,
+            tracks.size
+        )
+
+        val trackWord = trackCountText.replace(Regex("^\\d+\\s*"), "")
+        builder.append("\n").append("[").append(tracks.size).append("] ").append(trackWord)
         
         tracks.forEachIndexed { index, track ->
             builder.append("\n")

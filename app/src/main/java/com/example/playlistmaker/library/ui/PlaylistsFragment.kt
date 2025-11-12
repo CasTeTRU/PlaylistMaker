@@ -50,7 +50,9 @@ class PlaylistsFragment : Fragment() {
 
     private fun setupViews() {
         binding.newPlaylistBtn.setOnClickListener {
-            findNavController().navigate(R.id.action_libraryFragment_to_createPlaylistFragment)
+            requireParentFragment().findNavController().navigate(
+                R.id.action_libraryFragment_to_createPlaylistFragment
+            )
         }
 
         binding.playlistsRecyclerView.layoutManager = GridLayoutManager(requireContext(), 2)

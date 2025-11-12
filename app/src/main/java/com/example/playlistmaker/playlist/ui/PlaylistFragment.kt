@@ -37,13 +37,32 @@ class PlaylistFragment : Fragment() {
     private val viewModel: PlaylistViewModel by viewModel()
     private lateinit var tracksBottomSheetBehavior: BottomSheetBehavior<*>
     private lateinit var menuBottomSheetBehavior: BottomSheetBehavior<*>
+    private lateinit var menuBottomSheetCallback: BottomSheetBehavior.BottomSheetCallback
 
     private val trackAdapter = TrackAdapter(
         onTrackClick = { track ->
-            val intent = Intent(requireContext(), PlayerActivity::class.java).apply {
-                putExtra(PlayerActivity.EXTRA_TRACK, track)
+            try {
+                android.util.Log.d("PlaylistFragment", "Track clicked: trackId=${track.trackId}, trackName=${track.trackName}")
+                
+                // Проверяем, что трек валиден перед передачей
+                if (track.trackId.isBlank() || track.trackName.isBlank() || track.artistName.isBlank()) {
+                    android.util.Log.e("PlaylistFragment", "Invalid track data: trackId=${track.trackId}, trackName=${track.trackName}, artistName=${track.artistName}")
+                    Toast.makeText(requireContext(), "Ошибка: некорректные данные трека", Toast.LENGTH_SHORT).show()
+                    return@TrackAdapter
+                }
+                
+                android.util.Log.d("PlaylistFragment", "Creating intent with track")
+                val intent = Intent(requireContext(), PlayerActivity::class.java).apply {
+                    putExtra(PlayerActivity.EXTRA_TRACK, track)
+                }
+                android.util.Log.d("PlaylistFragment", "Starting PlayerActivity")
+                startActivity(intent)
+                android.util.Log.d("PlaylistFragment", "PlayerActivity started successfully")
+            } catch (e: Exception) {
+                android.util.Log.e("PlaylistFragment", "Error starting PlayerActivity", e)
+                e.printStackTrace()
+                Toast.makeText(requireContext(), "Ошибка при запуске плеера: ${e.message}", Toast.LENGTH_LONG).show()
             }
-            startActivity(intent)
         },
         onTrackLongClick = { track ->
             showDeleteTrackDialog(track)
@@ -69,7 +88,6 @@ class PlaylistFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        // Перезагружаем данные при возврате на экран (например, после редактирования)
         viewModel.loadPlaylist(args.playlistId)
     }
 
@@ -91,39 +109,44 @@ class PlaylistFragment : Fragment() {
     }
 
     private fun setupBottomSheet() {
-        // Настройка Bottom Sheet для списка треков
         tracksBottomSheetBehavior = BottomSheetBehavior.from(binding.tracksBottomSheet).apply {
             state = BottomSheetBehavior.STATE_COLLAPSED
-            isHideable = false
-            peekHeight = 400
-            skipCollapsed = false
+            isHideable = false // Нельзя скрыть
+            peekHeight = 400 // Высота в свернутом состоянии
+            skipCollapsed = false // Позволяет переходить в STATE_COLLAPSED
+            // Добавляем callback для предотвращения скрытия
+            addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+                override fun onStateChanged(bottomSheet: View, newState: Int) {
+                    // Предотвращаем переход в STATE_HIDDEN
+                    if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+                        state = BottomSheetBehavior.STATE_COLLAPSED
+                    }
+                }
+
+                override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                    // Ничего не делаем при скольжении
+                }
+            })
         }
 
-        // Настройка Bottom Sheet для меню
         menuBottomSheetBehavior = BottomSheetBehavior.from(binding.menuBottomSheet).apply {
             state = BottomSheetBehavior.STATE_HIDDEN
             isHideable = true
         }
 
-        // Настройка затемнения при открытии меню
-        menuBottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+        menuBottomSheetCallback = object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
-                when (newState) {
-                    BottomSheetBehavior.STATE_HIDDEN -> {
-                        binding.overlay.isVisible = false
-                    }
-                    else -> {
-                        binding.overlay.isVisible = true
-                    }
-                }
+                val isVisible = newState != BottomSheetBehavior.STATE_HIDDEN
+                _binding?.overlay?.isVisible = isVisible
             }
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                binding.overlay.alpha = kotlin.math.abs(slideOffset)
+                _binding?.overlay?.alpha = kotlin.math.abs(slideOffset)
             }
-        })
+        }
 
-        // Закрытие меню при нажатии на overlay
+        menuBottomSheetBehavior.addBottomSheetCallback(menuBottomSheetCallback)
+
         binding.overlay.setOnClickListener {
             hideMenuBottomSheet()
         }
@@ -144,13 +167,28 @@ class PlaylistFragment : Fragment() {
                 dialog.dismiss()
             }
             .create()
-        
+
         dialog.show()
-        
-        // Применяем стили к кнопкам после показа диалога
+
+        // Настройка для темной темы
+        if (isInNightMode(requireContext())) {
+            // Фон диалога - YP White
+            dialog.window?.setBackgroundDrawable(
+                android.graphics.drawable.ColorDrawable(
+                    androidx.core.content.ContextCompat.getColor(requireContext(), R.color.yp_white)
+                )
+            )
+            
+            // Текст сообщения - YP Black
+            val messageView = dialog.findViewById<android.widget.TextView>(android.R.id.message)
+            messageView?.setTextColor(
+                androidx.core.content.ContextCompat.getColor(requireContext(), R.color.yp_black)
+            )
+        }
+
         val buttonTextColor = androidx.core.content.ContextCompat.getColor(requireContext(), R.color.dialog_button_text_color)
         val buttonTextSize = 14f
-        
+
         dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.apply {
             setTextColor(buttonTextColor)
             textSize = buttonTextSize
@@ -184,10 +222,16 @@ class PlaylistFragment : Fragment() {
             bindTracks(state.tracks)
             bindDuration(state.totalDuration)
         }
+
+        viewModel.isPlaylistDeleted.observe(viewLifecycleOwner) { isDeleted ->
+            if (isDeleted) {
+                findNavController().popBackStack()
+            }
+        }
     }
 
     private fun sharePlaylist() {
-        val shareText = viewModel.getPlaylistShareText()
+        val shareText = viewModel.getPlaylistShareText(resources)
         if (shareText == null) {
             Toast.makeText(requireContext(), R.string.no_tracks_to_share, Toast.LENGTH_SHORT).show()
             return
@@ -204,36 +248,45 @@ class PlaylistFragment : Fragment() {
         val state = viewModel.state.value ?: return
         val playlist = state.playlist ?: return
 
-        // Заполняем информацию о плейлисте
-        binding.menuPlaylistNameTextView.text = playlist.name
+        _binding?.let { binding ->
+            binding.menuPlaylistNameTextView.text = playlist.name
 
-        if (!playlist.description.isNullOrEmpty()) {
-            binding.menuPlaylistDescriptionTextView.text = playlist.description
-            binding.menuPlaylistDescriptionTextView.isVisible = true
-        } else {
-            binding.menuPlaylistDescriptionTextView.isVisible = false
-        }
+            // Загружаем обложку плейлиста в меню
+            val placeholderRes = if (isInNightMode(requireContext())) {
+                R.drawable.ic_cover_placeholder_night
+            } else {
+                R.drawable.ic_cover_placeholder
+            }
 
-        binding.menuPlaylistInfoTextView.text = resources.getQuantityString(
-            R.plurals.playlist_track_count,
-            playlist.trackCount,
-            playlist.trackCount
-        )
+            val coverFile = playlist.coverPath?.let { File(it) }
+            Glide.with(requireContext())
+                .load(coverFile)
+                .placeholder(placeholderRes)
+                .error(placeholderRes)
+                .centerCrop()
+                .transform(RoundedCorners(dpToPxConvert.dpToPx(requireContext(), 8)))
+                .into(binding.menuCoverImageView)
 
-        // Обработка нажатий на пункты меню
-        binding.editMenuItem.setOnClickListener {
-            hideMenuBottomSheet()
-            navigateToEditPlaylist()
-        }
+            binding.menuPlaylistInfoTextView.text = resources.getQuantityString(
+                R.plurals.playlist_track_count,
+                playlist.trackCount,
+                playlist.trackCount
+            )
 
-        binding.shareMenuItem.setOnClickListener {
-            hideMenuBottomSheet()
-            sharePlaylist()
-        }
+            binding.editMenuItem.setOnClickListener {
+                hideMenuBottomSheet()
+                navigateToEditPlaylist()
+            }
 
-        binding.deleteMenuItem.setOnClickListener {
-            hideMenuBottomSheet()
-            showDeletePlaylistDialog()
+            binding.shareMenuItem.setOnClickListener {
+                hideMenuBottomSheet()
+                sharePlaylist()
+            }
+
+            binding.deleteMenuItem.setOnClickListener {
+                hideMenuBottomSheet()
+                showDeletePlaylistDialog()
+            }
         }
 
         menuBottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
@@ -244,9 +297,10 @@ class PlaylistFragment : Fragment() {
     }
 
     private fun navigateToEditPlaylist() {
-        val playlistId = args.playlistId
+        val state = viewModel.state.value ?: return
+        val playlist = state.playlist ?: return
         findNavController().navigate(
-            PlaylistFragmentDirections.actionPlaylistFragmentToEditPlaylistFragment(playlistId)
+            PlaylistFragmentDirections.actionPlaylistFragmentToCreatePlaylistFragment(playlist)
         )
     }
 
@@ -256,7 +310,6 @@ class PlaylistFragment : Fragment() {
             .setMessage(R.string.delete_playlist_question)
             .setPositiveButton(R.string.yes) { _, _ ->
                 viewModel.deletePlaylist()
-                findNavController().popBackStack()
             }
             .setNegativeButton(R.string.no) { dialog, _ ->
                 dialog.dismiss()
@@ -265,7 +318,28 @@ class PlaylistFragment : Fragment() {
 
         dialog.show()
 
-        // Применяем стили к кнопкам после показа диалога
+        // Настройка для темной темы
+        if (isInNightMode(requireContext())) {
+            // Фон диалога - YP White
+            dialog.window?.setBackgroundDrawable(
+                android.graphics.drawable.ColorDrawable(
+                    androidx.core.content.ContextCompat.getColor(requireContext(), R.color.yp_white)
+                )
+            )
+            
+            // Текст заголовка - YP Black
+            val titleView = dialog.findViewById<android.widget.TextView>(androidx.appcompat.R.id.alertTitle)
+            titleView?.setTextColor(
+                androidx.core.content.ContextCompat.getColor(requireContext(), R.color.yp_black)
+            )
+            
+            // Текст сообщения - YP Black
+            val messageView = dialog.findViewById<android.widget.TextView>(android.R.id.message)
+            messageView?.setTextColor(
+                androidx.core.content.ContextCompat.getColor(requireContext(), R.color.yp_black)
+            )
+        }
+
         val buttonTextColor = androidx.core.content.ContextCompat.getColor(requireContext(), R.color.dialog_button_text_color)
         val buttonTextSize = 14f
 
@@ -294,48 +368,43 @@ class PlaylistFragment : Fragment() {
     }
 
     private fun bindPlaylist(playlist: com.example.playlistmaker.playlist.domain.Playlist) {
-        binding.playlistNameTextView.text = playlist.name
+        _binding?.let { binding ->
+            binding.playlistNameTextView.text = playlist.name
 
-        if (!playlist.description.isNullOrEmpty()) {
-            binding.playlistDescriptionTextView.text = playlist.description
-            binding.playlistDescriptionTextView.isVisible = true
-        } else {
-            binding.playlistDescriptionTextView.isVisible = false
+            if (!playlist.description.isNullOrEmpty()) {
+                binding.playlistDescriptionTextView.text = playlist.description
+                binding.playlistDescriptionTextView.isVisible = true
+            } else {
+                binding.playlistDescriptionTextView.isVisible = false
+            }
+
+            val placeholderRes = if (isInNightMode(requireContext())) {
+                R.drawable.ic_cover_placeholder_night
+            } else {
+                R.drawable.ic_cover_placeholder
+            }
+
+            val coverFile = playlist.coverPath?.let { File(it) }
+            Glide.with(requireContext())
+                .load(coverFile)
+                .placeholder(placeholderRes)
+                .error(placeholderRes)
+                .centerCrop()
+                .transform(RoundedCorners(dpToPxConvert.dpToPx(requireContext(), 8)))
+                .into(binding.coverImageView)
         }
-
-        val placeholderRes = if (isInNightMode(requireContext())) {
-            R.drawable.ic_cover_placeholder_night
-        } else {
-            R.drawable.ic_cover_placeholder
-        }
-
-        val coverFile = playlist.coverPath?.let { File(it) }
-        Glide.with(requireContext())
-            .load(coverFile)
-            .placeholder(placeholderRes)
-            .error(placeholderRes)
-            .centerCrop()
-            .transform(RoundedCorners(dpToPxConvert.dpToPx(requireContext(), 8)))
-            .into(binding.coverImageView)
     }
 
     private fun bindTracks(tracks: List<Track>) {
         trackAdapter.submitList(tracks)
-        // Показываем Bottom Sheet только если есть треки
-        binding.tracksBottomSheet.isVisible = tracks.isNotEmpty()
+        _binding?.let { binding ->
+            binding.tracksBottomSheet.isVisible = tracks.isNotEmpty()
+            binding.emptyTracksTextView.isVisible = tracks.isEmpty()
+        }
     }
 
     private fun bindDuration(totalDurationMillis: Long) {
-        // Вычисляем общую длительность в минутах
         val totalMinutes = totalDurationMillis / (1000 * 60)
-        
-        // Используем SimpleDateFormat для форматирования (как указано в требованиях)
-        val dateFormat = SimpleDateFormat("mm", Locale.getDefault())
-        // Создаем Date из суммы миллисекунд для форматирования
-        val date = java.util.Date(totalDurationMillis)
-        val formattedMinutesStr = dateFormat.format(date)
-        
-        // Вычисляем часы и минуты из общего количества минут
         val hours = totalMinutes / 60
         val remainingMinutes = totalMinutes % 60
 
@@ -345,11 +414,11 @@ class PlaylistFragment : Fragment() {
             String.format("%d мин", remainingMinutes)
         }
 
-        binding.totalDurationTextView.text = durationText
+        _binding?.totalDurationTextView?.text = durationText
     }
 
     private fun bindTrackCount(trackCount: Int) {
-        binding.trackCountTextView.text = resources.getQuantityString(
+        _binding?.trackCountTextView?.text = resources.getQuantityString(
             R.plurals.playlist_track_count,
             trackCount,
             trackCount
@@ -363,6 +432,7 @@ class PlaylistFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        menuBottomSheetBehavior.removeBottomSheetCallback(menuBottomSheetCallback)
         super.onDestroyView()
         _binding = null
     }
@@ -371,4 +441,3 @@ class PlaylistFragment : Fragment() {
         const val ARG_PLAYLIST_ID = "playlist_id"
     }
 }
-

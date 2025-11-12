@@ -63,9 +63,8 @@ class MainActivity : AppCompatActivity() {
         
         // Настраиваем обновление заголовка при изменении экрана
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            // Скрываем нижнюю панель навигации на экране создания плейлиста, редактирования плейлиста и просмотра плейлиста
+            // Скрываем нижнюю панель навигации на экране создания/редактирования плейлиста и просмотра плейлиста
             if (destination.id == R.id.createPlaylistFragment || 
-                destination.id == R.id.editPlaylistFragment || 
                 destination.id == R.id.playlistFragment) {
                 binding.bottomNavigation.isVisible = false
                 binding.bottomDivider.isVisible = false
@@ -116,7 +115,7 @@ class MainActivity : AppCompatActivity() {
         
         // Скрываем заголовок на экране создания плейлиста, редактирования плейлиста и просмотра плейлиста
         if (currentDestination?.id == R.id.createPlaylistFragment || 
-            currentDestination?.id == R.id.editPlaylistFragment || 
+            //currentDestination?.id == R.id.editPlaylistFragment ||
             currentDestination?.id == R.id.playlistFragment) {
             binding.screenTitle.isVisible = false
         } else {

@@ -27,8 +27,35 @@ open class CreatePlaylistViewModel(
     protected val _isPlaylistCreated = MutableLiveData<String?>()
     val isPlaylistCreated: LiveData<String?> = _isPlaylistCreated
 
+    private val _isPlaylistUpdated = MutableLiveData<Boolean>()
+    val isPlaylistUpdated: LiveData<Boolean> = _isPlaylistUpdated
+
+    private var editingPlaylist: Playlist? = null
+    private var originalName: String = ""
+    private var originalDescription: String = ""
+    private var originalCoverPath: String? = null
+
     init {
         _state.value = CreatePlaylistState()
+    }
+
+    fun initializePlaylist(playlist: Playlist?) {
+        editingPlaylist = playlist
+        if (playlist != null) {
+            val coverUri = playlist.coverPath?.let { path ->
+                Uri.fromFile(java.io.File(path))
+            }
+            originalName = playlist.name
+            originalDescription = playlist.description ?: ""
+            originalCoverPath = playlist.coverPath
+            _state.value = CreatePlaylistState(
+                name = playlist.name,
+                description = playlist.description ?: "",
+                coverUri = coverUri,
+                coverPath = playlist.coverPath,
+                isCreateButtonEnabled = playlist.name.isNotBlank()
+            )
+        }
     }
 
     fun updateName(name: String) {
@@ -56,6 +83,12 @@ open class CreatePlaylistViewModel(
 
     open fun hasUnsavedChanges(): Boolean {
         val currentState = _state.value ?: return false
+        if (editingPlaylist != null) {
+            return currentState.name != originalName ||
+                    currentState.description != originalDescription ||
+                    currentState.coverPath != originalCoverPath
+        }
+
         return currentState.name.isNotBlank() ||
                 currentState.description.isNotBlank() ||
                 currentState.coverUri != null
@@ -67,17 +100,33 @@ open class CreatePlaylistViewModel(
 
         viewModelScope.launch {
             try {
-                val playlist = Playlist(
-                    name = currentState.name,
-                    description = currentState.description.takeIf { it.isNotBlank() },
-                    coverPath = coverPath,
-                    trackIds = emptyList(),
-                    trackCount = 0
-                )
-                playlistInteractor.createPlaylist(playlist)
-                _isPlaylistCreated.postValue(currentState.name)
+                if (editingPlaylist != null) {
+                    val finalCoverPath = coverPath ?: originalCoverPath
+                    val existingPlaylist = editingPlaylist!!
+                    val updatedPlaylist = Playlist(
+                        id = existingPlaylist.id,
+                        name = currentState.name,
+                        description = currentState.description.takeIf { it.isNotBlank() },
+                        coverPath = finalCoverPath,
+                        trackIds = existingPlaylist.trackIds,
+                        trackCount = existingPlaylist.trackCount
+                    )
+                    playlistInteractor.updatePlaylist(updatedPlaylist)
+                    _isPlaylistUpdated.postValue(true)
+                } else {
+
+                    val playlist = Playlist(
+                        name = currentState.name,
+                        description = currentState.description.takeIf { it.isNotBlank() },
+                        coverPath = coverPath,
+                        trackIds = emptyList(),
+                        trackCount = 0
+                    )
+                    playlistInteractor.createPlaylist(playlist)
+                    _isPlaylistCreated.postValue(currentState.name)
+                }
             } catch (e: Exception) {
-                android.util.Log.e("CreatePlaylistViewModel", "Error creating playlist", e)
+                android.util.Log.e("CreatePlaylistViewModel", "Error saving playlist", e)
             }
         }
     }
