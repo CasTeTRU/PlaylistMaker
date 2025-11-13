@@ -108,8 +108,45 @@ open class CreatePlaylistFragment : Fragment() {
             pickImageLauncher.launch(androidx.activity.result.PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
 
-        // Устанавливаем цвет курсора программно
-        setupCursorColor()
+        // Устанавливаем цвет курсора программно (TextInputLayout может переопределять атрибут из layout)
+        binding.nameEditText.post {
+            // Устанавливаем drawable курсора напрямую
+            val cursorDrawable = androidx.core.content.ContextCompat.getDrawable(requireContext(), R.drawable.cursor_color)
+            if (cursorDrawable != null && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                binding.nameEditText.setTextCursorDrawable(cursorDrawable)
+            }
+        }
+        
+        binding.descriptionEditText.post {
+            // Устанавливаем drawable курсора напрямую
+            val cursorDrawable = androidx.core.content.ContextCompat.getDrawable(requireContext(), R.drawable.cursor_color)
+            if (cursorDrawable != null && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                binding.descriptionEditText.setTextCursorDrawable(cursorDrawable)
+            }
+        }
+        
+        // Также устанавливаем при получении фокуса
+        binding.nameEditText.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                binding.nameEditText.post {
+                    val cursorDrawable = androidx.core.content.ContextCompat.getDrawable(requireContext(), R.drawable.cursor_color)
+                    if (cursorDrawable != null && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                        binding.nameEditText.setTextCursorDrawable(cursorDrawable)
+                    }
+                }
+            }
+        }
+        
+        binding.descriptionEditText.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                binding.descriptionEditText.post {
+                    val cursorDrawable = androidx.core.content.ContextCompat.getDrawable(requireContext(), R.drawable.cursor_color)
+                    if (cursorDrawable != null && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                        binding.descriptionEditText.setTextCursorDrawable(cursorDrawable)
+                    }
+                }
+            }
+        }
 
         // Создаём TextWatcher для поля имени, избегая зацикливания при восстановлении состояния
         val nameWatcher = binding.nameEditText.doAfterTextChanged { s: Editable? ->
@@ -341,66 +378,6 @@ open class CreatePlaylistFragment : Fragment() {
         snackbarLayout.layoutParams = params
         
         snackbar.show()
-    }
-
-    private fun setupCursorColor() {
-        val ypBlueColor = androidx.core.content.ContextCompat.getColor(requireContext(), R.color.yp_blue)
-        
-        // Загружаем drawable из ресурсов
-        val cursorDrawableRes = androidx.core.content.ContextCompat.getDrawable(requireContext(), R.drawable.cursor_color)
-        
-        // Создаем drawable для курсора программно (на случай, если ресурс не загрузился)
-        val cursorDrawable = cursorDrawableRes ?: android.graphics.drawable.GradientDrawable().apply {
-            setColor(ypBlueColor)
-            val widthPx = android.util.TypedValue.applyDimension(
-                android.util.TypedValue.COMPLEX_UNIT_DIP, 2f, resources.displayMetrics
-            ).toInt()
-            setSize(widthPx, 0)
-        }
-        
-        // Для Android Q+ (API 29+) используем setTextCursorDrawable
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-            binding.nameEditText.setTextCursorDrawable(cursorDrawable)
-            binding.descriptionEditText.setTextCursorDrawable(cursorDrawable)
-        }
-        
-        // Также устанавливаем цвет выделения текста
-        binding.nameEditText.highlightColor = ypBlueColor
-        binding.descriptionEditText.highlightColor = ypBlueColor
-        
-        // Устанавливаем цвет курсора при получении фокуса
-        val setupCursor = { editText: android.widget.EditText ->
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-                editText.post {
-                    editText.setTextCursorDrawable(cursorDrawable)
-                }
-            }
-        }
-        
-        binding.nameEditText.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) {
-                setupCursor(binding.nameEditText)
-            }
-        }
-        
-        binding.descriptionEditText.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) {
-                setupCursor(binding.descriptionEditText)
-            }
-        }
-        
-        // Также устанавливаем при первом отображении
-        binding.nameEditText.post {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-                binding.nameEditText.setTextCursorDrawable(cursorDrawable)
-            }
-        }
-        
-        binding.descriptionEditText.post {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-                binding.descriptionEditText.setTextCursorDrawable(cursorDrawable)
-            }
-        }
     }
 
     override fun onDestroyView() {

@@ -110,9 +110,9 @@
                 app:hintTextColor="@color/playlist_name_hint_color"
                 app:boxStrokeColor="@color/yp_blue"
                 app:boxBackgroundColor="@color/background_settings"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                style="@style/PlaylistTextInputLayoutStyle">
 
-                <com.google.android.material.textfield.TextInputEditText
+                <EditText
                     android:id="@+id/nameEditText"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
@@ -122,8 +122,7 @@
                     android:textColor="@color/text_color"
                     android:textSize="16sp"
                     android:fontFamily="@font/ys_display_regular"
-                    android:textCursorDrawable="@drawable/cursor_color"
-                    style="@style/PlaylistEditTextStyle" />
+                    android:textCursorDrawable="@drawable/cursor_color" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -137,9 +136,9 @@
                 app:hintTextColor="@color/description_hint_color"
                 app:boxStrokeColor="@color/yp_blue"
                 app:boxBackgroundColor="@color/background_settings"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                style="@style/PlaylistTextInputLayoutStyle">
 
-                <com.google.android.material.textfield.TextInputEditText
+                <EditText
                     android:id="@+id/descriptionEditText"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
@@ -152,8 +151,7 @@
                     android:maxLines="1"
                     android:inputType="text"
                     android:imeOptions="actionDone"
-                    android:textCursorDrawable="@drawable/cursor_color"
-                    style="@style/PlaylistEditTextStyle" />
+                    android:textCursorDrawable="@drawable/cursor_color" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
