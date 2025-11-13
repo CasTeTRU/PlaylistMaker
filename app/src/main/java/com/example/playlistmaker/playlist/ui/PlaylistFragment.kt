@@ -15,13 +15,11 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlaylistBinding
 import com.example.playlistmaker.player.ui.PlayerActivity
 import com.example.playlistmaker.search.ui.TrackAdapter
 import com.example.playlistmaker.search.domain.Track
-import com.example.playlistmaker.util.dpToPxConvert
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
@@ -109,10 +107,11 @@ class PlaylistFragment : Fragment() {
     }
 
     private fun setupBottomSheet() {
+
         tracksBottomSheetBehavior = BottomSheetBehavior.from(binding.tracksBottomSheet).apply {
             state = BottomSheetBehavior.STATE_COLLAPSED
             isHideable = false // Нельзя скрыть
-            peekHeight = 400 // Высота в свернутом состоянии
+            peekHeight = (266 * resources.displayMetrics.density).toInt()
             skipCollapsed = false // Позволяет переходить в STATE_COLLAPSED
             // Добавляем callback для предотвращения скрытия
             addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
@@ -128,6 +127,16 @@ class PlaylistFragment : Fragment() {
                 }
             })
         }
+        
+        // Вычисляем peekHeight на основе реальной позиции кнопок после отрисовки
+        binding.shareButton.viewTreeObserver.addOnGlobalLayoutListener(object : android.view.ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                // Удаляем listener после первого вызова
+                binding.shareButton.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                // Вычисляем peekHeight
+                updatePeekHeight()
+            }
+        })
 
         menuBottomSheetBehavior = BottomSheetBehavior.from(binding.menuBottomSheet).apply {
             state = BottomSheetBehavior.STATE_HIDDEN
@@ -155,6 +164,43 @@ class PlaylistFragment : Fragment() {
     private fun setupRecyclerView() {
         binding.tracksRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.tracksRecyclerView.adapter = trackAdapter
+    }
+    
+    private fun updatePeekHeight() {
+        // Используем post для расчета после полной отрисовки
+        binding.shareButton.post {
+            val buttonsContainer = binding.shareButton.parent as? ViewGroup
+            buttonsContainer?.let { container ->
+                val coordinatorLayout = binding.root
+                
+                // Получаем позицию контейнера с кнопками и CoordinatorLayout в окне
+                val containerLocation = IntArray(2)
+                container.getLocationInWindow(containerLocation)
+                val coordinatorLocation = IntArray(2)
+                coordinatorLayout.getLocationInWindow(coordinatorLocation)
+                
+                // Вычисляем нижнюю границу кнопок относительно CoordinatorLayout
+                val buttonsBottomY = containerLocation[1] - coordinatorLocation[1] + container.height
+                val coordinatorHeight = coordinatorLayout.height
+                val offset24dp = (24 * resources.displayMetrics.density).toInt()
+                
+                // peekHeight - это высота bottom sheet от низа CoordinatorLayout
+                // Верхняя граница bottom sheet должна быть на buttonsBottomY + 24dp от верха CoordinatorLayout
+                // Значит peekHeight = coordinatorHeight - (buttonsBottomY + 24dp)
+                val targetTopY = buttonsBottomY + offset24dp
+                val peekHeight = coordinatorHeight - targetTopY
+                
+                // Обновляем peekHeight на вычисленное значение
+                // Убеждаемся, что peekHeight положительный и разумный
+                val minPeekHeight = (200 * resources.displayMetrics.density).toInt()
+                if (peekHeight > minPeekHeight) {
+                    tracksBottomSheetBehavior.peekHeight = peekHeight
+                } else {
+                    // Если расчет дал слишком маленькое значение, используем минимальное
+                    tracksBottomSheetBehavior.peekHeight = minPeekHeight
+                }
+            }
+        }
     }
 
     private fun showDeleteTrackDialog(track: Track) {
@@ -264,7 +310,6 @@ class PlaylistFragment : Fragment() {
                 .placeholder(placeholderRes)
                 .error(placeholderRes)
                 .centerCrop()
-                .transform(RoundedCorners(dpToPxConvert.dpToPx(requireContext(), 8)))
                 .into(binding.menuCoverImageView)
 
             binding.menuPlaylistInfoTextView.text = resources.getQuantityString(
@@ -377,6 +422,14 @@ class PlaylistFragment : Fragment() {
             } else {
                 binding.playlistDescriptionTextView.isVisible = false
             }
+            
+            // Пересчитываем peekHeight после изменения видимости описания
+            // Используем двойной post для гарантии, что layout пересчитался
+            binding.playlistDescriptionTextView.post {
+                binding.playlistDescriptionTextView.post {
+                    updatePeekHeight()
+                }
+            }
 
             val placeholderRes = if (isInNightMode(requireContext())) {
                 R.drawable.ic_cover_placeholder_night
@@ -390,7 +443,6 @@ class PlaylistFragment : Fragment() {
                 .placeholder(placeholderRes)
                 .error(placeholderRes)
                 .centerCrop()
-                .transform(RoundedCorners(dpToPxConvert.dpToPx(requireContext(), 8)))
                 .into(binding.coverImageView)
         }
     }

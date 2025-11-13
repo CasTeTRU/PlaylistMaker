@@ -122,7 +122,8 @@
                     android:textColor="@color/text_color"
                     android:textSize="16sp"
                     android:fontFamily="@font/ys_display_regular"
-                    android:textCursorDrawable="@drawable/cursor_color" />
+                    android:textCursorDrawable="@drawable/cursor_color"
+                    style="@style/PlaylistEditTextStyle" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -151,7 +152,8 @@
                     android:maxLines="1"
                     android:inputType="text"
                     android:imeOptions="actionDone"
-                    android:textCursorDrawable="@drawable/cursor_color" />
+                    android:textCursorDrawable="@drawable/cursor_color"
+                    style="@style/PlaylistEditTextStyle" />
 
             </com.google.android.material.textfield.TextInputLayout>
 

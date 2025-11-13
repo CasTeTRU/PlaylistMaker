@@ -74,9 +74,17 @@ class PlaylistRepositoryImpl(
         
         // Получаем все треки из таблицы плейлистов
         val allTracks = playlistTrackDao.getAllTracks()
-        // Фильтруем только те треки, которые есть в плейлисте
-        val filteredTracks = allTracks.filter { playlist.trackIds.contains(it.trackId) }
-        return filteredTracks.map { playlistTrackConverter.map(it) }
+        // Создаем Map для быстрого поиска треков по trackId
+        val tracksMap = allTracks.associateBy { it.trackId }
+        
+        // Сортируем треки по порядку в playlist.trackIds и разворачиваем список,
+        // чтобы последние добавленные треки были вверху
+        val sortedTracks = playlist.trackIds
+            .mapNotNull { tracksMap[it] }
+            .reversed() // Разворачиваем список - последние добавленные вверху
+            .map { playlistTrackConverter.map(it) }
+        
+        return sortedTracks
     }
 
     override suspend fun removeTrackFromPlaylist(playlistId: Long, trackId: String) {
@@ -96,10 +104,7 @@ class PlaylistRepositoryImpl(
         checkAndRemoveUnusedTrack(trackId)
     }
 
-    /**
-     * Проверяет, используется ли трек в других плейлистах.
-     * Если трек не используется ни в одном плейлисте, удаляет его из таблицы треков.
-     */
+
     private suspend fun checkAndRemoveUnusedTrack(trackId: String) {
         // Получаем все плейлисты
         val allPlaylistsEntities = playlistDao.getAllPlaylists().first()
@@ -117,7 +122,7 @@ class PlaylistRepositoryImpl(
     }
 
     override suspend fun deletePlaylist(playlistId: Long) {
-        val playlist = getPlaylistById(playlistId) ?: throw IllegalStateException("Playlist with id $playlistId not found")
+        val playlist = getPlaylistById(playlistId) ?: return
         
         // Удаляем все треки плейлиста из таблицы, если они не используются в других плейлистах
         playlist.trackIds.forEach { trackId ->

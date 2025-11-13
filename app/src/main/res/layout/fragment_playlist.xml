@@ -5,6 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_playlist"
+    android:fitsSystemWindows="false"
+    android:clipChildren="false"
     tools:context=".playlist.ui.PlaylistFragment">
 
     <LinearLayout
@@ -27,7 +29,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:shapeAppearanceOverlay="@style/PlaylistCoverShapeAppearance"
                 tools:src="@drawable/ic_cover_placeholder" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -146,7 +147,9 @@
                     android:orientation="horizontal"
                     android:gravity="start"
                     android:layout_marginTop="0dp"
-                    android:layout_marginBottom="16dp">
+                    android:layout_marginBottom="16dp"
+                    android:elevation="8dp"
+                    android:background="@android:color/transparent">
 
                     <ImageView
                         android:id="@+id/shareButton"
@@ -224,6 +227,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:paddingTop="8dp"
+            android:clipToPadding="false"
             tools:listitem="@layout/item_track" />
 
     </LinearLayout>
