@@ -10,13 +10,14 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.playlist.domain.AddTrackResult
+import com.example.playlistmaker.playlist.ui.CreatePlaylistFragmentArgs
 import com.example.playlistmaker.search.domain.Track
 import com.example.playlistmaker.util.dpToPxConvert
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -30,7 +31,6 @@ class PlayerActivity : AppCompatActivity() {
     companion object {
         const val EXTRA_TRACK = "track"
         private const val CORNER_RADIUS = 8f
-        const val REQUEST_CODE_CREATE_PLAYLIST = 100
     }
 
     private lateinit var viewModel: PlayerViewModel
@@ -41,6 +41,7 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
     private lateinit var playlistAdapter: PlaylistBottomSheetAdapter
     private var playlistsJob: Job? = null
+    private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,9 +57,9 @@ class PlayerActivity : AppCompatActivity() {
         val viewModelInstance: PlayerViewModel by viewModel { parametersOf(track) }
         viewModel = viewModelInstance
 
+        setupNavigation()
         setupViews()
         setupBottomSheet()
-        setupNavigation()
         observeViewModel()
     }
 
@@ -142,20 +143,28 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun setupNavigation() {
-        // Настройка навигации для отслеживания возврата из CreatePlaylistFragment
-        // CreatePlaylistFragment сам скрывает контейнер при возврате
+        // Получаем NavHostFragment из layout
+        val navHostFragment = supportFragmentManager
+            .findFragmentById(R.id.nav_host_fragment_player) as? NavHostFragment
+        
+        navHostFragment?.let {
+            navController = it.navController
+            navController.setGraph(R.navigation.nav_graph_player)
+        } ?: run {
+            android.util.Log.e("PlayerActivity", "NavHostFragment not found")
+        }
     }
 
     private fun navigateToCreatePlaylist() {
         hideBottomSheet()
-        val navHostFragment = supportFragmentManager
-            .findFragmentById(R.id.nav_host_fragment_player) as? NavHostFragment
-        navHostFragment?.let {
-            val navController = it.findNavController()
-            val fragmentContainer = findViewById<View>(R.id.nav_host_fragment_player)
-            fragmentContainer.isVisible = true
-            navController.navigate(R.id.createPlaylistFragment)
-        }
+        
+        // Показываем контейнер
+        findViewById<View>(R.id.nav_host_fragment_player).isVisible = true
+        findViewById<View>(R.id.nav_host_fragment_player).bringToFront()
+        
+        // Передаём null для нового плейлиста
+        val args = CreatePlaylistFragmentArgs(playlist = null)
+        navController.navigate(R.id.createPlaylistFragment, args.toBundle())
     }
 
     private fun observeViewModel() {
@@ -283,11 +292,8 @@ class PlayerActivity : AppCompatActivity() {
         if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
             hideBottomSheet()
         } else {
-            val navHostFragment = supportFragmentManager
-                .findFragmentById(R.id.nav_host_fragment_player) as? NavHostFragment
-            val navController = navHostFragment?.findNavController()
-            
-            if (navController?.currentDestination?.id == R.id.createPlaylistFragment) {
+            // Проверяем, находимся ли мы на экране создания плейлиста
+            if (::navController.isInitialized && navController.currentDestination?.id == R.id.createPlaylistFragment) {
                 // Если мы на экране создания плейлиста, позволяем фрагменту обработать нажатие
                 // OnBackPressedCallback в CreatePlaylistFragment покажет диалог, если есть несохраненные изменения
                 // Если диалог не показан, фрагмент сам вызовет navigateBack()

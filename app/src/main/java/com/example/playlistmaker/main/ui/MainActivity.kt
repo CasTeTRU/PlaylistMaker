@@ -63,16 +63,29 @@ class MainActivity : AppCompatActivity() {
         
         // Настраиваем обновление заголовка при изменении экрана
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            // Скрываем нижнюю панель навигации на экране создания плейлиста
-            if (destination.id == R.id.createPlaylistFragment) {
+            // Скрываем нижнюю панель навигации на экране создания/редактирования плейлиста и просмотра плейлиста
+            if (destination.id == R.id.createPlaylistFragment || 
+                destination.id == R.id.playlistFragment) {
                 binding.bottomNavigation.isVisible = false
                 binding.bottomDivider.isVisible = false
                 binding.screenTitle.isVisible = false
+
+                val layoutParams = binding.navHostFragment.layoutParams as androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
+                layoutParams.topMargin = 0
+                layoutParams.topToBottom = androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.UNSET
+                layoutParams.topToTop = androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.PARENT_ID
+                binding.navHostFragment.layoutParams = layoutParams
             } else {
                 binding.bottomNavigation.isVisible = true
                 binding.bottomDivider.isVisible = true
                 binding.screenTitle.isVisible = true
                 updateScreenTitle(destination.label?.toString())
+                // Восстанавливаем отступ сверху для FragmentContainerView
+                val layoutParams = binding.navHostFragment.layoutParams as androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
+                layoutParams.topMargin = (16 * resources.displayMetrics.density).toInt() // 16dp
+                layoutParams.topToTop = androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.UNSET
+                layoutParams.topToBottom = R.id.screen_title
+                binding.navHostFragment.layoutParams = layoutParams
             }
         }
     }
@@ -112,12 +125,26 @@ class MainActivity : AppCompatActivity() {
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val currentDestination = navHostFragment.navController.currentDestination
         
-        // Скрываем заголовок на экране создания плейлиста
-        if (currentDestination?.id == R.id.createPlaylistFragment) {
+        // Скрываем заголовок на экране создания плейлиста, редактирования плейлиста и просмотра плейлиста
+        if (currentDestination?.id == R.id.createPlaylistFragment || 
+            //currentDestination?.id == R.id.editPlaylistFragment ||
+            currentDestination?.id == R.id.playlistFragment) {
             binding.screenTitle.isVisible = false
+            // Убираем отступ сверху для FragmentContainerView, чтобы обложка начиналась с самого верха
+            val layoutParams = binding.navHostFragment.layoutParams as androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
+            layoutParams.topMargin = 0
+            layoutParams.topToBottom = androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.UNSET
+            layoutParams.topToTop = androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.PARENT_ID
+            binding.navHostFragment.layoutParams = layoutParams
         } else {
             binding.screenTitle.isVisible = true
             updateScreenTitle(currentDestination?.label?.toString())
+            // Восстанавливаем отступ сверху для FragmentContainerView
+            val layoutParams = binding.navHostFragment.layoutParams as androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
+            layoutParams.topMargin = (16 * resources.displayMetrics.density).toInt() // 16dp
+            layoutParams.topToTop = androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.UNSET
+            layoutParams.topToBottom = R.id.screen_title
+            binding.navHostFragment.layoutParams = layoutParams
         }
     }
 

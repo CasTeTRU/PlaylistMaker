@@ -20,12 +20,14 @@ class SearchFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: SearchViewModel by viewModel()
-    private val trackAdapter = TrackAdapter { track ->
-        val intent = Intent(requireContext(), PlayerActivity::class.java).apply {
-            putExtra(PlayerActivity.EXTRA_TRACK, track)
+    private val trackAdapter = TrackAdapter(
+        onTrackClick = { track ->
+            val intent = Intent(requireContext(), PlayerActivity::class.java).apply {
+                putExtra(PlayerActivity.EXTRA_TRACK, track)
+            }
+            startActivity(intent)
         }
-        startActivity(intent)
-    }
+    )
 
     private var inputValue: String = INPUT_DEF
 

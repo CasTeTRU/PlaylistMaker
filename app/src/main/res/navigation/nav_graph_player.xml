@@ -9,7 +9,13 @@
         android:id="@+id/createPlaylistFragment"
         android:name="com.example.playlistmaker.playlist.ui.CreatePlaylistFragment"
         android:label="@string/create_playlist"
-        tools:layout="@layout/fragment_create_playlist" />
+        tools:layout="@layout/fragment_create_playlist">
+        <argument
+            android:name="playlist"
+            app:argType="com.example.playlistmaker.playlist.domain.Playlist"
+            android:defaultValue="@null"
+            app:nullable="true" />
+    </fragment>
 
 </navigation>
 

@@ -17,6 +17,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentCreatePlaylistBinding
@@ -27,12 +28,15 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
 import java.io.FileOutputStream
 
-class CreatePlaylistFragment : Fragment() {
+open class CreatePlaylistFragment : Fragment() {
 
-    private var _binding: FragmentCreatePlaylistBinding? = null
-    private val binding get() = _binding!!
+    protected var _binding: FragmentCreatePlaylistBinding? = null
+    protected val binding get() = _binding!!
 
-    private val viewModel: CreatePlaylistViewModel by viewModel()
+    protected open val viewModel: CreatePlaylistViewModel by viewModel()
+    
+    // Получаем nullable плейлист из аргументов навигации
+    private val args: CreatePlaylistFragmentArgs by navArgs()
 
     private val pickImageLauncher = registerForActivityResult(
         ActivityResultContracts.PickVisualMedia()
@@ -54,13 +58,27 @@ class CreatePlaylistFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupViews()
-        observeViewModel()
-        // Восстанавливаем состояние при первом создании view
-        restoreState()
+        try {
+            // Инициализируем ViewModel переданным плейлистом (может быть null)
+            viewModel.initializePlaylist(args.playlist)
+            
+            setupViews()
+            observeViewModel()
+            // Восстанавливаем состояние при первом создании view
+            restoreState()
+        } catch (e: Exception) {
+            android.util.Log.e("CreatePlaylistFragment", "Error in onViewCreated", e)
+            e.printStackTrace()
+            // Пытаемся вернуться назад при ошибке
+            try {
+                navigateBack()
+            } catch (e2: Exception) {
+                android.util.Log.e("CreatePlaylistFragment", "Error navigating back", e2)
+            }
+        }
     }
 
-    private fun restoreState() {
+    protected open fun restoreState() {
         // Восстанавливаем состояние из ViewModel при создании view
         // Это гарантирует, что при возврате из фонового режима данные будут восстановлены
         val currentState = viewModel.state.value ?: return
@@ -81,13 +99,53 @@ class CreatePlaylistFragment : Fragment() {
         }
     }
 
-    private fun setupViews() {
+    protected open fun setupViews() {
         binding.headerContainer.setOnClickListener {
             handleBackPress()
         }
 
         binding.coverContainer.setOnClickListener {
             pickImageLauncher.launch(androidx.activity.result.PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        }
+
+        // Устанавливаем цвет курсора программно (TextInputLayout может переопределять атрибут из layout)
+        binding.nameEditText.post {
+            // Устанавливаем drawable курсора напрямую
+            val cursorDrawable = androidx.core.content.ContextCompat.getDrawable(requireContext(), R.drawable.cursor_color)
+            if (cursorDrawable != null && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                binding.nameEditText.setTextCursorDrawable(cursorDrawable)
+            }
+        }
+        
+        binding.descriptionEditText.post {
+            // Устанавливаем drawable курсора напрямую
+            val cursorDrawable = androidx.core.content.ContextCompat.getDrawable(requireContext(), R.drawable.cursor_color)
+            if (cursorDrawable != null && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                binding.descriptionEditText.setTextCursorDrawable(cursorDrawable)
+            }
+        }
+        
+        // Также устанавливаем при получении фокуса
+        binding.nameEditText.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                binding.nameEditText.post {
+                    val cursorDrawable = androidx.core.content.ContextCompat.getDrawable(requireContext(), R.drawable.cursor_color)
+                    if (cursorDrawable != null && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                        binding.nameEditText.setTextCursorDrawable(cursorDrawable)
+                    }
+                }
+            }
+        }
+        
+        binding.descriptionEditText.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                binding.descriptionEditText.post {
+                    val cursorDrawable = androidx.core.content.ContextCompat.getDrawable(requireContext(), R.drawable.cursor_color)
+                    if (cursorDrawable != null && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                        binding.descriptionEditText.setTextCursorDrawable(cursorDrawable)
+                    }
+                }
+            }
         }
 
         // Создаём TextWatcher для поля имени, избегая зацикливания при восстановлении состояния
@@ -124,8 +182,20 @@ class CreatePlaylistFragment : Fragment() {
         )
     }
 
-    private fun observeViewModel() {
+    protected open fun observeViewModel() {
         viewModel.state.observe(viewLifecycleOwner) { state ->
+            // Проверяем, редактируем ли мы существующий плейлист
+            val isEditMode = args.playlist != null
+            
+            // Устанавливаем заголовок и текст кнопки в зависимости от режима
+            if (isEditMode) {
+                binding.titleTextView.text = getString(R.string.edit)
+                binding.createButton.text = getString(R.string.save)
+            } else {
+                binding.titleTextView.text = getString(R.string.new_playlist)
+                binding.createButton.text = getString(R.string.create)
+            }
+
             // Восстанавливаем состояние полей при изменении состояния
             if (binding.nameEditText.text.toString() != state.name) {
                 binding.nameEditText.setText(state.name)
@@ -155,17 +225,31 @@ class CreatePlaylistFragment : Fragment() {
                 }
             }
         }
-    }
-
-    private fun handleBackPress() {
-        if (viewModel.hasUnsavedChanges()) {
-            showConfirmDialog()
-        } else {
-            navigateBack()
+        
+        viewModel.isPlaylistUpdated.observe(viewLifecycleOwner) { isUpdated ->
+            if (isUpdated) {
+                if (isAdded && !isRemoving) {
+                    navigateBack()
+                }
+            }
         }
     }
 
-    private fun navigateBack() {
+    protected open fun handleBackPress() {
+        // Если редактируем плейлист, выходим без подтверждения
+        if (args.playlist != null) {
+            navigateBack()
+        } else {
+            // Если создаем новый плейлист, показываем диалог подтверждения при наличии изменений
+            if (viewModel.hasUnsavedChanges()) {
+                showConfirmDialog()
+            } else {
+                navigateBack()
+            }
+        }
+    }
+
+    protected open fun navigateBack() {
         if (!isAdded || isRemoving) {
             return // Фрагмент уже удаляется или не добавлен
         }
@@ -176,15 +260,14 @@ class CreatePlaylistFragment : Fragment() {
             
             // Проверяем, находимся ли мы в PlayerActivity (есть контейнер nav_host_fragment_player)
             if (playerContainer != null) {
-                // Мы в PlayerActivity
-                // Пытаемся вернуться через Navigation
+                // Мы в PlayerActivity - используем Navigation Component для возврата
                 val canPop = navController.previousBackStackEntry != null && navController.popBackStack()
                 // Если не удалось вернуться (стек пуст) или мы на startDestination, скрываем контейнер
                 if (!canPop || navController.previousBackStackEntry == null) {
                     playerContainer.isVisible = false
                 }
             } else {
-                // Мы в MainActivity, используем стандартную навигацию
+                // Мы в MainActivity, используем стандартную навигацию через Navigation Component
                 navController.popBackStack()
             }
         } catch (e: Exception) {
@@ -194,7 +277,7 @@ class CreatePlaylistFragment : Fragment() {
         }
     }
 
-    private fun showConfirmDialog() {
+    protected open fun showConfirmDialog() {
         val dialog = AlertDialog.Builder(requireContext())
             .setTitle(R.string.finish_playlist_creation)
             .setMessage(R.string.unsaved_data_warning)
@@ -234,7 +317,7 @@ class CreatePlaylistFragment : Fragment() {
         }
     }
 
-    private fun copyImageToPrivateStorage(uri: Uri) {
+    protected open fun copyImageToPrivateStorage(uri: Uri) {
         lifecycleScope.launch {
             try {
                 val context = context ?: return@launch
@@ -267,7 +350,7 @@ class CreatePlaylistFragment : Fragment() {
         }
     }
 
-    private fun showSnackbar(message: String) {
+    protected open fun showSnackbar(message: String) {
         val snackbarView = LayoutInflater.from(requireContext())
             .inflate(R.layout.custom_snackbar, null)
         

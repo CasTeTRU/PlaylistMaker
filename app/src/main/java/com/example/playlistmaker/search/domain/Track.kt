@@ -1,8 +1,9 @@
 package com.example.playlistmaker.search.domain
 
-import android.os.Parcel
 import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class Track(
     val trackId: String,
     val trackName: String,
@@ -28,44 +29,7 @@ data class Track(
         return releaseDate?.take(4)
     }
 
-    override fun describeContents(): Int = 0
-
-    override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeString(trackId)
-        dest.writeString(trackName)
-        dest.writeString(artistName)
-        dest.writeLong(trackTimeMillis)
-        dest.writeString(artworkUrl100)
-        dest.writeString(collectionName)
-        dest.writeString(releaseDate)
-        dest.writeString(primaryGenreName)
-        dest.writeString(country)
-        dest.writeString(previewUrl)
-    }
-
     companion object {
-        @JvmField
-        val CREATOR = object : Parcelable.Creator<Track> {
-            override fun createFromParcel(parcel: Parcel): Track {
-                return Track(
-                    trackId = parcel.readString()!!,
-                    trackName = parcel.readString()!!,
-                    artistName = parcel.readString()!!,
-                    trackTimeMillis = parcel.readLong(),
-                    artworkUrl100 = parcel.readString()!!,
-                    collectionName = parcel.readString(),
-                    releaseDate = parcel.readString(),
-                    primaryGenreName = parcel.readString(),
-                    country = parcel.readString(),
-                    previewUrl = parcel.readString()
-                )
-            }
-
-            override fun newArray(size: Int): Array<Track?> {
-                return arrayOfNulls(size)
-            }
-        }
-
         fun formatMillis(millis: Long): String {
             val totalSeconds = millis / 1000
             val minutes = totalSeconds / 60

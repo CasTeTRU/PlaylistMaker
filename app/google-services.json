@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "71045734746",
+    "project_id": "yp-playlist-project",
+    "storage_bucket": "yp-playlist-project.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:71045734746:android:b180150d035caf4331d363",
+        "android_client_info": {
+          "package_name": "com.example.playlistmaker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRGXIfwXorbxHwRyMLr9Pz4pvPelL029U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
