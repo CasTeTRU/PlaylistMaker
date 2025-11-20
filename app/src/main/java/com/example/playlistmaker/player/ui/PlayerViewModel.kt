@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.playlistmaker.analytics.AnalyticsHelper
 import com.example.playlistmaker.playlist.domain.AddTrackResult
 import com.example.playlistmaker.playlist.domain.Playlist
 import com.example.playlistmaker.playlist.domain.PlaylistInteractor
@@ -175,6 +176,12 @@ class PlayerViewModel(
             
             if (updatedTrack.isFavorite) {
                 favoritesInteractor.addTrack(updatedTrack)
+                // Отправка события в Firebase Analytics
+                AnalyticsHelper.logAddToFavorites(
+                    trackName = track.trackName,
+                    artistName = track.artistName,
+                    trackId = track.trackId
+                )
             } else {
                 favoritesInteractor.removeTrack(updatedTrack)
             }
